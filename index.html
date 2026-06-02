@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Better Selling With Bailey</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --dark: #1A1A1A;
+  --dark-2: #2A2A2A;
+  --cream: #FAF7F2;
+  --text: #3A3A3A;
+  --text-light: #6B6B6B;
+  --white: #FFFFFF;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(26,26,26,0.97);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%;
+  height: 68px;
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #bbb;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--gold); }
+
+.nav-cta {
+  background: var(--gold) !important;
+  color: var(--dark) !important;
+  padding: 0.45rem 1.1rem !important;
+  border-radius: 4px;
+  font-weight: 700 !important;
+}
+
+.nav-cta:hover { background: var(--gold-light) !important; }
+/* HERO */
+.hero {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #111 0%, #2D2000 55%, #111 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 5% 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(201,168,76,0.18) 0%, transparent 65%);
+}
+
+.hero-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.35);
+  color: var(--gold-light);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.38rem 1.1rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  color: var(--white);
+  font-size: clamp(2.2rem, 5.5vw, 4rem);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  font-weight: 900;
+}
+
+.hero h1 span { color: var(--gold); }
+
+.hero-sub {
+  color: #aaa;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.75;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-cta { display: flex; justify-content: center; flex-wrap: wrap; }
+.stat { text-align: center; }
+
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--gold);
+  font-weight: 700;
+  display: block;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.76rem;
+  color: #888;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 0.98rem;
+  padding: 0.95rem 2.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+  margin: 0.4rem;
+}
+
+.btn-primary:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,168,76,0.4);
+}
+
+.btn-outline {
+  display: inline-block;
+  background: transparent;
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.98rem;
+  padding: 0.95rem 2.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  border: 2px solid var(--gold);
+  margin: 0.4rem;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover { background: var(--gold); color: var(--dark); }
+
+/* SECTIONS */
+section { padding: 90px 5%; }
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.7rem;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  color: var(--dark);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.section-intro {
+  color: var(--text-light);
+  font-size: 1rem;
+  max-width: 580px;
+  line-height: 1.75;
+}
+
+.inner { max-width: 1100px; margin: 0 auto; }
+.inner-narrow { max-width: 860px; margin: 0 auto; }
+/* HOW IT WORKS */
+.how-it-works { background: var(--white); }
+.how-it-works .header { text-align: center; margin-bottom: 3rem; }
+.how-it-works .header .section-intro { margin: 0 auto; }
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.step {
+  background: var(--cream);
+  border-radius: 12px;
+  padding: 1.8rem;
+  border: 1px solid #E8E0D0;
+  transition: all 0.2s;
+}
+
+.step:hover {
+  box-shadow: 0 8px 28px rgba(0,0,0,0.07);
+  border-color: rgba(201,168,76,0.3);
+}
+
+.step-num {
+  width: 40px; height: 40px;
+  background: var(--gold);
+  color: var(--dark);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.step h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+}
+
+.step p { color: var(--text-light); font-size: 0.88rem; line-height: 1.65; }
+
+/* INCLUDED */
+.included { background: var(--dark); }
+
+.included .inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.included .section-title { color: var(--white); }
+.included .section-intro { color: #999; }
+
+.price-tag {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  color: var(--gold);
+  font-weight: 900;
+  margin: 1.2rem 0 0.25rem;
+  line-height: 1;
+}
+
+.price-note { color: #777; font-size: 0.82rem; margin-bottom: 0.5rem; }
+
+.included-list { list-style: none; margin-top: 1.5rem; }
+
+.included-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: #ccc;
+  font-size: 0.92rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+.included-list li::before {
+  content: '✓';
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: 0.12rem;
+}
+
+.included-right {
+  background: var(--dark-2);
+  border-radius: 16px;
+  padding: 2.2rem;
+  border: 1px solid rgba(201,168,76,0.15);
+}
+.keep-100 {
+  background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.04));
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: 10px;
+  padding: 1.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.keep-100 h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+}
+
+.keep-100 p { color: #bbb; font-size: 0.9rem; line-height: 1.65; }
+
+.info-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 9px;
+  padding: 1.25rem;
+  margin-bottom: 0.9rem;
+}
+
+.info-card h4 {
+  color: var(--white);
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.info-card p { color: #888; font-size: 0.86rem; line-height: 1.6; }
+
+/* IDEAL */
+.ideal { background: var(--cream); }
+.ideal .header { text-align: center; margin-bottom: 2.8rem; }
+.ideal .header .section-intro { margin: 0.5rem auto 0; }
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.2rem;
+}
+
+.category {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border: 1px solid #EAE0D0;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.category:hover {
+  border-color: var(--gold);
+  box-shadow: 0 4px 18px rgba(201,168,76,0.15);
+  transform: translateY(-3px);
+}
+
+.category-icon { font-size: 2rem; margin-bottom: 0.6rem; display: block; }
+
+.category h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dark);
+  line-height: 1.3;
+}
+
+/* NEWS */
+.news { background: var(--white); }
+.news .inner-narrow { text-align: center; }
+.news .section-intro { margin: 0.5rem auto 0; }
+
+.news-card {
+  background: var(--cream);
+  border-radius: 14px;
+  padding: 2.2rem;
+  border-left: 4px solid var(--gold);
+  text-align: left;
+  margin-top: 2.2rem;
+}
+
+.news-source {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.news-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  color: var(--dark);
+  margin-bottom: 0.9rem;
+  font-weight: 700;
+}
+
+.news-excerpt { color: var(--text-light); font-size: 0.93rem; line-height: 1.72; }
+
+.news-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.news-link:hover { text-decoration: underline; }
+/* WEATHER */
+.weather { background: var(--dark); }
+.weather .inner-narrow { text-align: center; }
+.weather .section-title { color: var(--white); }
+.weather .section-intro { color: #999; margin: 0.5rem auto 0; }
+
+.weather-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  text-align: left;
+}
+
+.weather-card {
+  background: var(--dark-2);
+  border-radius: 12px;
+  padding: 1.8rem;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.weather-card h3 {
+  color: var(--white);
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  line-height: 1.4;
+}
+
+.weather-card p { color: #999; font-size: 0.88rem; line-height: 1.65; }
+
+.weather-insured { border-color: rgba(201,168,76,0.25); }
+
+.weather-insured h3 { color: var(--gold-light); }
+
+.price-badge {
+  background: rgba(201,168,76,0.15);
+  color: var(--gold);
+  font-size: 0.78rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  border: 1px solid rgba(201,168,76,0.3);
+}
+
+/* CTA */
+.cta-section {
+  background: linear-gradient(135deg, #0E0C00 0%, #2D2200 50%, #0E0C00 100%);
+  text-align: center;
+  padding: 100px 5%;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(201,168,76,0.18) 0%, transparent 60%);
+}
+
+.cta-section .inner-narrow { position: relative; z-index: 1; }
+
+.cta-section .section-title { color: var(--white); margin-bottom: 1rem; }
+
+.cta-section > .inner-narrow > p {
+  color: #bbb;
+  font-size: 1rem;
+  margin: 0 auto 2.2rem;
+  max-width: 540px;
+  line-height: 1.7;
+}
+
+/* FOOTER */
+footer {
+  background: #0E0E0E;
+  color: #777;
+  text-align: center;
+  padding: 2.5rem 5%;
+  font-size: 0.83rem;
+  border-top: 1px solid rgba(201,168,76,0.12);
+  line-height: 1.8;
+}
+
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .included .inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .weather-cards { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}
+  </style>
+</head>
+<body>
+<!-- Better Selling With Bailey -->
+<nav>
+  <a href="#" class="nav-logo">Better Selling With Bailey</a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#included">Pricing</a></li>
+    <li><a href="#ideal">Ideal For</a></li>
+    <li><a href="#weather">Weather Policy</a></li>
+    <li><a href="#contact" class="nav-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-badge">Professional Sale Management</span>
+    <h1>Clear Out Your Space.<br><span>Keep 100% of the Sales.</span><br>We'll Even Remove What's Left for Free.</h1>
+    <p class="hero-sub">Turn unwanted items into cash without doing any of the work. We handle every aspect of your sale — from pricing to cleanup — while you keep every dollar earned.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">$16K+</span><span class="stat-label">Top Single Event Sales</span></div>
+      <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Sales You Keep</span></div>
+      <div class="stat"><span class="stat-num">$0</span><span class="stat-label">Leftover Removal Cost</span></div>
+    </div>
+    <div class="hero-cta">
+      <a href="#contact" class="btn-primary">Book Your Sale</a>
+      <a href="#included" class="btn-outline">See What's Included</a>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works" id="how-it-works">
+  <div class="inner">
+    <div class="header">
+      <p class="section-label">The Process</p>
+      <h2 class="section-title">Everything Handled, Start to Finish</h2>
+      <p class="section-intro">The sale is hosted at your home, but you don't need to be present during the event unless you choose to be. We take care of everything.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><h3>Pricing &amp; Organization</h3><p>We assess and price all of your sale items strategically to maximize value and attract the right buyers.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Staging &amp; Setup</h3><p>Your merchandise is organized and staged professionally to create an appealing shopping environment.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Promotion &amp; Advertising</h3><p>We handle all marketing and advertising to drive traffic and bring the right buyers to your event.</p></div>
+      <div class="step"><div class="step-num">4</div><h3>Day-of Management</h3><p>Our team handles all customer interactions, sales, and event coordination throughout the entire event.</p></div>
+      <div class="step"><div class="step-num">5</div><h3>Cleanup &amp; Removal</h3><p>At the end of the sale, we handle teardown. Unsold items can be removed free of charge — your choice.</p></div>
+      <div class="step"><div class="step-num">6</div><h3>You Keep It All</h3><p>Every dollar earned from the sale goes directly to you. Our flat fee covers the entire operation.</p></div>
+    </div>
+  </div>
+</section>
+<section class="included" id="included">
+  <div class="inner">
+    <div class="included-left">
+      <p class="section-label">Transparent Pricing</p>
+      <h2 class="section-title">One Flat Rate. No Hidden Fees.</h2>
+      <div class="price-tag">$995</div>
+      <p class="price-note">One-time flat fee · You keep 100% of all sales revenue</p>
+      <ul class="included-list">
+        <li>Pricing of all sale items</li>
+        <li>Organizing and staging merchandise</li>
+        <li>Professional promotion and advertising</li>
+        <li>Sale setup and teardown</li>
+        <li>Customer interactions and sales management</li>
+        <li>General event oversight and coordination</li>
+        <li>Free removal of unwanted remaining inventory after the sale</li>
+      </ul>
+    </div>
+    <div class="included-right">
+      <div class="keep-100">
+        <h3>You Keep 100% of the Money</h3>
+        <p>Unlike traditional estate sale companies that take a percentage of sales, you keep 100% of the money generated from the event. Our fee is strictly for managing and operating the sale. Every dollar earned during the event belongs to you.</p>
+      </div>
+      <div class="info-card">
+        <h4>🏠 What Happens After the Sale?</h4>
+        <p>At the conclusion of the event, you decide what happens next. Keep any remaining items you wish to retain, or have us remove the remaining inventory completely free of charge.</p>
+      </div>
+      <div class="info-card">
+        <h4>📍 Hosted at Your Home</h4>
+        <p>Many clients view this service as a garage, basement, attic, or collection cleanout — with the added benefit of potentially making money in the process. Even if your primary goal is reclaiming your space, the sale gives your items an opportunity to generate income before they're removed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ideal" id="ideal">
+  <div class="inner">
+    <div class="header">
+      <p class="section-label">Best-Performing Categories</p>
+      <h2 class="section-title">Ideal For</h2>
+      <p class="section-intro">These categories consistently attract buyers and typically provide the strongest opportunity to generate meaningful proceeds from a sale.</p>
+    </div>
+    <div class="categories">
+      <div class="category"><span class="category-icon">👗</span><h3>Clothing Collections</h3></div>
+      <div class="category"><span class="category-icon">🧩</span><h3>Toys &amp; LEGO Collections</h3></div>
+      <div class="category"><span class="category-icon">🎮</span><h3>Video Games &amp; Electronics</h3></div>
+      <div class="category"><span class="category-icon">🏺</span><h3>Antiques &amp; Vintage Items</h3></div>
+      <div class="category"><span class="category-icon">⚾</span><h3>Sports Cards &amp; Collectibles</h3></div>
+      <div class="category"><span class="category-icon">🃏</span><h3>Trading Card Collections</h3></div>
+      <div class="category"><span class="category-icon">🏡</span><h3>General Household Items</h3></div>
+    </div>
+  </div>
+</section>
+<section class="news">
+  <div class="inner-narrow">
+    <p class="section-label">As Seen In</p>
+    <h2 class="section-title">In the News</h2>
+    <p class="section-intro">Our sales draw real crowds and real interest — even in challenging weather conditions.</p>
+    <div class="news-card">
+      <p class="news-source">YourErie.com · Local News · May 2026</p>
+      <h3 class="news-headline">Star Wars Sale Draws Crowd in North East</h3>
+      <p class="news-excerpt">A Star Wars collector's sale in North East drew enthusiastic buyers even through heavy rain and wind. Organizers reported a strong turnout, with fans eager to browse a collection spanning action figures, books, and sealed LEGO sets — showcasing just how powerfully a well-run specialty sale can bring a community together and generate real results.</p>
+      <a href="https://www.yourerie.com/news/local-news/star-wars-sale-draws-crowd-in-north-east/" target="_blank" class="news-link">Read the Full Story →</a>
+    </div>
+  </div>
+</section>
+
+<section class="weather" id="weather">
+  <div class="inner-narrow">
+    <p class="section-label">Peace of Mind</p>
+    <h2 class="section-title">Weather Policy</h2>
+    <p class="section-intro">We offer optional weather insurance to protect your investment in case of severe weather conditions.</p>
+    <div class="weather-cards">
+      <div class="weather-card weather-insured">
+        <h3>☑️ With Weather Insurance <span class="price-badge">$125</span></h3>
+        <p>In the event of severe weather, you will receive the full $995 fee refunded, or the opportunity to reschedule to a different day at no additional cost. Severe weather includes: wind over 30mph, rain over 0.7in for the day, thunder/lightning, and any other severe and unusual weather.</p>
+      </div>
+      <div class="weather-card">
+        <h3>⚠️ Without Weather Insurance</h3>
+        <p>If the sale is canceled due to severe weather without insurance coverage, a 30% refund will be given. We strongly recommend weather insurance for full peace of mind going into your event.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contact">
+  <div class="inner-narrow">
+    <p class="section-label">Ready to Get Started?</p>
+    <h2 class="section-title">The Bottom Line</h2>
+    <p>If you're looking to reclaim valuable space, reduce clutter, and potentially generate thousands of dollars without doing the work yourself, this service was designed for you. We handle the pricing, setup, promotion, selling, cleanup, and optional removal — and you keep 100% of the sales.</p>
+    <a href="mailto:dorianbailey310@gmail.com" class="btn-primary">Email Bailey to Book Your Sale</a>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-logo">Better Selling With Bailey</span>
+  <p>Professional sale management services · You keep 100% of sales · Free leftover removal</p>
+  <p style="margin-top:0.5rem; font-size:0.8rem;">© 2026 Better Selling With Bailey · All rights reserved</p>
+</footer>
+</body>
+</html>

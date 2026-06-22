@@ -883,7 +883,99 @@ display: block;
 @media (max-width: 480px) {
   .snav-link { padding: 5px 8px; font-size: 0.63rem; }
 }
+
+/* FAQ */
+.faq { background: var(--dark); }
+.faq .faq-header { text-align: center; margin-bottom: 0.6rem; }
+.faq .faq-intro {
+color: #999;
+font-size: 0.98rem;
+text-align: center;
+max-width: 580px;
+margin: 0 auto 3rem;
+line-height: 1.75;
+}
+.faq-list { max-width: 780px; margin: 0 auto; }
+.faq-item {
+border-bottom: 1px solid rgba(201,168,76,0.15);
+border-radius: 6px;
+margin-bottom: 2px;
+transition: background 0.2s;
+}
+.faq-item:first-child { border-top: 1px solid rgba(201,168,76,0.15); }
+.faq-item:hover { background: rgba(255,255,255,0.03); }
+.faq-question {
+width: 100%;
+background: none;
+border: none;
+outline: none;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 1.2rem;
+padding: 1.25rem 1rem;
+text-align: left;
+color: var(--white);
+font-family: 'Inter', sans-serif;
+font-size: 0.97rem;
+font-weight: 600;
+line-height: 1.45;
+letter-spacing: 0.01em;
+transition: color 0.2s;
+}
+.faq-question:hover { color: var(--gold-light); }
+.faq-question:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+.faq-question[aria-expanded="true"] { color: var(--gold); }
+.faq-icon {
+flex-shrink: 0;
+width: 22px;
+height: 22px;
+border: 1px solid rgba(201,168,76,0.35);
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1rem;
+font-weight: 300;
+color: var(--gold);
+line-height: 1;
+user-select: none;
+transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s, border-color 0.2s;
+}
+.faq-question[aria-expanded="true"] .faq-icon {
+background: rgba(201,168,76,0.12);
+border-color: rgba(201,168,76,0.6);
+transform: rotate(45deg);
+}
+.faq-body {
+overflow: hidden;
+max-height: 0;
+transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.faq-body.faq-open { max-height: 500px; }
+.faq-answer {
+padding: 0 1rem 1.4rem 1rem;
+color: #aaa;
+font-size: 0.91rem;
+line-height: 1.8;
+max-width: 680px;
+}
+.faq-cta {
+text-align: center;
+margin-top: 3.2rem;
+padding-top: 2.4rem;
+border-top: 1px solid rgba(201,168,76,0.12);
+}
+.faq-cta p { color: #888; font-size: 0.93rem; margin-bottom: 1.2rem; }
+@media (max-width: 600px) {
+.faq-question { font-size: 0.9rem; padding: 1.1rem 0.75rem; }
+.faq-answer { padding: 0 0.75rem 1.2rem; font-size: 0.88rem; }
+}
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need to be present during the sale?","acceptedAnswer":{"@type":"Answer","text":"No. Most clients choose not to be present. Better Selling with Bailey handles setup, pricing, customer interactions, checkout, and cleanup so you can go about your day."}},{"@type":"Question","name":"Why wouldn't I just run the sale myself?","acceptedAnswer":{"@type":"Answer","text":"Running a successful sale takes significantly more work than most people expect. Proper pricing, advertising, setup, customer interactions, checkout, and cleanup all require time and experience. Better Selling with Bailey handles the entire process while helping maximize turnout and sell-through, allowing you to focus on other things."}},{"@type":"Question","name":"What kinds of items can be sold?","acceptedAnswer":{"@type":"Answer","text":"We work with a wide variety of items including tools, collectibles, LEGO, Star Wars items, hunting and fishing gear, Harley Davidson merchandise, vintage clothing, sports cards, video games, household goods, antiques, and more."}},{"@type":"Question","name":"How are items priced?","acceptedAnswer":{"@type":"Answer","text":"Items are researched and priced using current market data, recent sold listings, and years of real-world buying and selling experience to maximize sell-through while protecting value."}},{"@type":"Question","name":"How much inventory do I need?","acceptedAnswer":{"@type":"Answer","text":"Every situation is different, but generally the more inventory available, the more successful the event will be. A consultation can determine if your collection is a good fit."}},{"@type":"Question","name":"How much money can I expect to make?","acceptedAnswer":{"@type":"Answer","text":"Every sale is different and results depend on the quantity, quality, and demand for the items being sold. During the consultation process, realistic expectations can be provided based on your inventory, market demand, and comparable past sales."}},{"@type":"Question","name":"What happens to unsold items?","acceptedAnswer":{"@type":"Answer","text":"You decide. Items can be kept, donated, removed, or handled according to a plan we discuss before the sale."}},{"@type":"Question","name":"How far in advance should I book?","acceptedAnswer":{"@type":"Answer","text":"The earlier the better. Sale dates, especially during spring and summer, can fill quickly. Booking in advance gives more time for promotion and preparation."}},{"@type":"Question","name":"What if it rains?","acceptedAnswer":{"@type":"Answer","text":"Weather is monitored closely leading up to the event. Rain insurance options may be available depending on the sale package selected."}},{"@type":"Question","name":"Do you provide advertising and promotion?","acceptedAnswer":{"@type":"Answer","text":"Yes. Better Selling with Bailey creates and manages advertising across multiple platforms to help attract as many qualified buyers as possible."}},{"@type":"Question","name":"What areas do you serve?","acceptedAnswer":{"@type":"Answer","text":"We primarily serve Erie County and surrounding areas, but additional locations may be considered depending on the size and scope of the sale."}},{"@type":"Question","name":"How do I get started?","acceptedAnswer":{"@type":"Answer","text":"Simply reach out directly to discuss your inventory, goals, and determine whether a Better Selling with Bailey event is the right fit."}}]}
+</script>
 </head>
 <body>
 <!-- Better Selling With Bailey -->
@@ -891,6 +983,7 @@ display: block;
 <a href="#" class="nav-logo">Better Selling With Bailey</a>
 <ul class="nav-links">
 <li><a href="#how-it-works">How It Works</a></li>
+<li><a href="#faq">FAQ</a></li>
 <li><a href="#included">Pricing</a></li>
 <li><a href="#ideal">Ideal For</a></li>
 <li><a href="#events">Events</a></li>
@@ -905,6 +998,7 @@ display: block;
   <div class="snav-inner">
     <div class="snav-pill" id="snav-pill"></div>
     <a href="#how-it-works" class="snav-link" data-section="how-it-works">How It Works</a>
+    <a href="#faq" class="snav-link" data-section="faq">FAQ</a>
     <a href="#included" class="snav-link" data-section="included">Pricing</a>
     <a href="#ideal" class="snav-link" data-section="ideal">Ideal For</a>
     <a href="#events" class="snav-link" data-section="events">Events</a>
@@ -969,6 +1063,142 @@ display: block;
 <h3>You Keep the Proceeds</h3>
 <p>The earnings from the sale go directly to you, minus any applicable commission per your chosen service tier.</p>
 </div>
+</div>
+</div>
+</section>
+
+<section class="faq" id="faq">
+<div class="inner-narrow">
+<div class="faq-header">
+<p class="section-label">Common Questions</p>
+<h2 class="section-title" style="color:var(--white)">Frequently Asked Questions</h2>
+</div>
+<p class="faq-intro">Have questions? Here are answers to some of the most common things people ask before booking a sale.</p>
+<div class="faq-list" role="list">
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-1" id="faq-q-1">
+Do I need to be present during the sale?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-1" role="region" aria-labelledby="faq-q-1">
+<p class="faq-answer">No. Most clients choose not to be present. Better Selling with Bailey handles setup, pricing, customer interactions, checkout, and cleanup so you can go about your day.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-2" id="faq-q-2">
+Why wouldn&rsquo;t I just run the sale myself?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-2" role="region" aria-labelledby="faq-q-2">
+<p class="faq-answer">Running a successful sale takes significantly more work than most people expect. Proper pricing, advertising, setup, customer interactions, checkout, and cleanup all require time and experience. Better Selling with Bailey handles the entire process while helping maximize turnout and sell-through, allowing you to focus on other things.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-3" id="faq-q-3">
+What kinds of items can be sold?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-3" role="region" aria-labelledby="faq-q-3">
+<p class="faq-answer">We work with a wide variety of items including tools, collectibles, LEGO, Star Wars items, hunting and fishing gear, Harley Davidson merchandise, vintage clothing, sports cards, video games, household goods, antiques, and more.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-4" id="faq-q-4">
+How are items priced?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-4" role="region" aria-labelledby="faq-q-4">
+<p class="faq-answer">Items are researched and priced using current market data, recent sold listings, and years of real-world buying and selling experience to maximize sell-through while protecting value.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-5" id="faq-q-5">
+How much inventory do I need?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-5" role="region" aria-labelledby="faq-q-5">
+<p class="faq-answer">Every situation is different, but generally the more inventory available, the more successful the event will be. A consultation can determine if your collection is a good fit.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-6" id="faq-q-6">
+How much money can I expect to make?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-6" role="region" aria-labelledby="faq-q-6">
+<p class="faq-answer">Every sale is different and results depend on the quantity, quality, and demand for the items being sold. During the consultation process, realistic expectations can be provided based on your inventory, market demand, and comparable past sales.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-7" id="faq-q-7">
+What happens to unsold items?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-7" role="region" aria-labelledby="faq-q-7">
+<p class="faq-answer">You decide. Items can be kept, donated, removed, or handled according to a plan we discuss before the sale.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-8" id="faq-q-8">
+How far in advance should I book?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-8" role="region" aria-labelledby="faq-q-8">
+<p class="faq-answer">The earlier the better. Sale dates, especially during spring and summer, can fill quickly. Booking in advance gives more time for promotion and preparation.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-9" id="faq-q-9">
+What if it rains?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-9" role="region" aria-labelledby="faq-q-9">
+<p class="faq-answer">Weather is monitored closely leading up to the event. Rain insurance options may be available depending on the sale package selected.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-10" id="faq-q-10">
+Do you provide advertising and promotion?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-10" role="region" aria-labelledby="faq-q-10">
+<p class="faq-answer">Yes. Better Selling with Bailey creates and manages advertising across multiple platforms to help attract as many qualified buyers as possible.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-11" id="faq-q-11">
+What areas do you serve?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-11" role="region" aria-labelledby="faq-q-11">
+<p class="faq-answer">We primarily serve Erie County and surrounding areas, but additional locations may be considered depending on the size and scope of the sale.</p>
+</div>
+</div>
+
+<div class="faq-item" role="listitem">
+<button class="faq-question" aria-expanded="false" aria-controls="faq-a-12" id="faq-q-12">
+How do I get started?
+<span class="faq-icon" aria-hidden="true">+</span>
+</button>
+<div class="faq-body" id="faq-a-12" role="region" aria-labelledby="faq-q-12">
+<p class="faq-answer">Simply reach out directly to discuss your inventory, goals, and determine whether a Better Selling with Bailey event is the right fit.</p>
+</div>
+</div>
+</div>
+<div class="faq-cta">
+<p>Still have questions? Contact Bailey today.</p>
+<a href="#contact" class="btn-primary">Get in Touch</a>
 </div>
 </div>
 </section>
@@ -1135,6 +1365,38 @@ Facebook Page
 <p style="margin-top:0.5rem; font-size:0.8rem;">&copy; 2026 Better Selling With Bailey &middot; All rights reserved</p>
 </footer>
 
+<script>
+(function() {
+  var items = document.querySelectorAll('.faq-item');
+  items.forEach(function(item) {
+    var btn = item.querySelector('.faq-question');
+    var body = item.querySelector('.faq-body');
+    if (!btn || !body) return;
+    btn.addEventListener('click', function() {
+      var isOpen = btn.getAttribute('aria-expanded') === 'true';
+      items.forEach(function(other) {
+        var ob = other.querySelector('.faq-question');
+        var od = other.querySelector('.faq-body');
+        if (ob && od && ob !== btn) {
+          ob.setAttribute('aria-expanded', 'false');
+          od.classList.remove('faq-open');
+        }
+      });
+      btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+      body.classList.toggle('faq-open', !isOpen);
+    });
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var all = Array.from(document.querySelectorAll('.faq-question'));
+        var idx = all.indexOf(btn);
+        var next = e.key === 'ArrowDown' ? all[idx+1] : all[idx-1];
+        if (next) next.focus();
+      }
+    });
+  });
+})();
+</script>
 <script>
 (function() {
   var nav = document.getElementById('section-nav');

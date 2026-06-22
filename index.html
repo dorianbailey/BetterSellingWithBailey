@@ -792,6 +792,97 @@ display: block;
 .weather-cards { grid-template-columns: 1fr; }
 .nav-links { display: none; }
 }
+
+/* STICKY SECTION NAV */
+#section-nav {
+  position: fixed;
+  top: 68px;
+  left: 0; right: 0;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  transform: translateY(-110%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#section-nav.visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.snav-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(20, 16, 4, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201,168,76,0.22);
+  border-radius: 100px;
+  padding: 4px 6px;
+  gap: 2px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+  margin-top: 8px;
+  max-width: calc(100vw - 32px);
+}
+
+.snav-pill {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  height: calc(100% - 8px);
+  background: rgba(201,168,76,0.18);
+  border: 1px solid rgba(201,168,76,0.45);
+  border-radius: 100px;
+  transition: left 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+}
+
+.snav-link {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #888;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.22s;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.snav-link:hover { color: var(--gold-light); }
+.snav-link.snav-active { color: var(--gold); }
+
+@media (max-width: 768px) {
+  #section-nav { top: 60px; }
+  .snav-inner {
+    padding: 3px 4px;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .snav-inner::-webkit-scrollbar { display: none; }
+  .snav-link { padding: 5px 10px; font-size: 0.67rem; letter-spacing: 0.04em; }
+}
+
+@media (max-width: 480px) {
+  .snav-link { padding: 5px 8px; font-size: 0.63rem; }
+}
 </style>
 </head>
 <body>
@@ -807,6 +898,20 @@ display: block;
 <li><a href="#contact" class="nav-cta">Get Started</a></li>
 </ul>
 </nav>
+
+<!-- STICKY SECTION NAV -->
+<div id="section-nav" role="navigation" aria-label="Page sections">
+  <div class="snav-inner">
+    <div class="snav-pill" id="snav-pill"></div>
+    <a href="#how-it-works" class="snav-link" data-section="how-it-works">How It Works</a>
+    <a href="#included" class="snav-link" data-section="included">Pricing</a>
+    <a href="#ideal" class="snav-link" data-section="ideal">Ideal For</a>
+    <a href="#events" class="snav-link" data-section="events">Events</a>
+    <a href="#news" class="snav-link" data-section="news">News</a>
+    <a href="#weather" class="snav-link" data-section="weather">Weather</a>
+    <a href="#contact" class="snav-link" data-section="contact">Get Started</a>
+  </div>
+</div>
 
 <section class="hero">
 <div class="hero-inner">
@@ -975,7 +1080,7 @@ display: block;
 </div>
 </section>
 
-<section class="news">
+<section class="news" id="news">
 <div class="inner-narrow">
 <p class="section-label">As Seen In</p>
 <h2 class="section-title">In the News</h2>
@@ -1028,5 +1133,84 @@ Facebook Page
 <p>Professional sale management services &middot; Two service tiers available &middot; Free leftover removal</p>
 <p style="margin-top:0.5rem; font-size:0.8rem;">&copy; 2026 Better Selling With Bailey &middot; All rights reserved</p>
 </footer>
+
+<script>
+(function() {
+  var nav = document.getElementById('section-nav');
+  var pill = document.getElementById('snav-pill');
+  var links = Array.from(document.querySelectorAll('.snav-link'));
+  var sectionIds = links.map(function(l){ return l.dataset.section; });
+  var activeIndex = -1;
+
+  function updatePill(index) {
+    if (index < 0 || index >= links.length) { pill.style.opacity = '0'; return; }
+    var link = links[index];
+    var inner = link.closest('.snav-inner');
+    var innerRect = inner.getBoundingClientRect();
+    var linkRect = link.getBoundingClientRect();
+    var leftOffset = linkRect.left - innerRect.left + inner.scrollLeft;
+    pill.style.opacity = '1';
+    pill.style.left = leftOffset + 'px';
+    pill.style.width = linkRect.width + 'px';
+  }
+
+  function setActive(index) {
+    if (index === activeIndex) return;
+    activeIndex = index;
+    links.forEach(function(l, i){ l.classList.toggle('snav-active', i === index); });
+    updatePill(index);
+    // On mobile, scroll the active link into view
+    if (index >= 0) {
+      var inner = links[index].closest('.snav-inner');
+      var link = links[index];
+      var innerRect = inner.getBoundingClientRect();
+      var linkRect = link.getBoundingClientRect();
+      if (linkRect.right > innerRect.right - 8 || linkRect.left < innerRect.left + 8) {
+        link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }
+
+  function getActiveSection() {
+    var scrollY = window.scrollY || window.pageYOffset;
+    var offset = 130;
+    var best = -1;
+    for (var i = sectionIds.length - 1; i >= 0; i--) {
+      var el = document.getElementById(sectionIds[i]);
+      if (!el) continue;
+      if (scrollY + offset >= el.offsetTop) { best = i; break; }
+    }
+    return best;
+  }
+
+  function onScroll() {
+    var hero = document.querySelector('.hero');
+    var heroHeight = hero ? hero.offsetHeight : 400;
+    if ((window.scrollY || window.pageYOffset) > heroHeight * 0.55) {
+      nav.classList.add('visible');
+    } else {
+      nav.classList.remove('visible');
+    }
+    setActive(getActiveSection());
+  }
+
+  links.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var id = this.dataset.section;
+      var target = document.getElementById(id);
+      if (!target) return;
+      var navH = 68 + 50;
+      var top = target.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) - navH;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    });
+  });
+
+  window.addEventListener('resize', function(){ if (activeIndex >= 0) updatePill(activeIndex); }, { passive: true });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
 </body>
 </html>

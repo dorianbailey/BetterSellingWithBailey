@@ -647,7 +647,7 @@ flex-shrink: 0;
 }
 
 /* NEWS */
-.news { background: var(--white); }
+.news { background: var(--cream); }
 .news .inner-narrow { text-align: center; }
 .news .section-intro { margin: 0.5rem auto 0; }
 
@@ -893,8 +893,9 @@ display: block;
 <li><a href="#how-it-works">How It Works</a></li>
 <li><a href="#included">Pricing</a></li>
 <li><a href="#ideal">Ideal For</a></li>
-<li><a href="#events">Upcoming Events</a></li>
-<li><a href="#weather">Weather Policy</a></li>
+<li><a href="#events">Events</a></li>
+<li><a href="#news">News</a></li>
+<li><a href="#weather">Weather</a></li>
 <li><a href="#contact" class="nav-cta">Get Started</a></li>
 </ul>
 </nav>
@@ -1173,7 +1174,12 @@ Facebook Page
 
   function getActiveSection() {
     var scrollY = window.scrollY || window.pageYOffset;
+    var winH = window.innerHeight;
+    var docH = document.documentElement.scrollHeight;
     var offset = 130;
+    if (scrollY + winH >= docH - 80) {
+      return sectionIds.length - 1;
+    }
     var best = -1;
     for (var i = sectionIds.length - 1; i >= 0; i--) {
       var el = document.getElementById(sectionIds[i]);

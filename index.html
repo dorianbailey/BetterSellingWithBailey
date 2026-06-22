@@ -235,7 +235,7 @@ line-height: 1.75;
 
 .steps {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+grid-template-columns: repeat(3, 1fr);
 gap: 1.5rem;
 }
 
@@ -262,6 +262,7 @@ font-weight: 800;
 font-size: 1rem;
 margin-bottom: 1rem;
 font-family: 'Playfair Display', serif;
+flex-shrink: 0;
 }
 
 .step h3 {
@@ -272,6 +273,14 @@ margin-bottom: 0.5rem;
 }
 
 .step p { color: var(--text-light); font-size: 0.88rem; line-height: 1.65; }
+
+@media (max-width: 800px) {
+.steps { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 500px) {
+.steps { grid-template-columns: 1fr; }
+}
 
 /* INCLUDED */
 .included { background: var(--dark); }
@@ -824,12 +833,36 @@ display: block;
 <p class="section-intro">The sale is hosted at your home, but you don't need to be present during the event unless you choose to be. We take care of everything.</p>
 </div>
 <div class="steps">
-<div class="step"><div class="step-num">1</div><h3>Pricing &amp; Organization</h3><p>We assess and price all of your sale items strategically to maximize value and attract the right buyers.</p></div>
-<div class="step"><div class="step-num">2</div><h3>Staging &amp; Setup</h3><p>Your merchandise is organized and staged professionally to create an appealing shopping environment.</p></div>
-<div class="step"><div class="step-num">3</div><h3>Promotion &amp; Advertising</h3><p>We handle all marketing and advertising to drive traffic and bring the right buyers to your event.</p></div>
-<div class="step"><div class="step-num">4</div><h3>Day-of Management</h3><p>Our team handles all customer interactions, sales, and event coordination throughout the entire event.</p></div>
-<div class="step"><div class="step-num">5</div><h3>Cleanup &amp; Removal</h3><p>At the end of the sale, we handle teardown. Unsold items can be removed free of charge &mdash; your choice.</p></div>
-<div class="step"><div class="step-num">6</div><h3>You Keep the Proceeds</h3><p>The earnings from the sale go directly to you, minus any applicable commission per your chosen service tier.</p></div>
+<div class="step">
+<div class="step-num">1</div>
+<h3>Pricing &amp; Organization</h3>
+<p>We assess and price all of your sale items strategically to maximize value and attract the right buyers.</p>
+</div>
+<div class="step">
+<div class="step-num">2</div>
+<h3>Staging &amp; Setup</h3>
+<p>Your merchandise is organized and staged professionally to create an appealing, easy-to-browse shopping environment.</p>
+</div>
+<div class="step">
+<div class="step-num">3</div>
+<h3>Promotion &amp; Advertising</h3>
+<p>We handle all marketing and advertising to drive traffic and bring the right buyers to your event.</p>
+</div>
+<div class="step">
+<div class="step-num">4</div>
+<h3>Day-of Management</h3>
+<p>Our team handles all customer interactions, sales, and event coordination throughout the entire event.</p>
+</div>
+<div class="step">
+<div class="step-num">5</div>
+<h3>Cleanup &amp; Removal</h3>
+<p>At the end of the sale, we handle teardown. Unsold items can be removed free of charge &mdash; your choice.</p>
+</div>
+<div class="step">
+<div class="step-num">6</div>
+<h3>You Keep the Proceeds</h3>
+<p>The earnings from the sale go directly to you, minus any applicable commission per your chosen service tier.</p>
+</div>
 </div>
 </div>
 </section>

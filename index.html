@@ -1376,7 +1376,20 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 <li><a href="#faq">FAQ</a></li>
 <li><a href="#contact" class="nav-cta">Get Started</a></li>
 </ul>
+<button class="nav-hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-mobile-menu">
+<span></span><span></span><span></span>
+</button>
 </nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu" role="navigation" aria-label="Mobile navigation">
+<a href="#news" class="nav-mobile-link">News</a>
+<a href="#ideal" class="nav-mobile-link">Ideal For</a>
+<a href="#events" class="nav-mobile-link">Events</a>
+<a href="#how-it-works" class="nav-mobile-link">How It Works</a>
+<a href="#included" class="nav-mobile-link">Pricing</a>
+<a href="#weather" class="nav-mobile-link">Weather</a>
+<a href="#faq" class="nav-mobile-link">FAQ</a>
+<a href="#contact" class="nav-mobile-cta nav-mobile-link">Get Started</a>
+</div>
 
 <!-- STICKY SECTION NAV -->
 <div id="section-nav" role="navigation" aria-label="Page sections">
@@ -2211,6 +2224,39 @@ hamburger.focus();
 window.addEventListener('resize', function() {
 if (window.innerWidth > 800) closeMenu();
 }, { passive: true });
+})();
+</script>
+<script>
+(function(){
+var hamburger = document.getElementById('nav-hamburger');
+var mobileMenu = document.getElementById('nav-mobile-menu');
+if (!hamburger || !mobileMenu) return;
+function openMenu() {
+hamburger.classList.add('is-open');
+mobileMenu.classList.add('is-open');
+hamburger.setAttribute('aria-expanded', 'true');
+hamburger.setAttribute('aria-label', 'Close navigation menu');
+}
+function closeMenu() {
+hamburger.classList.remove('is-open');
+mobileMenu.classList.remove('is-open');
+hamburger.setAttribute('aria-expanded', 'false');
+hamburger.setAttribute('aria-label', 'Open navigation menu');
+}
+hamburger.addEventListener('click', function() {
+if (hamburger.classList.contains('is-open')) closeMenu();
+else openMenu();
+});
+mobileMenu.querySelectorAll('.nav-mobile-link').forEach(function(link) {
+link.addEventListener('click', function() { closeMenu(); });
+});
+document.addEventListener('click', function(e) {
+if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) closeMenu();
+});
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape' && hamburger.classList.contains('is-open')) { closeMenu(); hamburger.focus(); }
+});
+window.addEventListener('resize', function() { if (window.innerWidth > 800) closeMenu(); }, { passive: true });
 })();
 </script>
 </body>

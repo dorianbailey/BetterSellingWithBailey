@@ -41,6 +41,12 @@ justify-content: space-between;
 padding: 0 5%;
 height: 68px;
 border-bottom: 1px solid rgba(201,168,76,0.25);
+transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+nav.nav-hidden {
+opacity: 0;
+transform: translateY(-100%);
+pointer-events: none;
 }
 
 .nav-logo {
@@ -782,7 +788,7 @@ display: block;
 /* STICKY SECTION NAV */
 #section-nav {
   position: fixed;
-  top: 68px;
+  top: 0;
   left: 0; right: 0;
   z-index: 999;
   display: flex;
@@ -1621,10 +1627,13 @@ Facebook Page
   function onScroll() {
     var hero = document.querySelector('.hero');
     var heroHeight = hero ? hero.offsetHeight : 400;
+    var mainNav = document.querySelector('nav');
     if ((window.scrollY || window.pageYOffset) > heroHeight * 0.55) {
       nav.classList.add('visible');
+      if (mainNav) mainNav.classList.add('nav-hidden');
     } else {
       nav.classList.remove('visible');
+      if (mainNav) mainNav.classList.remove('nav-hidden');
     }
     setActive(getActiveSection());
   }

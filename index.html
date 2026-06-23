@@ -1157,6 +1157,99 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 .ep-meta-row { font-size: 0.82rem; }
 #ep-desc { font-size: 0.85rem; }
 }
+
+/* CONTACT FORM */
+.contact-form-wrap {
+  margin-top: 2.8rem;
+  text-align: left;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 16px;
+  padding: 2.2rem 2.4rem;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.contact-form-wrap .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 560px) {
+  .contact-form-wrap .form-row { grid-template-columns: 1fr; }
+  .contact-form-wrap { padding: 1.6rem 1.4rem; }
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.form-group label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 7px;
+  padding: 0.75rem 1rem;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.93rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #555;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: rgba(201,168,76,0.55);
+  background: rgba(255,255,255,0.08);
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+.form-group select option {
+  background: #1a1a1a;
+  color: var(--white);
+}
+.form-submit-row {
+  margin-top: 0.5rem;
+}
+.form-submit-row .btn-primary {
+  width: 100%;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 1.6rem 0 0.8rem;
+  color: var(--gold-light);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.form-success .success-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need to be present during the sale?","acceptedAnswer":{"@type":"Answer","text":"No. Most clients choose not to be present. Better Selling with Bailey handles setup, pricing, customer interactions, checkout, and cleanup so you can go about your day."}},{"@type":"Question","name":"Why wouldn't I just run the sale myself?","acceptedAnswer":{"@type":"Answer","text":"Running a successful sale takes significantly more work than most people expect. Proper pricing, advertising, setup, customer interactions, checkout, and cleanup all require time and experience. Better Selling with Bailey handles the entire process while helping maximize turnout and sell-through, allowing you to focus on other things."}},{"@type":"Question","name":"What kinds of items can be sold?","acceptedAnswer":{"@type":"Answer","text":"We work with a wide variety of items including tools, collectibles, LEGO, Star Wars items, hunting and fishing gear, Harley Davidson merchandise, vintage clothing, sports cards, video games, household goods, antiques, and more."}},{"@type":"Question","name":"How are items priced?","acceptedAnswer":{"@type":"Answer","text":"Items are researched and priced using current market data, recent sold listings, and years of real-world buying and selling experience to maximize sell-through while protecting value."}},{"@type":"Question","name":"How much inventory do I need?","acceptedAnswer":{"@type":"Answer","text":"Every situation is different, but generally the more inventory available, the more successful the event will be. A consultation can determine if your collection is a good fit."}},{"@type":"Question","name":"How much money can I expect to make?","acceptedAnswer":{"@type":"Answer","text":"Every sale is different and results depend on the quantity, quality, and demand for the items being sold. During the consultation process, realistic expectations can be provided based on your inventory, market demand, and comparable past sales."}},{"@type":"Question","name":"What happens to unsold items?","acceptedAnswer":{"@type":"Answer","text":"You decide. Items can be kept, donated, removed, or handled according to a plan we discuss before the sale."}},{"@type":"Question","name":"How far in advance should I book?","acceptedAnswer":{"@type":"Answer","text":"The earlier the better. Sale dates, especially during spring and summer, can fill quickly. Booking in advance gives more time for promotion and preparation."}},{"@type":"Question","name":"What if it rains?","acceptedAnswer":{"@type":"Answer","text":"Weather is monitored closely leading up to the event. Rain insurance options may be available depending on the sale package selected."}},{"@type":"Question","name":"Do you provide advertising and promotion?","acceptedAnswer":{"@type":"Answer","text":"Yes. Better Selling with Bailey creates and manages advertising across multiple platforms to help attract as many qualified buyers as possible."}},{"@type":"Question","name":"What areas do you serve?","acceptedAnswer":{"@type":"Answer","text":"We primarily serve Erie County and surrounding areas, but additional locations may be considered depending on the size and scope of the sale."}},{"@type":"Question","name":"How do I get started?","acceptedAnswer":{"@type":"Answer","text":"Simply reach out directly to discuss your inventory, goals, and determine whether a Better Selling with Bailey event is the right fit."}}]}
@@ -1520,8 +1613,45 @@ How do I get started?
 <div class="inner-narrow">
 <p class="section-label">Ready to Get Started?</p>
 <h2 class="section-title">The Bottom Line</h2>
-<p>If you're looking to reclaim valuable space, reduce clutter, and potentially generate thousands of dollars without doing the work yourself, this service was designed for you. We handle the pricing, setup, promotion, selling, cleanup, and optional removal &mdash; so you can focus on what matters most.</p>
-<a href="mailto:bettersellingwithbailey@gmail.com" class="btn-primary">Email Bailey to Book Your Sale</a>
+<p>If you&rsquo;re looking to reclaim valuable space, reduce clutter, and potentially generate thousands of dollars without doing the work yourself, this service was designed for you. Fill out the form below and Bailey will be in touch shortly.</p>
+<div class="contact-form-wrap">
+<form id="contact-form" novalidate>
+<div class="form-row">
+<div class="form-group">
+<label for="cf-name">Your Name</label>
+<input type="text" id="cf-name" name="name" placeholder="Jane Smith" required>
+</div>
+<div class="form-group">
+<label for="cf-phone">Phone Number</label>
+<input type="tel" id="cf-phone" name="phone" placeholder="(814) 555-0100">
+</div>
+</div>
+<div class="form-group">
+<label for="cf-email">Email Address</label>
+<input type="email" id="cf-email" name="email" placeholder="you@example.com" required>
+</div>
+<div class="form-group">
+<label for="cf-interest">I&rsquo;m interested in&hellip;</label>
+<select id="cf-interest" name="interest">
+<option value="">Select an option</option>
+<option value="Standard Commission">Standard Commission &mdash; $595 + 25% commission</option>
+<option value="Flat Rate">Flat Rate &mdash; $1,195 &middot; Keep 100%</option>
+<option value="Not sure yet">Not sure yet &mdash; just exploring</option>
+</select>
+</div>
+<div class="form-group">
+<label for="cf-message">Tell me a bit about your sale</label>
+<textarea id="cf-message" name="message" placeholder="What kinds of items do you have? Rough quantity? Preferred dates?"></textarea>
+</div>
+<div class="form-submit-row">
+<button type="submit" class="btn-primary">Send Message</button>
+</div>
+</form>
+<div class="form-success" id="form-success">
+<span class="success-icon">&#10003;</span>
+Message sent! Bailey will be in touch with you soon.
+</div>
+</div>
 </div>
 </section>
 
@@ -1535,6 +1665,7 @@ Facebook Page
 <footer>
 <span class="footer-logo">Better Selling With Bailey</span>
 <p>Professional sale management services &middot; Two service tiers available &middot; Free leftover removal</p>
+<p style="margin-top:0.6rem;"><a href="mailto:bettersellingwithbailey@gmail.com" style="color:var(--gold);text-decoration:none;font-weight:500;">bettersellingwithbailey@gmail.com</a></p>
 <p style="margin-top:0.5rem; font-size:0.8rem;">&copy; 2026 Better Selling With Bailey &middot; All rights reserved</p>
 </footer>
 
@@ -1885,6 +2016,39 @@ var BSWB_EVENTS = [
   });
 
   setTimeout(openPopup, 800);
+})();
+</script>
+
+<script>
+(function(){
+var form = document.getElementById('contact-form');
+var successDiv = document.getElementById('form-success');
+if (!form || !successDiv) return;
+form.addEventListener('submit', function(e) {
+e.preventDefault();
+var name = (form.querySelector('#cf-name').value || '').trim();
+var phone = (form.querySelector('#cf-phone').value || '').trim();
+var email = (form.querySelector('#cf-email').value || '').trim();
+var interest = (form.querySelector('#cf-interest').value || '').trim();
+var message = (form.querySelector('#cf-message').value || '').trim();
+if (!name || !email) {
+var missing = [];
+if (!name) missing.push('name');
+if (!email) missing.push('email address');
+alert('Please fill in your ' + missing.join(' and ') + ' before sending.');
+return;
+}
+var subject = 'Sale Inquiry from ' + name;
+var body = 'Name: ' + name + '\n';
+if (phone) body += 'Phone: ' + phone + '\n';
+body += 'Email: ' + email + '\n';
+if (interest) body += 'Interest: ' + interest + '\n';
+if (message) body += '\nMessage:\n' + message;
+var mailto = 'mailto:bettersellingwithbailey@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+window.location.href = mailto;
+form.style.display = 'none';
+successDiv.style.display = 'block';
+});
 })();
 </script>
 </body>

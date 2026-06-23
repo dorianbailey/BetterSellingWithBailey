@@ -958,6 +958,199 @@ border-top: 1px solid rgba(201,168,76,0.12);
 .faq-question { font-size: 0.9rem; padding: 1.1rem 0.75rem; }
 .faq-answer { padding: 0 0.75rem 1.2rem; font-size: 0.88rem; }
 }
+
+/* EVENT POPUP MODAL */
+#ep-overlay {
+position: fixed;
+inset: 0;
+z-index: 10000;
+background: rgba(10,8,2,0.72);
+backdrop-filter: blur(4px);
+-webkit-backdrop-filter: blur(4px);
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 16px;
+opacity: 0;
+transition: opacity 0.32s cubic-bezier(0.4,0,0.2,1);
+pointer-events: none;
+}
+#ep-overlay.ep-visible {
+opacity: 1;
+pointer-events: auto;
+}
+#ep-modal {
+position: relative;
+background: var(--dark-2);
+border: 1px solid rgba(201,168,76,0.3);
+border-radius: 18px;
+width: 100%;
+max-width: 520px;
+max-height: 90vh;
+overflow-y: auto;
+overflow-x: hidden;
+scrollbar-width: thin;
+scrollbar-color: rgba(201,168,76,0.25) transparent;
+transform: scale(0.93) translateY(12px);
+transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(201,168,76,0.08);
+}
+#ep-overlay.ep-visible #ep-modal {
+transform: scale(1) translateY(0);
+}
+#ep-close {
+position: absolute;
+top: 14px;
+right: 14px;
+z-index: 2;
+width: 34px;
+height: 34px;
+border-radius: 50%;
+background: rgba(255,255,255,0.07);
+border: 1px solid rgba(255,255,255,0.12);
+color: #ccc;
+font-size: 1.1rem;
+line-height: 1;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+#ep-close:hover { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.4); color: var(--gold); }
+#ep-close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+#ep-img-wrap {
+position: relative;
+width: 100%;
+background: rgba(10,8,2,0.5);
+border-radius: 18px 18px 0 0;
+overflow: hidden;
+}
+#ep-img-wrap img {
+width: 100%;
+display: block;
+object-fit: cover;
+max-height: 260px;
+}
+#ep-img-wrap.ep-clickable { cursor: pointer; }
+#ep-img-hover-label {
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+background: rgba(0,0,0,0);
+color: transparent;
+padding: 10px 14px;
+font-size: 0.75rem;
+font-weight: 600;
+letter-spacing: 0.04em;
+text-align: right;
+transition: background 0.22s, color 0.22s;
+}
+#ep-img-wrap.ep-clickable:hover #ep-img-hover-label {
+background: rgba(0,0,0,0.38);
+color: rgba(232,201,122,0.95);
+}
+#ep-no-img { height: 10px; background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.04)); border-radius: 18px 18px 0 0; }
+#ep-body {
+padding: 1.6rem 1.8rem 1.8rem;
+}
+#ep-urgency {
+display: inline-block;
+font-size: 0.68rem;
+font-weight: 700;
+letter-spacing: 0.16em;
+text-transform: uppercase;
+padding: 0.28rem 0.85rem;
+border-radius: 100px;
+margin-bottom: 0.5rem;
+}
+#ep-urgency.ep-now { background: rgba(201,168,76,0.2); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.45); }
+#ep-urgency.ep-soon { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+#ep-urgency.ep-next { background: rgba(255,255,255,0.05); color: #aaa; border: 1px solid rgba(255,255,255,0.1); }
+#ep-small-label {
+font-size: 0.72rem;
+font-weight: 600;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 0.5rem;
+display: block;
+}
+#ep-title {
+font-family: 'Playfair Display', serif;
+font-size: clamp(1.1rem, 3vw, 1.4rem);
+color: var(--white);
+font-weight: 700;
+line-height: 1.25;
+margin-bottom: 1rem;
+}
+#ep-meta {
+display: flex;
+flex-direction: column;
+gap: 0.42rem;
+margin-bottom: 1rem;
+}
+.ep-meta-row {
+display: flex;
+align-items: flex-start;
+gap: 0.55rem;
+font-size: 0.86rem;
+color: #bbb;
+line-height: 1.45;
+}
+.ep-meta-dot {
+width: 6px;
+height: 6px;
+border-radius: 50%;
+background: var(--gold);
+flex-shrink: 0;
+margin-top: 0.42rem;
+}
+#ep-desc {
+font-size: 0.88rem;
+color: #999;
+line-height: 1.72;
+margin-bottom: 1.2rem;
+}
+#ep-fb-link {
+display: none;
+margin-bottom: 1.4rem;
+}
+#ep-fb-link a {
+color: var(--gold);
+font-size: 0.83rem;
+font-weight: 600;
+text-decoration: none;
+letter-spacing: 0.02em;
+}
+#ep-fb-link a:hover { text-decoration: underline; color: var(--gold-light); }
+#ep-cta {
+display: none;
+width: 100%;
+background: var(--gold);
+color: var(--dark);
+font-family: 'Inter', sans-serif;
+font-weight: 700;
+font-size: 0.95rem;
+padding: 0.9rem 1.5rem;
+border-radius: 7px;
+text-decoration: none;
+letter-spacing: 0.03em;
+text-align: center;
+transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+#ep-cta:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,168,76,0.35); }
+#ep-cta:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+@media (max-width: 560px) {
+#ep-modal { border-radius: 14px; max-height: 92vh; }
+#ep-img-wrap { border-radius: 14px 14px 0 0; }
+#ep-img-wrap img { max-height: 200px; }
+#ep-body { padding: 1.3rem 1.3rem 1.5rem; }
+#ep-title { font-size: 1.05rem; }
+.ep-meta-row { font-size: 0.82rem; }
+#ep-desc { font-size: 0.85rem; }
+}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need to be present during the sale?","acceptedAnswer":{"@type":"Answer","text":"No. Most clients choose not to be present. Better Selling with Bailey handles setup, pricing, customer interactions, checkout, and cleanup so you can go about your day."}},{"@type":"Question","name":"Why wouldn't I just run the sale myself?","acceptedAnswer":{"@type":"Answer","text":"Running a successful sale takes significantly more work than most people expect. Proper pricing, advertising, setup, customer interactions, checkout, and cleanup all require time and experience. Better Selling with Bailey handles the entire process while helping maximize turnout and sell-through, allowing you to focus on other things."}},{"@type":"Question","name":"What kinds of items can be sold?","acceptedAnswer":{"@type":"Answer","text":"We work with a wide variety of items including tools, collectibles, LEGO, Star Wars items, hunting and fishing gear, Harley Davidson merchandise, vintage clothing, sports cards, video games, household goods, antiques, and more."}},{"@type":"Question","name":"How are items priced?","acceptedAnswer":{"@type":"Answer","text":"Items are researched and priced using current market data, recent sold listings, and years of real-world buying and selling experience to maximize sell-through while protecting value."}},{"@type":"Question","name":"How much inventory do I need?","acceptedAnswer":{"@type":"Answer","text":"Every situation is different, but generally the more inventory available, the more successful the event will be. A consultation can determine if your collection is a good fit."}},{"@type":"Question","name":"How much money can I expect to make?","acceptedAnswer":{"@type":"Answer","text":"Every sale is different and results depend on the quantity, quality, and demand for the items being sold. During the consultation process, realistic expectations can be provided based on your inventory, market demand, and comparable past sales."}},{"@type":"Question","name":"What happens to unsold items?","acceptedAnswer":{"@type":"Answer","text":"You decide. Items can be kept, donated, removed, or handled according to a plan we discuss before the sale."}},{"@type":"Question","name":"How far in advance should I book?","acceptedAnswer":{"@type":"Answer","text":"The earlier the better. Sale dates, especially during spring and summer, can fill quickly. Booking in advance gives more time for promotion and preparation."}},{"@type":"Question","name":"What if it rains?","acceptedAnswer":{"@type":"Answer","text":"Weather is monitored closely leading up to the event. Rain insurance options may be available depending on the sale package selected."}},{"@type":"Question","name":"Do you provide advertising and promotion?","acceptedAnswer":{"@type":"Answer","text":"Yes. Better Selling with Bailey creates and manages advertising across multiple platforms to help attract as many qualified buyers as possible."}},{"@type":"Question","name":"What areas do you serve?","acceptedAnswer":{"@type":"Answer","text":"We primarily serve Erie County and surrounding areas, but additional locations may be considered depending on the size and scope of the sale."}},{"@type":"Question","name":"How do I get started?","acceptedAnswer":{"@type":"Answer","text":"Simply reach out directly to discuss your inventory, goals, and determine whether a Better Selling with Bailey event is the right fit."}}]}
@@ -1274,25 +1467,8 @@ How do I get started?
 <p class="section-label">On the Calendar</p>
 <h2 class="section-title">Upcoming Events</h2>
 <p class="section-intro">Browse our scheduled sales below and follow us on Facebook to stay up to date on new events as they are announced.</p>
-<div class="events-grid">
-<div class="event-card">
-<div class="event-date-bar">
-<div>
-<span class="event-month">July</span>
-<span class="event-day">24</span>
-</div>
-<span class="event-date-range">Jul 24 &ndash; Jul 26 &nbsp;&middot;&nbsp; 9 AM &ndash; 3 PM Daily</span>
-</div>
-<div class="event-body">
-<div class="event-title">Massive Hunting, Fishing, Harley &amp; Outdoor Sports Sale</div>
-<div class="event-meta">
-<span>10347 Bennett Rd, Erie, PA 16510</span>
-<span>3-Day Event &nbsp;&middot;&nbsp; Open to the Public</span>
-</div>
-<p class="event-desc">A large-scale outdoor sports sale featuring hundreds of items across hunting, fishing, Harley-Davidson, and outdoor recreation. Featured brands include KUIU, Klim, Shimano, Patagonia, Polaris, Ski-Doo, and more.</p>
-<a href="https://www.facebook.com/share/18pRW9gpqS/" target="_blank" rel="noopener" class="event-link">View on Facebook &rarr;</a>
-</div>
-</div>
+<div class="events-grid" id="events-grid">
+<!-- Event cards rendered dynamically by BSWB_EVENTS -->
 </div>
 </div>
 </section>
@@ -1472,5 +1648,236 @@ Facebook Page
 })();
 </script>
 
+
+<!-- EVENT POPUP MODAL -->
+<div id="ep-overlay" role="dialog" aria-modal="true" aria-labelledby="ep-title" aria-describedby="ep-desc" hidden>
+<div id="ep-modal">
+<button id="ep-close" aria-label="Close event popup">×</button>
+<div id="ep-img-wrap">
+<!-- image injected by JS -->
+</div>
+<div id="ep-body">
+<span id="ep-urgency"></span>
+<span id="ep-small-label">Upcoming Event</span>
+<div id="ep-title"></div>
+<div id="ep-meta"></div>
+<p id="ep-desc"></p>
+<div id="ep-fb-link"><a id="ep-fb-anchor" href="#" target="_blank" rel="noopener">View Facebook Event →</a></div>
+<a id="ep-cta" href="#" target="_blank" rel="noopener">View Facebook Event</a>
+</div>
+</div>
+</div>
+
+<script>
+// =============================================================
+// BSWB_EVENTS — Single source of truth for all event data.
+// To add/update/remove an event, edit this array only.
+// Both the Events section and the popup use this data.
+//
+// Fields:
+//   title      : string
+//   startDate  : "YYYY-MM-DD"
+//   endDate    : "YYYY-MM-DD"  (same as startDate for single-day)
+//   dailyStart : "HH:MM" 24h  (daily open time)
+//   dailyEnd   : "HH:MM" 24h  (daily close time)
+//   dateLabel  : string shown in the date bar range (e.g. "Jul 24 – Jul 26")
+//   hoursLabel : string shown for hours (e.g. "9 AM – 3 PM Daily")
+//   address    : string
+//   addressNote: string (e.g. "3-Day Event · Open to the Public")
+//   desc       : string
+//   fbUrl      : string | "" (Facebook event URL, or "" if none)
+//   image      : string | "" (absolute or relative image URL, or "" if none)
+// =============================================================
+var BSWB_EVENTS = [
+  {
+    title: "Massive Hunting, Fishing, Harley & Outdoor Sports Sale",
+    startDate: "2026-07-24",
+    endDate:   "2026-07-26",
+    dailyStart: "09:00",
+    dailyEnd:   "15:00",
+    dateLabel:  "Jul 24 – Jul 26",
+    hoursLabel: "9 AM – 3 PM Daily",
+    address:    "10347 Bennett Rd, Erie, PA 16510",
+    addressNote:"3-Day Event · Open to the Public",
+    desc:       "A large-scale outdoor sports sale featuring hundreds of items across hunting, fishing, Harley-Davidson, and outdoor recreation. Featured brands include KUIU, Klim, Shimano, Patagonia, Polaris, Ski-Doo, and more.",
+    fbUrl:      "https://www.facebook.com/share/18pRW9gpqS/",
+    image:      ""
+  }
+];
+
+// =============================================================
+// EVENTS SECTION RENDERER
+// Builds event-card HTML from BSWB_EVENTS and injects into #events-grid
+// =============================================================
+(function renderEventCards() {
+  var grid = document.getElementById("events-grid");
+  if (!grid) return;
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var now = new Date();
+  var cards = "";
+  var hasVisible = false;
+  BSWB_EVENTS.forEach(function(ev) {
+    var endDt = new Date(ev.endDate + "T" + ev.dailyEnd + ":00");
+    if (endDt < now) return;
+    hasVisible = true;
+    var startParts = ev.startDate.split("-");
+    var monthIdx = parseInt(startParts[1], 10) - 1;
+    var day = parseInt(startParts[2], 10);
+    var fbLink = ev.fbUrl ? '<a href="' + ev.fbUrl + '" target="_blank" rel="noopener" class="event-link">View on Facebook →</a>' : "";
+    cards += '<div class="event-card">';
+    cards += '<div class="event-date-bar">';
+    cards += '<div><span class="event-month">' + MONTHS[monthIdx] + '</span><span class="event-day">' + day + '</span></div>';
+    cards += '<span class="event-date-range">' + ev.dateLabel + " · " + ev.hoursLabel + '</span>';
+    cards += '</div>';
+    cards += '<div class="event-body">';
+    cards += '<div class="event-title">' + ev.title + '</div>';
+    cards += '<div class="event-meta"><span>' + ev.address + '</span><span>' + ev.addressNote + '</span></div>';
+    cards += '<p class="event-desc">' + ev.desc + '</p>';
+    cards += fbLink;
+    cards += '</div></div>';
+  });
+  if (!hasVisible) {
+    grid.innerHTML = '<p style="color:var(--text-light);font-size:0.95rem;grid-column:1/-1;text-align:center;padding:2rem 0;">No upcoming events scheduled. Follow us on Facebook for announcements.</p>';
+  } else {
+    grid.innerHTML = cards;
+  }
+})();
+
+// =============================================================
+// EVENT POPUP
+// Selects the active/next event from BSWB_EVENTS and shows modal
+// =============================================================
+(function initEventPopup() {
+  var overlay  = document.getElementById("ep-overlay");
+  var modal    = document.getElementById("ep-modal");
+  var closeBtn = document.getElementById("ep-close");
+  if (!overlay || !modal || !closeBtn) return;
+
+  var now = new Date();
+  var sevenDays = 7 * 24 * 60 * 60 * 1000;
+  var selected = null;
+  var urgencyClass = "ep-next";
+  var urgencyText  = "Next Event";
+
+  for (var i = 0; i < BSWB_EVENTS.length; i++) {
+    var ev = BSWB_EVENTS[i];
+    var startDt = new Date(ev.startDate + "T" + ev.dailyStart + ":00");
+    var endDt   = new Date(ev.endDate   + "T" + ev.dailyEnd   + ":00");
+    if (endDt < now) continue;
+    selected = ev;
+    if (now >= startDt && now <= endDt) {
+      urgencyClass = "ep-now";
+      urgencyText  = "Happening Now";
+    } else if ((startDt - now) <= sevenDays) {
+      urgencyClass = "ep-soon";
+      urgencyText  = "Coming Soon";
+    } else {
+      urgencyClass = "ep-next";
+      urgencyText  = "Next Event";
+    }
+    break;
+  }
+
+  if (!selected) return;
+
+  var urgEl    = document.getElementById("ep-urgency");
+  var titleEl  = document.getElementById("ep-title");
+  var metaEl   = document.getElementById("ep-meta");
+  var descEl   = document.getElementById("ep-desc");
+  var fbLinkEl = document.getElementById("ep-fb-link");
+  var fbAnchor = document.getElementById("ep-fb-anchor");
+  var ctaEl    = document.getElementById("ep-cta");
+  var imgWrap  = document.getElementById("ep-img-wrap");
+
+  urgEl.textContent = urgencyText;
+  urgEl.className = "";
+  urgEl.classList.add(urgencyClass);
+  titleEl.textContent = selected.title;
+  descEl.textContent  = selected.desc;
+
+  var metaHTML = "";
+  metaHTML += '<div class="ep-meta-row"><span class="ep-meta-dot"></span><span>' + selected.dateLabel + " · " + selected.hoursLabel + '</span></div>';
+  metaHTML += '<div class="ep-meta-row"><span class="ep-meta-dot"></span><span>' + selected.address + '</span></div>';
+  if (selected.addressNote) {
+    metaHTML += '<div class="ep-meta-row"><span class="ep-meta-dot"></span><span>' + selected.addressNote + '</span></div>';
+  }
+  metaEl.innerHTML = metaHTML;
+
+  if (selected.image) {
+    var imgEl = document.createElement("img");
+    imgEl.src = selected.image;
+    imgEl.alt = selected.fbUrl ? selected.title + " — click to view Facebook Event" : selected.title;
+    var hoverLabel = document.createElement("span");
+    hoverLabel.id = "ep-img-hover-label";
+    hoverLabel.textContent = "View Facebook Event →";
+    imgWrap.innerHTML = "";
+    imgWrap.appendChild(imgEl);
+    imgWrap.appendChild(hoverLabel);
+    if (selected.fbUrl) {
+      imgWrap.classList.add("ep-clickable");
+      imgWrap.setAttribute("role", "link");
+      imgWrap.setAttribute("tabindex", "0");
+      imgWrap.setAttribute("aria-label", "View Facebook Event for " + selected.title);
+      var capturedFbUrl = selected.fbUrl;
+      imgWrap.addEventListener("click", function() { window.open(capturedFbUrl, "_blank", "noopener"); });
+      imgWrap.addEventListener("keydown", function(e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); window.open(capturedFbUrl, "_blank", "noopener"); } });
+    }
+  } else {
+    imgWrap.innerHTML = '<div id="ep-no-img"></div>';
+  }
+
+  if (selected.fbUrl) {
+    fbAnchor.href = selected.fbUrl;
+    fbLinkEl.style.display = "block";
+    ctaEl.href = selected.fbUrl;
+    ctaEl.style.display = "block";
+  }
+
+  var previouslyFocused = null;
+
+  function openPopup() {
+    overlay.removeAttribute("hidden");
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        overlay.classList.add("ep-visible");
+      });
+    });
+    previouslyFocused = document.activeElement;
+    setTimeout(function() { closeBtn.focus(); }, 60);
+  }
+
+  function closePopup() {
+    overlay.classList.remove("ep-visible");
+    setTimeout(function() {
+      overlay.setAttribute("hidden", "");
+      if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus();
+    }, 340);
+  }
+
+  closeBtn.addEventListener("click", closePopup);
+
+  overlay.addEventListener("click", function(e) {
+    if (e.target === overlay) closePopup();
+  });
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && overlay.classList.contains("ep-visible")) closePopup();
+  });
+
+  modal.addEventListener("keydown", function(e) {
+    if (e.key !== "Tab") return;
+    var focusable = Array.from(modal.querySelectorAll('a[href],button,[tabindex]:not([tabindex="-1"])'));
+    if (!focusable.length) return;
+    var first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  setTimeout(openPopup, 800);
+})();
+</script>
 </body>
 </html>

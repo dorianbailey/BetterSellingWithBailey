@@ -102,6 +102,76 @@ font-weight: 700 !important;
 }
 
 .nav-cta:hover { background: var(--gold-light) !important; }
+
+/* HAMBURGER */
+.nav-hamburger {
+display: none;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+gap: 5px;
+width: 40px;
+height: 40px;
+background: none;
+border: none;
+cursor: pointer;
+padding: 6px;
+border-radius: 6px;
+transition: background 0.2s;
+}
+.nav-hamburger:hover { background: rgba(201,168,76,0.1); }
+.nav-hamburger span {
+display: block;
+width: 22px;
+height: 2px;
+background: #bbb;
+border-radius: 2px;
+transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s, background 0.2s;
+}
+.nav-hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--gold); }
+.nav-hamburger.is-open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--gold); }
+
+/* MOBILE NAV DROPDOWN */
+.nav-mobile-menu {
+display: none;
+position: absolute;
+top: 68px;
+left: 0; right: 0;
+background: rgba(22,18,6,0.98);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border-bottom: 1px solid rgba(201,168,76,0.2);
+padding: 0.6rem 0 1rem;
+z-index: 999;
+}
+.nav-mobile-menu.is-open { display: block; }
+.nav-mobile-menu a {
+display: block;
+padding: 0.75rem 5%;
+color: #bbb;
+font-size: 0.9rem;
+font-weight: 500;
+letter-spacing: 0.05em;
+text-transform: uppercase;
+text-decoration: none;
+transition: color 0.2s, background 0.2s;
+border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.nav-mobile-menu a:last-child { border-bottom: none; }
+.nav-mobile-menu a:hover { color: var(--gold); background: rgba(201,168,76,0.06); }
+.nav-mobile-menu a.nav-mobile-cta {
+margin: 0.6rem 5% 0;
+padding: 0.7rem 1.1rem;
+display: block;
+background: var(--gold);
+color: var(--dark) !important;
+border-radius: 6px;
+font-weight: 700;
+text-align: center;
+border-bottom: none;
+}
+.nav-mobile-menu a.nav-mobile-cta:hover { background: var(--gold-light); }
 /* HERO */
 .hero {
 min-height: 100vh;
@@ -800,6 +870,7 @@ display: block;
 .included-info { grid-template-columns: 1fr; }
 .weather-cards { grid-template-columns: 1fr; }
 .nav-links { display: none; }
+.nav-hamburger { display: flex; }
 }
 
 /* STICKY SECTION NAV */
@@ -1448,6 +1519,9 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 <li>General event oversight and coordination</li>
 <li>Free removal of unwanted remaining inventory after the sale</li>
 </ul>
+<div style="margin-top:1.6rem;">
+<a href="#contact" class="btn-primary" style="display:block;text-align:center;padding:0.8rem 1.5rem;font-size:0.93rem;">Book Your Sale &rarr;</a>
+</div>
 </div>
 <div class="pricing-tier tier-featured">
 <span class="tier-badge">Full-Service</span>
@@ -1463,6 +1537,9 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 <li>General event oversight and coordination</li>
 <li>Free removal of unwanted remaining inventory after the sale</li>
 </ul>
+<div style="margin-top:1.6rem;">
+<a href="#contact" class="btn-primary" style="display:block;text-align:center;padding:0.8rem 1.5rem;font-size:0.93rem;">Book Your Sale &rarr;</a>
+</div>
 </div>
 </div>
 
@@ -2085,6 +2162,55 @@ window.location.href = mailto;
 form.style.display = 'none';
 successDiv.style.display = 'block';
 });
+})();
+</script>
+<script>
+(function(){
+var hamburger = document.getElementById('nav-hamburger');
+var mobileMenu = document.getElementById('nav-mobile-menu');
+if (!hamburger || !mobileMenu) return;
+
+function openMenu() {
+hamburger.classList.add('is-open');
+mobileMenu.classList.add('is-open');
+hamburger.setAttribute('aria-expanded', 'true');
+hamburger.setAttribute('aria-label', 'Close navigation menu');
+}
+
+function closeMenu() {
+hamburger.classList.remove('is-open');
+mobileMenu.classList.remove('is-open');
+hamburger.setAttribute('aria-expanded', 'false');
+hamburger.setAttribute('aria-label', 'Open navigation menu');
+}
+
+hamburger.addEventListener('click', function() {
+if (hamburger.classList.contains('is-open')) closeMenu();
+else openMenu();
+});
+
+mobileMenu.querySelectorAll('.nav-mobile-link').forEach(function(link) {
+link.addEventListener('click', function() {
+closeMenu();
+});
+});
+
+document.addEventListener('click', function(e) {
+if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+closeMenu();
+}
+});
+
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape' && hamburger.classList.contains('is-open')) {
+closeMenu();
+hamburger.focus();
+}
+});
+
+window.addEventListener('resize', function() {
+if (window.innerWidth > 800) closeMenu();
+}, { passive: true });
 })();
 </script>
 </body>

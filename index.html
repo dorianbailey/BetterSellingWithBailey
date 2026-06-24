@@ -1349,6 +1349,101 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
   display: block;
   margin-bottom: 0.5rem;
 }
+
+/* ABOUT ME */
+.about-me {
+  background: var(--cream);
+}
+.about-me .inner {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 3.5rem;
+  align-items: flex-start;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.about-me-image-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.about-me-photo-frame {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 3px solid var(--gold);
+  box-shadow: 0 8px 32px rgba(26,26,26,0.18), 0 2px 8px rgba(201,168,76,0.15);
+  background: var(--dark);
+}
+.about-me-photo-frame img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 3/4;
+}
+.about-me-caption {
+  margin-top: 1.1rem;
+  text-align: center;
+}
+.about-me-caption .caption-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--dark);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.about-me-caption .caption-title {
+  font-size: 0.82rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+}
+.about-me-caption .caption-detail {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  display: block;
+  line-height: 1.6;
+}
+.about-me-content {
+  padding-top: 0.25rem;
+}
+.about-me-content p {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.85;
+  margin-bottom: 1.25rem;
+}
+.about-me-content p:last-child {
+  margin-bottom: 0;
+}
+.about-me-divider {
+  width: 60px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 2px;
+  margin: 1.5rem 0 2rem 0;
+}
+.about-me-bottom-divider {
+  border: none;
+  border-top: 1px solid #E8E0D0;
+  max-width: 860px;
+  margin: 3rem auto 0;
+}
+@media (max-width: 768px) {
+  .about-me .inner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .about-me-photo-frame {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need to be present during the sale?","acceptedAnswer":{"@type":"Answer","text":"No. Most clients choose not to be present. Better Selling with Bailey handles setup, pricing, customer interactions, checkout, and cleanup so you can go about your day."}},{"@type":"Question","name":"Why wouldn't I just run the sale myself?","acceptedAnswer":{"@type":"Answer","text":"Running a successful sale takes significantly more work than most people expect. Proper pricing, advertising, setup, customer interactions, checkout, and cleanup all require time and experience. Better Selling with Bailey handles the entire process while helping maximize turnout and sell-through, allowing you to focus on other things."}},{"@type":"Question","name":"What kinds of items can be sold?","acceptedAnswer":{"@type":"Answer","text":"We work with a wide variety of items including tools, collectibles, LEGO, Star Wars items, hunting and fishing gear, Harley Davidson merchandise, vintage clothing, sports cards, video games, household goods, antiques, and more."}},{"@type":"Question","name":"How are items priced?","acceptedAnswer":{"@type":"Answer","text":"Items are researched and priced using current market data, recent sold listings, and years of real-world buying and selling experience to maximize sell-through while protecting value."}},{"@type":"Question","name":"How much inventory do I need?","acceptedAnswer":{"@type":"Answer","text":"Every situation is different, but generally the more inventory available, the more successful the event will be. A consultation can determine if your collection is a good fit."}},{"@type":"Question","name":"How much money can I expect to make?","acceptedAnswer":{"@type":"Answer","text":"Every sale is different and results depend on the quantity, quality, and demand for the items being sold. During the consultation process, realistic expectations can be provided based on your inventory, market demand, and comparable past sales."}},{"@type":"Question","name":"What happens to unsold items?","acceptedAnswer":{"@type":"Answer","text":"You decide. Items can be kept, donated, removed, or handled according to a plan we discuss before the sale."}},{"@type":"Question","name":"How far in advance should I book?","acceptedAnswer":{"@type":"Answer","text":"The earlier the better. Sale dates, especially during spring and summer, can fill quickly. Booking in advance gives more time for promotion and preparation."}},{"@type":"Question","name":"What if it rains?","acceptedAnswer":{"@type":"Answer","text":"Weather is monitored closely leading up to the event. Rain insurance options may be available depending on the sale package selected."}},{"@type":"Question","name":"Do you provide advertising and promotion?","acceptedAnswer":{"@type":"Answer","text":"Yes. Better Selling with Bailey creates and manages advertising across multiple platforms to help attract as many qualified buyers as possible."}},{"@type":"Question","name":"What areas do you serve?","acceptedAnswer":{"@type":"Answer","text":"We primarily serve Erie County and surrounding areas, but additional locations may be considered depending on the size and scope of the sale."}},{"@type":"Question","name":"How do I get started?","acceptedAnswer":{"@type":"Answer","text":"Simply reach out directly to discuss your inventory, goals, and determine whether a Better Selling with Bailey event is the right fit."}}]}
@@ -1382,6 +1477,7 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 <li><a href="#ideal">Ideal For</a></li>
 <li><a href="#events">Events</a></li>
 <li><a href="#how-it-works">How It Works</a></li>
+<li><a href="#about">About</a></li>
 <li><a href="#included">Pricing</a></li>
 <li><a href="#weather">Weather</a></li>
 <li><a href="#faq">FAQ</a></li>
@@ -1396,6 +1492,7 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 <a href="#ideal" class="nav-mobile-link">Ideal For</a>
 <a href="#events" class="nav-mobile-link">Events</a>
 <a href="#how-it-works" class="nav-mobile-link">How It Works</a>
+<a href="#about" class="nav-mobile-link">About</a>
 <a href="#included" class="nav-mobile-link">Pricing</a>
 <a href="#weather" class="nav-mobile-link">Weather</a>
 <a href="#faq" class="nav-mobile-link">FAQ</a>
@@ -1584,6 +1681,36 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 </div>
 </div>
 </div>
+</section>
+
+<section class="about-me" id="about">
+<div class="inner">
+  <div class="about-me-image-col">
+    <div class="about-me-photo-frame">
+      <img src="/dorian-bailey-headshot.jpg" alt="Dorian Bailey, Founder of Better Selling With Bailey" loading="lazy">
+    </div>
+    <div class="about-me-caption">
+      <span class="caption-name">Dorian Bailey</span>
+      <span class="caption-title">Founder, Better Selling With Bailey</span>
+      <span class="caption-detail">North East, Pennsylvania</span>
+      <span class="caption-detail">Penn State Behrend | Marketing &amp; MIS</span>
+    </div>
+  </div>
+  <div class="about-me-content">
+    <p class="section-label">The Person Behind the Sale</p>
+    <h2 class="section-title">About Me</h2>
+    <div class="about-me-divider"></div>
+    <p>My name is Dorian Bailey, and I’m the founder of Better Selling With Bailey.</p>
+    <p>As a lifelong resident of North East, Pennsylvania, I’ve always believed in the value of community, hard work, and treating people fairly. I graduated from North East High School and am currently studying Marketing and Management Information Systems at Penn State Behrend.</p>
+    <p>Long before Better Selling With Bailey existed, I spent years buying, selling, researching, and pricing items of all kinds. What began as a personal interest eventually grew into a passion for helping others navigate the selling process and get the most value from the items they no longer need.</p>
+    <p>When I created Better Selling With Bailey, I wanted to build a business that felt personal. In an industry where clients are often passed between different employees, I wanted to offer something different: a direct, one-on-one experience from start to finish.</p>
+    <p>When you work with Better Selling With Bailey, you’ll work directly with me. From our initial consultation to the final day of the sale, I am personally involved in the planning, pricing, promotion, and execution of every event. Some clients prefer to collaborate on pricing and be involved in the decision-making process, while others would rather leave those details in my hands. Either approach is welcome. My goal is to create a process that fits your comfort level and goals.</p>
+    <p>I believe communication and transparency are essential. Selling personal belongings can be an emotional and sometimes overwhelming process. Whether you’re downsizing, settling an estate, helping a family member, or simply clearing out years of accumulated items, you deserve clear communication, honest guidance, and a partner you can trust.</p>
+    <p>At its core, Better Selling With Bailey is about helping people. It’s about creating successful sales, building relationships, and making what can feel like a daunting process as simple and stress-free as possible.</p>
+    <p>Whether you’re downsizing, settling an estate, or simply ready to clear some space, I’m committed to making the process as smooth and stress-free as possible.</p>
+  </div>
+</div>
+<hr class="about-me-bottom-divider">
 </section>
 
 <section class="weather" id="weather">

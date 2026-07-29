@@ -74,10 +74,12 @@ pointer-events: none;
 .nav-logo {
 font-family: 'Playfair Display', serif;
 color: var(--gold);
-font-size: 1.15rem;
+font-size: calc(1.15rem * var(--logo-scale, 1));
 font-weight: 700;
 text-decoration: none;
 letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-links {
@@ -1050,7 +1052,7 @@ transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
 .faq-body.faq-open { max-height: 500px; }
 .faq-answer {
 padding: 0 1rem 1.4rem 1rem;
-color: #aaa;
+color: #eee;
 font-size: 0.91rem;
 line-height: 1.8;
 max-width: 680px;
@@ -1646,5 +1648,5 @@ if (e.key === 'Escape' && hamburger.classList.contains('is-open')) { closeMenu()
 
 window.addEventListener('resize', function() { if (window.innerWidth > 800) closeMenu(); }, { passive: true });
 </script>
-<script>(function(){var nav=document.querySelector('nav');var navLinks=document.querySelector('.nav-links');var logo=document.querySelector('.nav-logo');var hamburger=document.querySelector('.nav-hamburger');if(!nav||!navLinks){return;}var MIN_SCALE=0.6;var BUFFER=20;function fitNavLinks(){if(getComputedStyle(navLinks).display==='none'){return;}nav.style.setProperty('--nav-scale','1');var navBox=nav.getBoundingClientRect();var logoWidth=logo?logo.getBoundingClientRect().width:0;var hamburgerWidth=(hamburger&&getComputedStyle(hamburger).display!=='none')?hamburger.getBoundingClientRect().width:0;var navStyles=getComputedStyle(nav);var horizontalPadding=parseFloat(navStyles.paddingLeft)+parseFloat(navStyles.paddingRight);var available=navBox.width-horizontalPadding-logoWidth-hamburgerWidth-BUFFER;var needed=navLinks.scrollWidth;if(needed>available&&available>0){var scale=Math.max(MIN_SCALE,available/needed);nav.style.setProperty('--nav-scale',scale.toFixed(3));}}window.addEventListener('resize',fitNavLinks,{passive:true});window.addEventListener('load',fitNavLinks);fitNavLinks();})();</script></body>
+<script>(function(){var nav=document.querySelector('nav');var navLinks=document.querySelector('.nav-links');var logo=document.querySelector('.nav-logo');var hamburger=document.querySelector('.nav-hamburger');if(!nav||!navLinks||!logo){return;}var MIN_SCALE=0.6;var LOGO_MIN_SCALE=0.55;var BUFFER=20;function fitNav(){nav.style.setProperty('--nav-scale','1');nav.style.setProperty('--logo-scale','1');var navBox=nav.getBoundingClientRect();var navStyles=getComputedStyle(nav);var horizontalPadding=parseFloat(navStyles.paddingLeft)+parseFloat(navStyles.paddingRight);var hamburgerVisible=hamburger&&getComputedStyle(hamburger).display!=='none';var hamburgerWidth=hamburgerVisible?hamburger.getBoundingClientRect().width:0;var linksVisible=getComputedStyle(navLinks).display!=='none';if(linksVisible){var logoWidth=logo.getBoundingClientRect().width;var availableForLinks=navBox.width-horizontalPadding-logoWidth-hamburgerWidth-BUFFER;var neededLinks=navLinks.scrollWidth;if(neededLinks>availableForLinks&&availableForLinks>0){var scale=Math.max(MIN_SCALE,availableForLinks/neededLinks);nav.style.setProperty('--nav-scale',scale.toFixed(3));}}var linksWidthNow=linksVisible?navLinks.getBoundingClientRect().width:0;var availableForLogo=navBox.width-horizontalPadding-linksWidthNow-hamburgerWidth-BUFFER;var neededLogo=logo.scrollWidth;if(neededLogo>availableForLogo&&availableForLogo>0){var logoScale=Math.max(LOGO_MIN_SCALE,availableForLogo/neededLogo);nav.style.setProperty('--logo-scale',logoScale.toFixed(3));}}window.addEventListener('resize',fitNav,{passive:true});window.addEventListener('load',fitNav);fitNav();})();</script></body>
 </html>

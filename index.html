@@ -1356,6 +1356,85 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
   margin-bottom: 0.5rem;
 }
 
+/* TESTIMONIALS */
+.testimonials { background: var(--dark); }
+.testimonials .header { text-align: center; margin-bottom: 3rem; }
+.testimonials .section-title { color: var(--white); }
+.testimonials .section-intro { color: #999; margin: 0 auto; }
+.testimonials-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+.testimonials-stars { color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; }
+.testimonials-score { color: #ccc; font-size: 0.9rem; }
+.testimonial-carousel { position: relative; max-width: 760px; margin: 0 auto; }
+.testimonial-track { overflow: hidden; }
+.testimonial-slides {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.testimonial-slide { flex: 0 0 100%; padding: 0 1rem; }
+.testimonial-card {
+  background: var(--dark-2);
+  border: 1px solid rgba(201,168,76,0.18);
+  border-radius: 14px;
+  padding: 2rem 2.2rem;
+  text-align: center;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.testimonial-stars { color: var(--gold); font-size: 1rem; letter-spacing: 2px; margin-bottom: 0.9rem; }
+.testimonial-text { color: #ddd; font-size: 0.98rem; line-height: 1.75; margin-bottom: 1.2rem; font-style: italic; }
+.testimonial-author { color: var(--gold-light); font-weight: 600; font-size: 0.9rem; }
+.testimonial-time { color: #777; font-size: 0.78rem; margin-top: 0.2rem; }
+.testimonial-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 2;
+}
+.testimonial-nav-btn:hover { background: rgba(201,168,76,0.15); }
+.testimonial-prev { left: -10px; }
+.testimonial-next { right: -10px; }
+.testimonial-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.4rem; }
+.testimonial-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.testimonial-dot.active { background: var(--gold); }
+.testimonials-google-link { display: block; text-align: center; margin-top: 2rem; color: #888; font-size: 0.85rem; }
+.testimonials-google-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
+.testimonials-google-link a:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  .testimonial-card { padding: 1.6rem 1.4rem; }
+  .testimonial-prev { left: 2px; }
+  .testimonial-next { right: 2px; }
+}
+
 /* ABOUT ME */
 .about-me {
   background: var(--cream);
@@ -1514,6 +1593,7 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 <li><a href="#how-it-works">How It Works</a></li>
 <li><a href="#about">About</a></li>
 <li><a href="#included">Pricing</a></li>
+<li><a href="#testimonials">Reviews</a></li>
 <li><a href="#weather">Weather</a></li>
 <li><a href="/blog/">Blog</a></li>
 <li><a href="#faq">FAQ</a></li>
@@ -1530,6 +1610,7 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 <a href="#how-it-works" class="nav-mobile-link">How It Works</a>
 <a href="#about" class="nav-mobile-link">About</a>
 <a href="#included" class="nav-mobile-link">Pricing</a>
+<a href="#testimonials" class="nav-mobile-link">Reviews</a>
 <a href="#weather" class="nav-mobile-link">Weather</a>
 <a href="/blog/" class="nav-mobile-link">Blog</a>
 <a href="#faq" class="nav-mobile-link">FAQ</a>
@@ -1545,6 +1626,7 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
     <a href="#events" class="snav-link" data-section="events">Events</a>
     <a href="#how-it-works" class="snav-link" data-section="how-it-works">How It Works</a>
     <a href="#included" class="snav-link" data-section="included">Pricing</a>
+<a href="#testimonials" class="snav-link" data-section="testimonials">Reviews</a>
     <a href="#weather" class="snav-link" data-section="weather">Weather</a>
     <a href="#faq" class="snav-link" data-section="faq">FAQ</a>
     <a href="#contact" class="snav-link" data-section="contact">Get Started</a>
@@ -1700,6 +1782,28 @@ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 </div>
 </div>
 </div>
+</div>
+</section>
+
+<section class="testimonials" id="testimonials">
+<div class="inner-narrow">
+<div class="header">
+<p class="section-label">Google Reviews</p>
+<h2 class="section-title">What Our Clients Say</h2>
+<div class="testimonials-badge-row" id="testimonials-badge-row"></div>
+<p class="section-intro" style="margin:0 auto;">Real feedback from real clients, pulled directly from our Google Business Profile.</p>
+</div>
+<div class="testimonial-carousel">
+<button class="testimonial-nav-btn testimonial-prev" id="tm-prev" aria-label="Previous review">&#8249;</button>
+<div class="testimonial-track">
+<div class="testimonial-slides" id="tm-slides">
+<!-- slides injected by JS from reviews.json -->
+</div>
+</div>
+<button class="testimonial-nav-btn testimonial-next" id="tm-next" aria-label="Next review">&#8250;</button>
+</div>
+<div class="testimonial-dots" id="tm-dots"></div>
+<p class="testimonials-google-link">See all of our reviews on <a href="https://www.google.com/search?q=Better+Selling+With+Bailey+reviews" target="_blank" rel="noopener">Google</a>.</p>
 </div>
 </section>
 
@@ -2396,5 +2500,87 @@ if (e.key === 'Escape' && hamburger.classList.contains('is-open')) { closeMenu()
 window.addEventListener('resize', function() { if (window.innerWidth > 800) closeMenu(); }, { passive: true });
 })();
 </script>
-<script>(function(){var nav=document.querySelector('nav');var navLinks=document.querySelector('.nav-links');var logo=document.querySelector('.nav-logo');var hamburger=document.querySelector('.nav-hamburger');if(!nav||!navLinks||!logo){return;}var MIN_SCALE=0.6;var LOGO_MIN_SCALE=0.55;var BUFFER=20;function fitNav(){nav.style.setProperty('--nav-scale','1');nav.style.setProperty('--logo-scale','1');var navBox=nav.getBoundingClientRect();var navStyles=getComputedStyle(nav);var horizontalPadding=parseFloat(navStyles.paddingLeft)+parseFloat(navStyles.paddingRight);var hamburgerVisible=hamburger&&getComputedStyle(hamburger).display!=='none';var hamburgerWidth=hamburgerVisible?hamburger.getBoundingClientRect().width:0;var linksVisible=getComputedStyle(navLinks).display!=='none';if(linksVisible){var logoWidth=logo.getBoundingClientRect().width;var availableForLinks=navBox.width-horizontalPadding-logoWidth-hamburgerWidth-BUFFER;var neededLinks=navLinks.scrollWidth;if(neededLinks>availableForLinks&&availableForLinks>0){var scale=Math.max(MIN_SCALE,availableForLinks/neededLinks);nav.style.setProperty('--nav-scale',scale.toFixed(3));}}var linksWidthNow=linksVisible?navLinks.getBoundingClientRect().width:0;var availableForLogo=navBox.width-horizontalPadding-linksWidthNow-hamburgerWidth-BUFFER;var neededLogo=logo.scrollWidth;if(neededLogo>availableForLogo&&availableForLogo>0){var logoScale=Math.max(LOGO_MIN_SCALE,availableForLogo/neededLogo);nav.style.setProperty('--logo-scale',logoScale.toFixed(3));}}window.addEventListener('resize',fitNav,{passive:true});window.addEventListener('load',fitNav);fitNav();})();</script></body>
+<script>(function(){var nav=document.querySelector('nav');var navLinks=document.querySelector('.nav-links');var logo=document.querySelector('.nav-logo');var hamburger=document.querySelector('.nav-hamburger');if(!nav||!navLinks||!logo){return;}var MIN_SCALE=0.6;var LOGO_MIN_SCALE=0.55;var BUFFER=20;function fitNav(){nav.style.setProperty('--nav-scale','1');nav.style.setProperty('--logo-scale','1');var navBox=nav.getBoundingClientRect();var navStyles=getComputedStyle(nav);var horizontalPadding=parseFloat(navStyles.paddingLeft)+parseFloat(navStyles.paddingRight);var hamburgerVisible=hamburger&&getComputedStyle(hamburger).display!=='none';var hamburgerWidth=hamburgerVisible?hamburger.getBoundingClientRect().width:0;var linksVisible=getComputedStyle(navLinks).display!=='none';if(linksVisible){var logoWidth=logo.getBoundingClientRect().width;var availableForLinks=navBox.width-horizontalPadding-logoWidth-hamburgerWidth-BUFFER;var neededLinks=navLinks.scrollWidth;if(neededLinks>availableForLinks&&availableForLinks>0){var scale=Math.max(MIN_SCALE,availableForLinks/neededLinks);nav.style.setProperty('--nav-scale',scale.toFixed(3));}}var linksWidthNow=linksVisible?navLinks.getBoundingClientRect().width:0;var availableForLogo=navBox.width-horizontalPadding-linksWidthNow-hamburgerWidth-BUFFER;var neededLogo=logo.scrollWidth;if(neededLogo>availableForLogo&&availableForLogo>0){var logoScale=Math.max(LOGO_MIN_SCALE,availableForLogo/neededLogo);nav.style.setProperty('--logo-scale',logoScale.toFixed(3));}}window.addEventListener('resize',fitNav,{passive:true});window.addEventListener('load',fitNav);fitNav();})();</script><script>
+(function(){
+var slidesEl = document.getElementById('tm-slides');
+var dotsEl = document.getElementById('tm-dots');
+var badgeRow = document.getElementById('testimonials-badge-row');
+var prevBtn = document.getElementById('tm-prev');
+var nextBtn = document.getElementById('tm-next');
+if (!slidesEl || !dotsEl) return;
+
+var current = 0;
+var timer = null;
+var reviews = [];
+
+function escapeHtml(str) {
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderStars(rating) {
+var full = Math.round(rating);
+var s = '';
+for (var i=0;i<5;i++) s += (i < full ? '★' : '☆');
+return s;
+}
+
+function render() {
+slidesEl.innerHTML = reviews.map(function(r){
+return '<div class="testimonial-slide">' +
+'<div class="testimonial-card">' +
+'<div class="testimonial-stars">' + renderStars(r.rating) + '</div>' +
+'<p class="testimonial-text">“' + escapeHtml(r.text) + '”</p>' +
+'<div class="testimonial-author">' + escapeHtml(r.author) + '</div>' +
+'<div class="testimonial-time">' + escapeHtml(r.relativeTime || '') + '</div>' +
+'</div></div>';
+}).join('');
+dotsEl.innerHTML = reviews.map(function(_, i){
+return '<button class="testimonial-dot' + (i===0 ? ' active' : '') + '" data-i="' + i + '" aria-label="Go to review ' + (i+1) + '"></button>';
+}).join('');
+Array.prototype.forEach.call(dotsEl.querySelectorAll('.testimonial-dot'), function(dot){
+dot.addEventListener('click', function(){ goTo(parseInt(this.dataset.i,10)); resetTimer(); });
+});
+update();
+}
+
+function update() {
+slidesEl.style.transform = 'translateX(-' + (current*100) + '%)';
+Array.prototype.forEach.call(dotsEl.children, function(d,i){ d.classList.toggle('active', i===current); });
+}
+
+function goTo(i) {
+if (!reviews.length) return;
+current = (i + reviews.length) % reviews.length;
+update();
+}
+
+function next(){ goTo(current+1); }
+function prev(){ goTo(current-1); }
+
+function resetTimer(){
+if (timer) clearInterval(timer);
+timer = setInterval(next, 7000);
+}
+
+if (prevBtn) prevBtn.addEventListener('click', function(){ prev(); resetTimer(); });
+if (nextBtn) nextBtn.addEventListener('click', function(){ next(); resetTimer(); });
+
+fetch('/reviews.json', { cache: 'no-store' })
+.then(function(res){ return res.ok ? res.json() : null; })
+.then(function(data){
+if (!data || !data.reviews || !data.reviews.length) return;
+// Sort so the highest-rated Google reviews are shown first.
+reviews = data.reviews.slice().sort(function(a,b){ return b.rating - a.rating; });
+if (badgeRow && data.rating) {
+badgeRow.innerHTML = '<span class="testimonials-stars">' + renderStars(data.rating) + '</span>' +
+'<span class="testimonials-score">' + Number(data.rating).toFixed(1) + ' out of 5' + (data.userRatingsTotal ? ' · ' + data.userRatingsTotal + ' Google reviews' : '') + '</span>';
+}
+render();
+resetTimer();
+})
+.catch(function(){ /* silently ignore — section just won't populate */ });
+})();
+</script>
+
+</body>
 </html>

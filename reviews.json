@@ -1,0 +1,25 @@
+{
+  "lastUpdated": null,
+  "rating": 4.9,
+  "userRatingsTotal": null,
+  "reviews": [
+    {
+      "author": "Placeholder Review",
+      "rating": 5,
+      "text": "This is placeholder testimonial text. It will automatically be replaced with real Google reviews the first time the daily sync workflow runs successfully.",
+      "relativeTime": "recently"
+    },
+    {
+      "author": "Placeholder Review",
+      "rating": 5,
+      "text": "Add your GOOGLE_PLACES_API_KEY and GOOGLE_PLACE_ID repository secrets, then run the Sync Google Reviews workflow to pull in real reviews.",
+      "relativeTime": "recently"
+    },
+    {
+      "author": "Placeholder Review",
+      "rating": 4,
+      "text": "Once synced, reviews are sorted so the highest-rated ones appear first in the carousel.",
+      "relativeTime": "recently"
+    }
+  ]
+}

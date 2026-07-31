@@ -1,25 +1,25 @@
 {
-  "lastUpdated": null,
-  "rating": 4.9,
-  "userRatingsTotal": null,
+  "lastUpdated": "2026-07-31",
+  "rating": 5,
+  "userRatingsTotal": 5,
   "reviews": [
     {
-      "author": "Placeholder Review",
+      "author": "Google Review",
       "rating": 5,
-      "text": "This is placeholder testimonial text. It will automatically be replaced with real Google reviews the first time the daily sync workflow runs successfully.",
-      "relativeTime": "recently"
+      "text": "Was awesome experience. Everything was done for me. Great turnout for the sale. Was better than I hoped for. The local TV station even came out and did a story on the sale.",
+      "relativeTime": ""
     },
     {
-      "author": "Placeholder Review",
+      "author": "Google Review",
       "rating": 5,
-      "text": "Add your GOOGLE_PLACES_API_KEY and GOOGLE_PLACE_ID repository secrets, then run the Sync Google Reviews workflow to pull in real reviews.",
-      "relativeTime": "recently"
+      "text": "Ran a giant garage sale for me and it went off without a hitch. Great advertising and phenomenal work setting things up and execution of the sale.",
+      "relativeTime": ""
     },
     {
-      "author": "Placeholder Review",
-      "rating": 4,
-      "text": "Once synced, reviews are sorted so the highest-rated ones appear first in the carousel.",
-      "relativeTime": "recently"
+      "author": "Google Review",
+      "rating": 5,
+      "text": "",
+      "relativeTime": ""
     }
   ]
 }

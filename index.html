@@ -2529,7 +2529,7 @@ slidesEl.innerHTML = reviews.map(function(r){
 return '<div class="testimonial-slide">' +
 '<div class="testimonial-card">' +
 '<div class="testimonial-stars">' + renderStars(r.rating) + '</div>' +
-'<p class="testimonial-text">“' + escapeHtml(r.text) + '”</p>' +
+(r.text ? '<p class="testimonial-text">“' + escapeHtml(r.text) + '”</p>' : '') +
 '<div class="testimonial-author">' + escapeHtml(r.author) + '</div>' +
 '<div class="testimonial-time">' + escapeHtml(r.relativeTime || '') + '</div>' +
 '</div></div>';

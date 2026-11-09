@@ -47,7 +47,16 @@ h2{font:700 20px/1.2 'Playfair Display',Georgia,serif;margin:6px 0 12px}
 .p-count{font:900 26px/1 'Playfair Display',Georgia,serif;font-variant-numeric:tabular-nums}
 .p-count small{font:600 12px 'Public Sans',sans-serif;color:var(--muted);margin-left:4px}
 .p-span{font-size:13.5px;color:var(--muted);margin-top:4px}
-.p-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.p-facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.p-clock{font-size:13.5px;margin-top:6px;color:var(--muted)}
+.p-clock.on{color:#2f7a45;font-weight:600}
+.p-clock.on::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#3fa35c;margin-right:7px;vertical-align:1px}
+.p-clock.none{font-style:italic}
+.p-facts em{display:block;font-style:normal;font-size:11.5px;color:var(--muted);margin-top:1px}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:12px;white-space:nowrap}
+.pill.on{background:#e3f4e7;color:#2f7a45}
+.pill.warn{background:#fbecd5;color:#8a5a12}
+.section{margin-bottom:28px}
 .p-facts div{background:var(--soft);border-radius:10px;padding:8px 10px}
 .p-facts span{display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
 .p-facts b{display:block;font-size:15px;margin-top:2px;font-variant-numeric:tabular-nums}
@@ -121,13 +130,15 @@ td.gap.long{color:#8a5a12;font-weight:600}
 
     <div class="stats">
       <div class="stat"><span>Items scanned</span><b id="sTotal">0</b><em id="sTotalSub"></em></div>
-      <div class="stat"><span>People scanning</span><b id="sPeople">0</b><em id="sPeopleSub"></em></div>
-      <div class="stat"><span>Team pace</span><b id="sPace">–</b><em>items per hour, whole team</em></div>
-      <div class="stat"><span>Typical gap</span><b id="sGap">–</b><em>between scans, breaks left out</em></div>
+      <div class="stat"><span>On the clock now</span><b id="sOn">0</b><em id="sOnSub"></em></div>
+      <div class="stat"><span>Hours on the clock</span><b id="sHours">–</b><em id="sHoursSub"></em></div>
+      <div class="stat"><span>Items per clocked hour</span><b id="sRate">–</b><em>whole team</em></div>
     </div>
 
     <h2>By person</h2>
     <div class="people" id="people"></div>
+
+    <div class="section"><div class="list-head"><h2>Time clock</h2><span class="filter" id="clockFilter"></span></div><div id="clockWrap"></div></div>
 
     <div class="list-head"><h2>Every scan</h2><span class="filter" id="filter"></span></div>
     <div id="listWrap"></div>
@@ -139,14 +150,16 @@ td.gap.long{color:#8a5a12;font-weight:600}
 'use strict';
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const KEY = 'bsb_owner_pass';
-const BREAK_MIN = 20;          // a gap longer than this counts as a break, not working time
+const BREAK_MIN = 20;          // a gap longer than this between scans counts as a break
+const STALE_H = 16;            // an open shift older than this was a forgotten clock-out
 const $ = (s) => document.querySelector(s);
 let OWNER = ''; try { OWNER = localStorage.getItem(KEY) || ''; } catch (e) {}
-let rows = [], range = 'today', person = null, shown = 150, timer = null;
+let rows = [], shifts = [], range = 'today', person = null, shown = 150, timer = null;
 
 const money = (n) => n == null ? '–' : '$' + Math.round(n).toLocaleString('en-US');
 const tfmt = (d) => d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 const dfmt = (d) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+const keyOf = (n) => (n || 'Unknown').trim().toLowerCase();
 function dur(sec) {
   if (sec == null || !isFinite(sec)) return '–';
   if (sec < 90) return Math.round(sec) + 's';
@@ -171,6 +184,12 @@ async function load() {
     const j = await res.json().catch(() => ({}));
     if (!res.ok) { gate(j.error && j.error.type === 'owner_not_set' ? 'No owner password has been set up yet.' : 'Couldn\'t load activity right now. Try again in a minute.'); return false; }
     rows = (j.rows || []).map((r) => Object.assign(r, { at: new Date(r.created_at) }));
+    const now = Date.now();
+    shifts = (j.shifts || []).map((s) => {
+      const tin = new Date(s.clock_in), tout = s.clock_out ? new Date(s.clock_out) : null;
+      const open = !tout, stale = open && now - tin > STALE_H * 3600000;
+      return Object.assign(s, { tin, tout, open: open && !stale, stale });
+    });
     $('#updated').textContent = 'Updated ' + tfmt(new Date());
     render();
     return true;
@@ -184,6 +203,15 @@ function inRange() {
   const [a, b] = bounds();
   return rows.filter((r) => r.at >= a && (!b || r.at < b)).sort((x, y) => x.at - y.at);
 }
+// shifts overlapping the range, with the part inside the range measured
+function shiftsInRange() {
+  const [a, b] = bounds(), end = b || new Date();
+  return shifts.map((s) => {
+    const sEnd = s.tout || (s.stale ? s.tin : new Date());
+    const from = Math.max(s.tin, a), to = Math.min(sEnd, end);
+    return Object.assign({}, s, { sEnd, secIn: Math.max(0, (to - from) / 1000) });
+  }).filter((s) => s.tin < end && (s.open || s.sEnd >= a)).sort((x, y) => y.tin - x.tin);
+}
 
 function statsFor(list) {
   const scans = list.filter((r) => r.kind === 'scan' && r.ok);
@@ -195,73 +223,101 @@ function statsFor(list) {
     const g = (scans[i].at - scans[i - 1].at) / 1000;
     if (g > BREAK_MIN * 60) breaks.push(g); else { gaps.push(g); workSec += g; }
   }
-  const pace = workSec >= 300 ? scans.length / (workSec / 3600) : null;
   const days = new Set(scans.map((r) => r.at.toDateString())).size;
-  return { scans, reprices, misses, gaps, breaks, workSec, pace, days, first: scans[0] && scans[0].at, last: scans.length && scans[scans.length - 1].at };
+  return { scans, reprices, misses, gaps, breaks, workSec, days, first: scans[0] && scans[0].at, last: scans.length && scans[scans.length - 1].at };
 }
 
 function render() {
-  const list = inRange();
+  const list = inRange(), sh = shiftsInRange();
   const singleDay = range === 'today' || range === 'yesterday';
+  const label = singleDay ? dfmt(bounds()[0]) : 'last ' + range + ' days';
+
+  // everyone who scanned or clocked in, matched by name (ignoring capitals)
+  const people = new Map();
+  const get = (name) => { const k = keyOf(name); if (!people.has(k)) people.set(k, { key: k, name: (name || 'Unknown').trim(), rows: [], shifts: [] }); return people.get(k); };
+  for (const s of sh) get(s.scanner).shifts.push(s);
+  for (const r of list) get(r.scanner).rows.push(r);
+  const per = [...people.values()].map((p) => {
+    const st = statsFor(p.rows);
+    const clockSec = p.shifts.reduce((t, s) => t + s.secIn, 0);
+    const openShift = p.shifts.find((s) => s.open);
+    return Object.assign(p, { st, clockSec, openShift, rate: clockSec >= 600 ? st.scans.length / (clockSec / 3600) : null });
+  }).sort((x, y) => (y.openShift ? 1 : 0) - (x.openShift ? 1 : 0) || y.st.scans.length - x.st.scans.length);
+
+  // summary
   const team = statsFor(list);
-  const names = [...new Set(list.map((r) => r.scanner || 'Unknown'))];
-  // team pace = sum of each person's pace (people scan in parallel)
-  const per = names.map((n) => ({ name: n, st: statsFor(list.filter((r) => (r.scanner || 'Unknown') === n)) }))
-    .sort((a, b) => b.st.scans.length - a.st.scans.length);
-  const allGaps = per.flatMap((p) => p.st.gaps);
-  const paces = per.map((p) => p.st.pace).filter((x) => x);
-
+  const onNow = per.filter((p) => p.openShift);
+  const clockTotal = per.reduce((t, p) => t + p.clockSec, 0);
+  const scansClocked = per.filter((p) => p.clockSec > 0).reduce((t, p) => t + p.st.scans.length, 0);
   $('#sTotal').textContent = team.scans.length.toLocaleString('en-US');
-  $('#sTotalSub').textContent = [team.reprices ? team.reprices + ' re-priced' : '', team.misses ? team.misses + ' no item found' : ''].filter(Boolean).join(' · ') || (singleDay ? dfmt(bounds()[0]) : 'last ' + range + ' days');
-  $('#sPeople').textContent = per.filter((p) => p.st.scans.length).length;
-  $('#sPeopleSub').textContent = singleDay ? dfmt(bounds()[0]) : 'last ' + range + ' days';
-  $('#sPace').textContent = paces.length ? Math.round(paces.reduce((a, b) => a + b, 0)) : '–';
-  $('#sGap').textContent = dur(median(allGaps));
+  $('#sTotalSub').textContent = [team.reprices ? team.reprices + ' re-priced' : '', team.misses ? team.misses + ' no item found' : ''].filter(Boolean).join(' · ') || label;
+  $('#sOn').textContent = onNow.length;
+  $('#sOnSub').textContent = onNow.length ? onNow.map((p) => p.name).join(', ') : 'Nobody right now';
+  $('#sHours').textContent = clockTotal ? dur(clockTotal) : '–';
+  $('#sHoursSub').textContent = label;
+  $('#sRate').textContent = clockTotal >= 600 ? Math.round(scansClocked / (clockTotal / 3600)) : '–';
 
-  // hour strip range shared by everyone on single-day views
+  // hour strip scale (single-day views)
   let h0 = 24, h1 = -1;
-  if (singleDay) for (const r of list) { const h = r.at.getHours(); h0 = Math.min(h0, h); h1 = Math.max(h1, h); }
+  if (singleDay) {
+    for (const r of list) { const h = r.at.getHours(); h0 = Math.min(h0, h); h1 = Math.max(h1, h); }
+    for (const s of sh) {
+      const from = new Date(Math.max(s.tin, bounds()[0])), to = new Date(Math.min(s.sEnd, bounds()[1] || new Date()));
+      if (to >= from) { h0 = Math.min(h0, from.getHours()); h1 = Math.max(h1, to.getHours()); }
+    }
+  }
   let maxPerHour = 1;
   const hourCounts = {};
   if (singleDay) for (const p of per) {
     const c = new Array(24).fill(0); for (const r of p.st.scans) c[r.at.getHours()]++;
-    hourCounts[p.name] = c; maxPerHour = Math.max(maxPerHour, ...c);
+    hourCounts[p.key] = c; maxPerHour = Math.max(maxPerHour, ...c);
   }
 
   const box = $('#people'); box.textContent = '';
   if (!per.length) {
     const d = document.createElement('div'); d.className = 'empty';
-    d.textContent = singleDay ? 'No scans ' + (range === 'today' ? 'yet today.' : 'yesterday.') : 'No scans in the last ' + range + ' days.';
+    d.textContent = singleDay ? 'Nobody has clocked in or scanned ' + (range === 'today' ? 'yet today.' : 'yesterday.') : 'No activity in the last ' + range + ' days.';
     box.appendChild(d);
   }
   for (const p of per) {
     const st = p.st;
     const card = document.createElement('button'); card.type = 'button';
-    card.className = 'person' + (person === p.name ? ' sel' : '');
-    card.addEventListener('click', () => { person = person === p.name ? null : p.name; shown = 150; render(); });
-    const span = !st.scans.length ? 'No priced scans'
-      : singleDay ? tfmt(st.first) + ' – ' + tfmt(st.last) + ' · ' + dur((st.last - st.first) / 1000) + ' span'
-      : st.days + ' day' + (st.days === 1 ? '' : 's') + ' · last scan ' + dfmt(st.last) + ' ' + tfmt(st.last);
-    const longest = st.breaks.length ? Math.max(...st.breaks) : null;
-    card.innerHTML = '<div class="p-head"><span class="p-name"></span><span class="p-count"></span></div><div class="p-span"></div>' +
-      '<div class="p-facts"><div><span>Pace</span><b class="f1"></b></div><div><span>Typical gap</span><b class="f2"></b></div><div><span>' + (singleDay ? 'Working time' : 'Per day') + '</span><b class="f3"></b></div></div>' +
-      '<div class="p-breaks"></div>';
+    card.className = 'person' + (person === p.key ? ' sel' : '');
+    card.addEventListener('click', () => { person = person === p.key ? null : p.key; shown = 150; render(); });
+    card.innerHTML = '<div class="p-head"><span class="p-name"></span><span class="p-count"></span></div><div class="p-clock"></div><div class="p-span"></div>' +
+      '<div class="p-facts"><div><span>On the clock</span><b class="f1"></b></div><div><span>Actively scanning</span><b class="f2"></b><em class="f2e"></em></div>' +
+      '<div><span>Per clocked hour</span><b class="f3"></b></div><div><span>Typical gap</span><b class="f4"></b></div></div><div class="p-breaks"></div>';
     card.querySelector('.p-name').textContent = p.name;
     const cnt = card.querySelector('.p-count'); cnt.textContent = st.scans.length;
     const sm = document.createElement('small'); sm.textContent = 'scans' + (st.reprices ? ' · ' + st.reprices + ' re-priced' : ''); cnt.appendChild(sm);
-    card.querySelector('.p-span').textContent = span;
-    card.querySelector('.f1').textContent = st.pace ? Math.round(st.pace) + '/hr' : '–';
-    card.querySelector('.f2').textContent = dur(median(st.gaps));
-    card.querySelector('.f3').textContent = singleDay ? dur(st.workSec) : (st.days ? Math.round(st.scans.length / st.days) + ' scans' : '–');
+
+    const cl = card.querySelector('.p-clock');
+    if (p.openShift) { cl.classList.add('on'); cl.textContent = 'On the clock since ' + tfmt(p.openShift.tin) + ' · ' + dur((Date.now() - p.openShift.tin) / 1000); }
+    else if (p.shifts.length) {
+      cl.textContent = singleDay
+        ? 'Clocked ' + p.shifts.slice().reverse().map((s) => tfmt(s.tin) + ' – ' + (s.tout ? tfmt(s.tout) : '?')).join(', ')
+        : p.shifts.length + ' shift' + (p.shifts.length === 1 ? '' : 's') + ' · last ' + dfmt(p.shifts[0].tin);
+      if (p.shifts.some((s) => s.auto_closed || s.stale)) cl.textContent += ' · forgot to clock out';
+    } else { cl.classList.add('none'); cl.textContent = 'Didn\'t clock in'; }
+
+    card.querySelector('.p-span').textContent = !st.scans.length ? 'No priced scans'
+      : singleDay ? 'Scanned ' + tfmt(st.first) + ' – ' + tfmt(st.last)
+      : st.days + ' day' + (st.days === 1 ? '' : 's') + ' scanning · ' + (st.days ? Math.round(st.scans.length / st.days) + ' scans a day' : '');
+    card.querySelector('.f1').textContent = p.clockSec ? dur(p.clockSec) : '–';
+    card.querySelector('.f2').textContent = st.workSec ? dur(st.workSec) : '–';
+    card.querySelector('.f2e').textContent = p.clockSec >= 600 && st.workSec ? Math.min(100, Math.round(st.workSec / p.clockSec * 100)) + '% of clocked time' : '';
+    card.querySelector('.f3').textContent = p.rate != null ? Math.round(p.rate) + ' items' : '–';
+    card.querySelector('.f4').textContent = dur(median(st.gaps));
     const br = card.querySelector('.p-breaks');
+    const longest = st.breaks.length ? Math.max(...st.breaks) : null;
     if (st.breaks.length) {
-      br.textContent = st.breaks.length + ' break' + (st.breaks.length === 1 ? '' : 's') + ' over ' + BREAK_MIN + ' min · longest ' + dur(longest) + ' · ' + dur(st.breaks.reduce((a, b) => a + b, 0)) + ' total';
+      br.textContent = st.breaks.length + ' break' + (st.breaks.length === 1 ? '' : 's') + ' over ' + BREAK_MIN + ' min · longest ' + dur(longest) + ' · ' + dur(st.breaks.reduce((x, y) => x + y, 0)) + ' total';
       if (singleDay && longest > 45 * 60) br.classList.add('warn');
     } else br.textContent = st.scans.length > 1 ? 'No gaps over ' + BREAK_MIN + ' min' : '';
-    if (singleDay && h1 >= h0 && hourCounts[p.name]) {
+    if (singleDay && h1 >= h0 && hourCounts[p.key]) {
       const hrs = document.createElement('div'); hrs.className = 'hours';
       for (let h = h0; h <= h1; h++) {
-        const n = hourCounts[p.name][h];
+        const n = hourCounts[p.key][h];
         const col = document.createElement('div'); col.className = 'h' + (n ? '' : ' zero');
         col.title = n + ' scan' + (n === 1 ? '' : 's') + ' ' + ((h % 12) || 12) + (h < 12 ? 'am' : 'pm');
         const bar = document.createElement('i'); bar.style.height = Math.max(4, Math.round(n / maxPerHour * 38)) + 'px';
@@ -274,13 +330,49 @@ function render() {
     box.appendChild(card);
   }
 
+  const nameOf = (k) => (people.get(k) || {}).name || k;
+  const filterBar = (el) => {
+    el.textContent = '';
+    if (!person) return;
+    el.append('Showing ' + nameOf(person) + ' only');
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Show everyone';
+    b.addEventListener('click', () => { person = null; render(); }); el.appendChild(b);
+  };
+
+  // time clock table
+  filterBar($('#clockFilter'));
+  const cw = $('#clockWrap'); cw.textContent = '';
+  const shown_sh = person ? sh.filter((s) => keyOf(s.scanner) === person) : sh;
+  if (!shown_sh.length) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = 'No clock-ins for this range.'; cw.appendChild(d); }
+  else {
+    const t = document.createElement('table');
+    t.innerHTML = '<thead><tr><th>Person</th><th class="hide-sm">Day</th><th>In</th><th>Out</th><th class="num">On the clock</th><th class="num">Items</th><th class="hide-sm"></th></tr></thead>';
+    const tb = document.createElement('tbody');
+    for (const s of shown_sh) {
+      const tr = document.createElement('tr');
+      const td = (cls, txt) => { const c = document.createElement('td'); if (cls) c.className = cls; if (txt != null) c.textContent = txt; tr.appendChild(c); return c; };
+      const end = s.tout || (s.open ? new Date() : null);
+      const items = rows.filter((r) => keyOf(r.scanner) === keyOf(s.scanner) && r.kind === 'scan' && r.ok && r.at >= s.tin && (!end || r.at <= end)).length;
+      td('', s.scanner);
+      td('time hide-sm', dfmt(s.tin));
+      td('time', tfmt(s.tin));
+      const outCell = td('time', s.tout ? tfmt(s.tout) : '');
+      if (!s.tout) { const pl = document.createElement('span'); pl.className = 'pill ' + (s.open ? 'on' : 'warn'); pl.textContent = s.open ? 'On the clock' : 'Never clocked out'; outCell.appendChild(pl); }
+      td('num', s.tout || s.open ? dur(((s.tout || new Date()) - s.tin) / 1000) : '–');
+      td('num', items);
+      const note = td('hide-sm');
+      if (s.auto_closed) { const pl = document.createElement('span'); pl.className = 'pill warn'; pl.textContent = 'Forgot to clock out · closed at last scan'; note.appendChild(pl); }
+      tb.appendChild(tr);
+    }
+    t.appendChild(tb); cw.appendChild(t);
+  }
+
   // every scan, newest first, with the gap since that person's previous scan
-  const f = $('#filter'); f.textContent = '';
-  if (person) { f.append('Showing ' + person + ' only'); const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Show everyone'; b.addEventListener('click', () => { person = null; render(); }); f.appendChild(b); }
-  const items = (person ? list.filter((r) => (r.scanner || 'Unknown') === person) : list).slice().reverse();
+  filterBar($('#filter'));
+  const items = (person ? list.filter((r) => keyOf(r.scanner) === person) : list).slice().reverse();
   const prevByPerson = {};
   const gapOf = new Map();
-  for (const r of list) { if (r.kind !== 'scan' || !r.ok) continue; const k = r.scanner || 'Unknown'; if (prevByPerson[k]) gapOf.set(r, (r.at - prevByPerson[k]) / 1000); prevByPerson[k] = r.at; }
+  for (const r of list) { if (r.kind !== 'scan' || !r.ok) continue; const k = keyOf(r.scanner); if (prevByPerson[k]) gapOf.set(r, (r.at - prevByPerson[k]) / 1000); prevByPerson[k] = r.at; }
   const wrap = $('#listWrap'); wrap.textContent = '';
   if (!items.length) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = 'Nothing to show for this range.'; wrap.appendChild(d); return; }
   const t = document.createElement('table');

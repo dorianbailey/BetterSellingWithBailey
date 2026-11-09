@@ -86,6 +86,15 @@ body.paused .reticle i{border-color:rgba(250,247,242,.45);opacity:.6}
 .status.warn .msg{color:#f1d58a}
 .pause{height:46px;padding:0 18px;border-radius:23px;border:1px solid rgba(201,168,76,.75);background:rgba(25,23,20,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--gold);font-weight:700;font-size:14px}
 body.paused .pause{background:var(--gold);color:var(--ink)}
+/* scanner off: camera stopped, start screen showing */
+.off-panel{position:fixed;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:0 32px;text-align:center;background:radial-gradient(110% 70% at 50% 35%,#2b261f 0%,var(--ink) 65%)}
+.start-btn{display:inline-flex;align-items:center;gap:12px;min-height:66px;padding:0 34px;border-radius:33px;border:0;background:var(--gold);color:var(--ink);font-weight:700;font-size:19px;box-shadow:0 10px 30px rgba(201,168,76,.25)}
+.start-btn svg{width:26px;height:26px}
+.start-btn:active{transform:scale(.97)}
+.off-hint{margin:0;max-width:300px;color:rgba(250,247,242,.75);font-size:15px;line-height:1.5}
+.off-count{margin:0;color:var(--gold);font-size:14px;font-weight:600}
+.off-count:empty{display:none}
+body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shade.b{display:none}
 
 /* sheets */
 .scrim{position:fixed;inset:0;z-index:8;background:rgba(0,0,0,.45)}
@@ -191,11 +200,17 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 
 <div id="reticle" class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
+<section id="offPanel" class="off-panel" hidden>
+  <button id="startBtn" class="start-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="4"/></svg>Start scanner</button>
+  <p class="off-hint">Point at an item and hold steady. Prices pop up on their own.</p>
+  <p class="off-count" id="offCount"></p>
+</section>
+
 <button id="bubble" class="bubble" type="button" aria-live="polite"><span class="price" id="bPrice"></span><span class="name" id="bName"></span></button>
 
 <footer class="bottom">
   <div id="status" class="status" role="status"><span class="msg" id="statusMsg">Starting camera…</span><span class="lat" id="lat"></span></div>
-  <button id="pauseBtn" class="pause" type="button">Pause</button>
+  <button id="pauseBtn" class="pause" type="button" aria-label="Stop scanner">Stop</button>
 </footer>
 
 <div id="scrim" class="scrim" hidden></div>
@@ -929,18 +944,30 @@ $('#sOwnerGo').addEventListener('click', async () => {
 $('#sOwner').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#sOwnerGo').click(); });
 
 $('#sLock').addEventListener('click', () => {
-  closeSheets(true); unlock();
+  closeSheets(true); stopScanner();
   PASS = ''; setPass(''); rememberRole('', '');
   askPassword('Scanner locked. Enter the password to unlock it again.');
 });
 
 /* ---------- pause / torch / wake ---------- */
-pauseBtn.addEventListener('click', () => {
-  paused = !paused;
-  pauseBtn.textContent = paused ? 'Resume' : 'Pause';
-  document.body.classList.toggle('paused', paused);
-  if (paused) { unlock(); setStatus('Paused'); } else { prev = null; stillMs = 0; setStatus('Hold steady on an item'); }
-});
+// Stop turns the camera fully off (saves battery) and shows the start screen.
+function stopScanner() {
+  unlock();
+  if (stream) { for (const t of stream.getTracks()) { try { t.stop(); } catch (e) {} } }
+  stream = null; track = null; video.srcObject = null;
+  torchOn = false; torchBtn.hidden = true; torchBtn.classList.remove('on');
+  try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null;
+  showOff();
+}
+function showOff() {
+  document.body.classList.add('off');
+  $('#offPanel').hidden = false;
+  const today = new Date().toDateString();
+  const n = history.filter((e) => new Date(e.t).toDateString() === today).length;
+  $('#offCount').textContent = n ? n + ' item' + (n === 1 ? '' : 's') + ' scanned on this phone today' : '';
+}
+pauseBtn.addEventListener('click', stopScanner);
+$('#startBtn').addEventListener('click', () => start());
 torchBtn.addEventListener('click', async () => {
   if (!track) return;
   torchOn = !torchOn;
@@ -950,7 +977,8 @@ torchBtn.addEventListener('click', async () => {
 async function keepAwake() { try { if ('wakeLock' in navigator && !document.hidden) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) return;
-  keepAwake(); prev = null; stillMs = 0;
+  if (stream) keepAwake();
+  prev = null; stillMs = 0;
   if (stream && video.paused) video.play().catch(() => {});
 });
 
@@ -980,7 +1008,10 @@ function camHelp(msg) {
 }
 async function start() {
   setup.hidden = true;
-  await startCamera();
+  paused = false; document.body.classList.remove('paused');
+  document.body.classList.remove('off'); $('#offPanel').hidden = true;
+  const ok = await startCamera();
+  if (!ok) showOff();
 }
 $('#camRetry').addEventListener('click', start);
 function showSetupForm(needPass, msg) {
@@ -1011,8 +1042,8 @@ $('#keySave').addEventListener('click', async () => {
       PASS = p; setPass(p); rememberRole(role, p);
     }
     S.who = who; store.set('settings', S);
-    paused = false; document.body.classList.remove('paused'); pauseBtn.textContent = 'Pause';
-    start();
+    paused = false; document.body.classList.remove('paused');
+    setup.hidden = true; showOff();
   } catch (e) {
     errEl.textContent = 'Couldn\'t reach the scanner. Check your signal or Wi-Fi.';
   } finally { btn.disabled = false; btn.textContent = label; }
@@ -1024,7 +1055,7 @@ applyRole();
 if (PASS) refreshRole();
 if (!PASS) askPassword();
 else if (!S.who) askName();
-else start();
+else showOff();   // the scanner opens switched off; "Start scanner" turns the camera on
 })();
 </script>
 </body>

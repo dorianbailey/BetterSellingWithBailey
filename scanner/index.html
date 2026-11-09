@@ -62,7 +62,7 @@ body.paused .reticle i{border-color:rgba(250,247,242,.45);opacity:.6}
 .bubble.on{opacity:1;transform:translate(-50%,-100%) scale(1);pointer-events:auto}
 .bubble .price{display:block;font:900 56px/1 'Playfair Display',Georgia,serif;color:var(--gold);letter-spacing:-.01em;white-space:nowrap}
 .bubble.range .price{font-size:42px}
-.bubble .name{display:block;margin-top:7px;font-size:13.5px;font-weight:500;line-height:1.3;color:rgba(250,247,242,.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bubble .name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-top:7px;font-size:13.5px;font-weight:500;line-height:1.3;color:rgba(250,247,242,.92);overflow:hidden}
 .bubble.low,.bubble.err,.bubble.none{border-color:var(--grey)}
 .bubble.low::after,.bubble.err::after,.bubble.none::after{border-color:var(--grey)}
 .bubble.low .price,.bubble.err .price{color:var(--cream)}
@@ -131,6 +131,11 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
 .field textarea{resize:vertical;min-height:96px;line-height:1.4}
 .small{font-size:13px;color:#6b655c;margin:4px 0 16px;line-height:1.45}
+.dbg{margin:0 0 16px}
+.dbg summary{font-size:14px;font-weight:600;color:#4a453e;cursor:pointer;padding:6px 0}
+.dbg .small{margin:6px 0}
+.dbg img{display:block;width:100%;max-width:260px;border-radius:10px;margin:8px 0;background:#ddd}
+.dbg pre{white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.4;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;margin:0;max-height:220px;overflow:auto}
 
 /* first-run / camera help */
 .setup{position:fixed;inset:0;z-index:20;overflow:auto;background:radial-gradient(120% 80% at 50% 0%,#2b261f 0%,var(--ink) 60%);color:var(--cream);padding:calc(var(--st) + 34px) 24px calc(var(--sb) + 30px);-webkit-user-select:text;user-select:text}
@@ -219,6 +224,7 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
   <label class="field"><span>Anthropic API key</span>
     <input id="sKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-ant-…"></label>
   <p class="small" id="sStats"></p>
+  <details class="dbg" id="dbg" hidden><summary>Last scan (troubleshooting)</summary><p class="small" id="dbgMeta"></p><img id="dbgImg" alt="What the AI saw"><pre id="dbgText"></pre></details>
   <div class="stack"><button id="sSave" class="btn gold" type="button">Save</button><button class="btn" type="button" data-close>Cancel</button></div>
 </section>
 
@@ -263,22 +269,27 @@ const AW = 48, AH = 64;                   // analysis frame size
 const MATCH_BITS = 6;                     // how close a view must be to reuse a saved price
 const MAX_HISTORY = 300;
 
-const SYSTEM = `You are the pricing assistant for Better Selling With Bailey, an estate sale company in Erie County, Pennsylvania. The owner points his phone camera at items while setting up a sale and needs an instant price.
+const SYSTEM = `You are the pricing assistant for Better Selling With Bailey, an estate sale company in Erie County, Pennsylvania. The owner walks through a house pointing his phone camera at hundreds of items while setting up a sale, and he needs a price for every single one.
 
-Look at the item in the center of the photo. Identify it as specifically as you can from what is visible: brand, maker, pattern, model, era. If it is a group or box lot, price the whole lot.
+Price the main object in the photo: whatever is nearest the center or takes up the most space. Most items are ordinary household things (picture frames, keyboards, mugs, lamps, tools, decor, linens, toys, kitchenware) and most are not listed anywhere online. That's fine. Always give a price.
 
-Give two prices:
-- "price": the tag price for an in-person estate sale in northwest Pennsylvania, i.e. what it should be marked so it sells during a 2-3 day sale. Use friendly round numbers: 1, 2, 3, 5, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 60, 75, 85, 100, then steps of 25 or 50.
-- "low" and "high": what this item typically sells for used online (eBay sold listings), whole dollars.
+How to price:
+1. First try to identify the exact item: brand, maker, model, pattern, era. If you can, use "match":"exact" and price that item.
+2. If you can't pin down the exact item, price it the way similar items of the same type, size, material and apparent quality sell, and use "match":"similar". Give it a plain descriptive name, e.g. "Wooden picture frame, 8x10" or "Wireless keyboard and mouse".
+Never decline to price something because it isn't a known or listed product. If it's a group or box lot, price the whole lot.
+
+The two prices:
+- "price": the tag price for an in-person estate sale in northwest Pennsylvania, i.e. what it should be marked so it sells during a 2-3 day sale. Use friendly round numbers: 1, 2, 3, 5, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 60, 75, 85, 100, then steps of 25 or 50. $1-$3 is fine for low-value things.
+- "low" and "high": what this item, or similar items, typically sell for used (eBay sold, Facebook Marketplace), whole dollars.
 
 Reply with ONLY one line of compact JSON with keys in exactly this order:
-{"name":"...","conf":"high|med|low","price":0,"low":0,"high":0,"note":"...","q":"..."}
-- name: 2-6 words a shopper would recognize, e.g. "Pyrex Butterprint mixing bowl".
-- conf: high = clearly identified with a well-known value; med = identified but value depends on condition or details; low = unsure what it is, or value could vary widely.
+{"name":"...","match":"exact|similar","conf":"high|med|low","price":0,"low":0,"high":0,"note":"...","q":"..."}
+- name: 2-6 words a shopper would recognize.
+- conf: how sure you are of the price. high = typical value is well known; med = depends on condition or details; low = rough guess.
 - note: at most 8 words on the one thing to check (maker's mark, chips, does it work, complete set). Empty string if nothing.
-- q: eBay search words to find sold comps.
-If there is no clear item in the center (blurry, blank wall, floor, too dark), reply exactly {"name":null}
-Never refuse and never add text outside the JSON.`;
+- q: eBay search words for this item, or for similar items if it's a "similar" match.
+Only if the photo is unusable (completely black, blurred beyond recognition, or nothing but bare wall, floor or ceiling) reply {"name":null}
+Never add text outside the JSON.`;
 
 /* ---------- storage ---------- */
 const store = {
@@ -308,6 +319,7 @@ let stream = null, track = null, torchOn = false, wakeLock = null, loopStarted =
 let paused = false, sheetOpen = null;
 let prev = null, stillMs = 0, lastTick = 0, lockRef = null, lastTrigger = 0;
 let scanSeq = 0, current = null, detailEntry = null;
+let lastScan = null;   // image + raw AI reply of the most recent scan, for troubleshooting
 
 /* ---------- helpers ---------- */
 const money = (n) => (n == null || isNaN(n)) ? '–' : '$' + Math.round(+n).toLocaleString('en-US');
@@ -456,6 +468,7 @@ async function priceIt(shot, id, hash, replace) {
   const t0 = performance.now();
   const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 20000);
   let text = '', partialShown = false;
+  const dbg = lastScan = { img: 'data:image/jpeg;base64,' + shot.b64, text: '', at: new Date(), ms: 0, err: '' };
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
@@ -489,11 +502,13 @@ async function priceIt(shot, id, hash, replace) {
     if (buf) handle(buf);
   } catch (err) {
     clearTimeout(timer);
+    dbg.text = text; dbg.err = (err && (err.status ? err.status + ' ' : '') + err.message) || 'error';
     if (id === scanSeq) showError(err);
     return;
   }
   clearTimeout(timer);
   if (!partialShown) markLatency(performance.now() - t0);
+  dbg.text = text; dbg.ms = performance.now() - t0;
 
   const r = parseFinal(text);
   if (!r) {
@@ -513,14 +528,15 @@ function parsePartial(t) {
   if (!n || n[1] === 'null') return null;
   const c = t.match(/"conf"\s*:\s*"(\w+)"/);
   if (!c) return null;
+  const mt = t.match(/"match"\s*:\s*"(\w+)"/), match = mt && mt[1] === 'similar' ? 'similar' : 'exact';
   const p = t.match(/"price"\s*:\s*(null|\d+(?:\.\d+)?)\s*[,}]/);
   if (S.mode === 'resale') {
     const lo = t.match(/"low"\s*:\s*(\d+(?:\.\d+)?)\s*[,}]/), hi = t.match(/"high"\s*:\s*(\d+(?:\.\d+)?)\s*[,}]/);
     if (!lo || !hi) return null;
-    return { name: unesc(n[2]), conf: c[1], price: p && p[1] !== 'null' ? +p[1] : null, low: +lo[1], high: +hi[1] };
+    return { name: unesc(n[2]), match, conf: c[1], price: p && p[1] !== 'null' ? +p[1] : null, low: +lo[1], high: +hi[1] };
   }
   if (!p || p[1] === 'null') return null;
-  return { name: unesc(n[2]), conf: c[1], price: +p[1] };
+  return { name: unesc(n[2]), match, conf: c[1], price: +p[1] };
 }
 function num(v) { const x = typeof v === 'string' ? parseFloat(v.replace(/[$,]/g, '')) : v; return (typeof x === 'number' && isFinite(x) && x >= 0) ? Math.round(x) : null; }
 function parseFinal(t) {
@@ -530,7 +546,7 @@ function parseFinal(t) {
   if (!j) { const p = parsePartial(t); if (p) j = p; }
   if (!j || !j.name || typeof j.name !== 'string') return null;
   const r = {
-    name: j.name.slice(0, 80), conf: ['high', 'med', 'low'].includes(j.conf) ? j.conf : 'med',
+    name: j.name.slice(0, 80), match: j.match === 'similar' ? 'similar' : 'exact', conf: ['high', 'med', 'low'].includes(j.conf) ? j.conf : 'med',
     price: num(j.price), low: num(j.low), high: num(j.high),
     note: typeof j.note === 'string' ? j.note.slice(0, 120) : '', q: typeof j.q === 'string' && j.q.trim() ? j.q.slice(0, 120) : j.name
   };
@@ -554,16 +570,16 @@ function showThinking() {
 function showEntry(e, partial) {
   current = partial ? null : e;
   scanning(false);
-  const unsure = e.conf === 'low' && !e.edited;
+  const rough = e.conf === 'low' && !e.edited;
   const resale = S.mode === 'resale' && e.low != null && e.high != null;
-  bPrice.textContent = unsure ? '?' : resale ? range(e.low, e.high) : money(e.price);
-  bName.textContent = unsure ? 'Not sure: ' + e.name : e.name;
-  popIn((unsure ? 'low' : '') + (resale && !unsure ? ' range' : ''));
+  bPrice.textContent = (rough ? '~' : '') + (resale ? range(e.low, e.high) : money(e.price));
+  bName.textContent = rough ? 'Rough guess · ' + e.name : e.match === 'similar' && !e.edited ? 'Similar items · ' + e.name : e.name;
+  popIn((rough ? 'low' : '') + (resale ? ' range' : ''));
 }
 function showNone() {
   current = null; scanning(false);
   bPrice.textContent = '';
-  bName.textContent = 'No item found. Move closer';
+  bName.textContent = 'Couldn\'t make out an item. Tap to try again';
   popIn('none');
   setStatus('Hold steady on an item');
 }
@@ -617,8 +633,10 @@ function openDetail(e) {
   $('#dImg').src = e.thumb || '';
   $('#dName').textContent = e.name;
   const conf = $('#dConf');
-  conf.className = 'conf ' + e.conf;
-  conf.textContent = e.conf === 'high' ? 'Confident' : e.conf === 'low' ? 'Not sure, best guess' : 'Fairly sure, check details';
+  const similar = e.match === 'similar';
+  conf.className = 'conf ' + (e.conf === 'low' ? 'low' : similar ? '' : e.conf);
+  conf.textContent = similar ? (e.conf === 'low' ? 'Rough guess from similar items' : 'Priced from similar items')
+    : (e.conf === 'high' ? 'Exact match' : e.conf === 'low' ? 'Rough guess' : 'Identified, check condition');
   $('#dPrice').value = e.price == null ? '' : e.price;
   $('#dRange').textContent = range(e.low, e.high);
   $('#dNote').textContent = e.note || '';
@@ -665,10 +683,10 @@ function renderHistory() {
     const img = document.createElement('img'); img.alt = ''; if (e.thumb) img.src = e.thumb;
     const mid = document.createElement('div'); mid.className = 'h-mid';
     const b = document.createElement('b'); b.textContent = e.name;
-    const sm = document.createElement('small'); sm.textContent = ago(e.t) + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
+    const sm = document.createElement('small'); sm.textContent = ago(e.t) + (e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
     mid.append(b, sm);
     const pr = document.createElement('span'); pr.className = 'h-price';
-    pr.textContent = e.conf === 'low' && !e.edited ? '?' : money(e.price);
+    pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
     li.append(img, mid, pr);
     list.appendChild(li);
   }
@@ -713,6 +731,12 @@ function openSettings() {
   $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sModel').value = S.model; $('#sKey').value = S.key;
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
+  $('#dbg').hidden = !lastScan;
+  if (lastScan) {
+    $('#dbgImg').src = lastScan.img;
+    $('#dbgMeta').textContent = 'Scanned ' + lastScan.at.toLocaleTimeString('en-US') + (lastScan.ms ? ' · ' + (lastScan.ms / 1000).toFixed(1) + 's' : '') + (lastScan.err ? ' · Error: ' + lastScan.err : '');
+    $('#dbgText').textContent = lastScan.text || '(no reply text)';
+  }
   openSheet($('#setSheet'));
 }
 $('#setBtn').addEventListener('click', openSettings);

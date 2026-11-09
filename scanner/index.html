@@ -37,7 +37,9 @@ button{cursor:pointer}
 .top{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:calc(var(--st) + 10px) 14px 10px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;letter-spacing:.01em}
 .brand .b{width:30px;height:30px;border-radius:8px;background:var(--ink);border:1px solid rgba(201,168,76,.65);color:var(--gold);font:700 19px/28px 'Playfair Display',Georgia,serif;text-align:center}
-.brand small{display:block;font-size:11px;font-weight:500;color:rgba(250,247,242,.7);letter-spacing:.04em}
+.brand{min-width:0}
+.brand>span:last-child{min-width:0}
+.brand small{display:block;font-size:11px;font-weight:500;color:rgba(250,247,242,.7);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .actions{display:flex;gap:8px}
 .icon-btn{position:relative;width:44px;height:44px;border-radius:50%;border:1px solid rgba(250,247,242,.2);background:rgba(25,23,20,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:grid;place-items:center;padding:0;color:var(--cream)}
 .icon-btn svg{width:20px;height:20px}
@@ -145,6 +147,9 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
 .field textarea{resize:vertical;min-height:96px;line-height:1.4}
 .small{font-size:13px;color:#6b655c;margin:4px 0 16px;line-height:1.45}
+.owner-in{margin-top:0}
+.owner-in input{flex:1;min-width:0}
+.owner-in .btn{width:auto;flex:none;min-height:0;padding:0 18px}
 .dbg{margin:0 0 16px}
 .dbg summary{font-size:14px;font-weight:600;color:#4a453e;cursor:pointer;padding:6px 0}
 .dbg .small{margin:6px 0}
@@ -178,6 +183,7 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
   <div class="brand"><span class="b">B</span><span>Price Scanner<small>BETTER SELLING WITH BAILEY</small></span></div>
   <div class="actions">
     <button id="torchBtn" class="icon-btn" aria-label="Flashlight" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 2h8v4l-2.5 4v12h-3V10L8 6z"/><path d="M8 6h8"/></svg></button>
+    <button id="teamBtn" class="icon-btn" aria-label="Team activity" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6M3 20h18"/></svg></button>
     <button id="histBtn" class="icon-btn" aria-label="Scanned items"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span id="histCount" class="count"></span></button>
     <button id="setBtn" class="icon-btn" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
@@ -244,8 +250,10 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
     <textarea id="sNotes" rows="4" placeholder="e.g. Tag most things around half of eBay sold. Glassware $1–5 unless it's a known pattern. Price furniture to move."></textarea></label>
   <label class="field"><span>How long to hold still before it prices</span>
     <select id="sSens"><option value="quick">Short (fastest)</option><option value="normal">Normal</option><option value="steady">Longer (fewer accidental scans)</option></select></label>
-  <label class="field"><span>AI model</span>
-    <select id="sModel"><option value="claude-haiku-5-5">Fast (Claude Haiku), recommended</option><option value="claude-sonnet-5-5">More accurate (Claude Sonnet), slower</option></select></label>
+  <div class="field" id="ownerRow"><span>Owner? Unlock team activity on this phone</span>
+    <div class="row owner-in"><input id="sOwner" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Owner password"><button id="sOwnerGo" class="btn" type="button">Unlock</button></div>
+    <p class="small" id="sOwnerMsg" style="margin:6px 0 0"></p></div>
+  <button id="sTeam" class="btn gold" type="button" hidden style="margin-bottom:14px">Team activity</button>
   <p class="small" id="sStats"></p>
   <details class="dbg" id="dbg" hidden><summary>Last scan (troubleshooting)</summary><p class="small" id="dbgMeta"></p><img id="dbgImg" alt="What the AI saw"><pre id="dbgText"></pre></details>
   <div class="stack"><button id="sSave" class="btn gold" type="button">Save</button><button class="btn" type="button" data-close>Cancel</button>
@@ -282,7 +290,8 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 // Scans go through Bailey's private relay, which checks the password and holds the AI key.
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
-const DEFAULTS = { model: 'claude-haiku-5-5', mode: 'tag', sens: 'normal', notes: '' };
+const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '' };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -318,7 +327,7 @@ const store = {
   set(k, v) { try { localStorage.setItem(PREFIX + k, JSON.stringify(v)); return true; } catch (e) { return false; } }
 };
 let S = Object.assign({}, DEFAULTS, store.get('settings', {}));
-if ('key' in S) { delete S.key; store.set('settings', S); }   // older version kept an AI key on the phone; no longer needed
+if ('key' in S || 'model' in S) { delete S.key; delete S.model; store.set('settings', S); }   // older version kept an AI key on the phone; no longer needed
 
 // The password is remembered two ways so the phone doesn't ask again.
 const COOKIE = 'bsbscan';
@@ -492,7 +501,7 @@ function body(b64, extra) {
   const notes = (S.notes || '').trim();
   if (notes) sys += "\n\nThe owner's own pricing rules. Follow them:\n" + notes.slice(0, 1500);
   return {
-    model: S.model, max_tokens: 200, stream: true, system: sys,
+    model: MODEL, max_tokens: 200, stream: true, system: sys,
     messages: [{ role: 'user', content: [
       { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
       { type: 'text', text: extra || 'Price the item in the center. JSON only.' }
@@ -570,7 +579,7 @@ async function priceIt(shot, id, hash, replace) {
     if (id === scanSeq) showNone();
     return;
   }
-  const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', hash, thumb: shot.thumb, model: S.model }, r);
+  const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', hash, thumb: shot.thumb, model: MODEL }, r);
   rememberShot(entry.id, shot.b64);
   if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) history.splice(i, 1); }
   history.unshift(entry); saveHistory();
@@ -855,7 +864,8 @@ $('#hExport').addEventListener('click', async () => {
 });
 
 function openSettings() {
-  $('#sWho').value = S.who || ''; $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sModel').value = S.model;
+  $('#sWho').value = S.who || ''; $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens;
+  applyRole(); $('#sOwner').value = ''; $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
   $('#dbg').hidden = !lastScan;
@@ -869,15 +879,58 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
-  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.model = $('#sModel').value;
+  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who) S.who = who;
   store.set('settings', S);
   closeSheets(true);
   if (modeChanged && current) showEntry(current);
 });
+/* ---------- owner view ---------- */
+function setOwnerPass(p) { try { if (p) localStorage.setItem('bsb_owner_pass', p); else localStorage.removeItem('bsb_owner_pass'); } catch (e) {} }
+function applyRole() {
+  const owner = S.role === 'owner';
+  $('#teamBtn').hidden = !owner; $('#sTeam').hidden = !owner; $('#ownerRow').hidden = owner;
+}
+const openTeam = () => { location.href = 'activity/'; };
+$('#teamBtn').addEventListener('click', openTeam);
+$('#sTeam').addEventListener('click', openTeam);
+async function roleFor(p) {
+  const res = await fetch(API + '?check=1', { method: 'POST', headers: { 'x-scanner-pass': p } });
+  if (res.status === 401) return null;
+  if (!res.ok) throw new Error('server ' + res.status);
+  const j = await res.json().catch(() => ({}));
+  return j.role || 'team';
+}
+function rememberRole(role, p) {
+  S.role = role; store.set('settings', S);
+  setOwnerPass(role === 'owner' ? p : '');
+  applyRole();
+}
+// keep this phone's role current (e.g. unlocked before roles existed)
+async function refreshRole() {
+  try {
+    let op = ''; try { op = localStorage.getItem('bsb_owner_pass') || ''; } catch (e) {}
+    if (op) { const r = await roleFor(op); if (r === 'owner') { rememberRole('owner', op); return; } }
+    const r = await roleFor(PASS); if (r) rememberRole(r, PASS);
+  } catch (e) {}
+}
+$('#sOwnerGo').addEventListener('click', async () => {
+  const msg = $('#sOwnerMsg'), btn = $('#sOwnerGo');
+  const p = $('#sOwner').value.trim().toUpperCase();
+  if (!p) { msg.textContent = 'Enter the owner password.'; return; }
+  btn.disabled = true; msg.textContent = 'Checking…';
+  try {
+    const r = await roleFor(p);
+    if (r === 'owner') { rememberRole('owner', p); msg.textContent = ''; $('#sOwner').value = ''; }
+    else msg.textContent = 'That isn\'t the owner password.';
+  } catch (e) { msg.textContent = 'Couldn\'t reach the scanner. Try again.'; }
+  finally { btn.disabled = false; }
+});
+$('#sOwner').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#sOwnerGo').click(); });
+
 $('#sLock').addEventListener('click', () => {
   closeSheets(true); unlock();
-  PASS = ''; setPass('');
+  PASS = ''; setPass(''); rememberRole('', '');
   askPassword('Scanner locked. Enter the password to unlock it again.');
 });
 
@@ -952,10 +1005,10 @@ $('#keySave').addEventListener('click', async () => {
   btn.disabled = true; btn.textContent = 'Checking…'; errEl.textContent = '';
   try {
     if (needPass) {
-      const res = await fetch(API + '?check=1', { method: 'POST', headers: { 'x-scanner-pass': p } });
-      if (res.status === 401) { errEl.textContent = 'Wrong password. Try again.'; return; }
-      if (!res.ok) { errEl.textContent = 'The scanner isn\'t responding right now. Try again in a minute.'; return; }
-      PASS = p; setPass(p);
+      let role;
+      try { role = await roleFor(p); } catch (e) { errEl.textContent = 'The scanner isn\'t responding right now. Try again in a minute.'; return; }
+      if (!role) { errEl.textContent = 'Wrong password. Try again.'; return; }
+      PASS = p; setPass(p); rememberRole(role, p);
     }
     S.who = who; store.set('settings', S);
     paused = false; document.body.classList.remove('paused'); pauseBtn.textContent = 'Pause';
@@ -967,6 +1020,8 @@ $('#keySave').addEventListener('click', async () => {
 for (const id of ['#keyIn', '#whoIn']) $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#keySave').click(); });
 
 histCount.textContent = history.length ? String(history.length) : '';
+applyRole();
+if (PASS) refreshRole();
 if (!PASS) askPassword();
 else if (!S.who) askName();
 else start();

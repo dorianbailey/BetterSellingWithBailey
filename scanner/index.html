@@ -164,7 +164,8 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 .field textarea{resize:vertical;min-height:96px;line-height:1.4}
 .small{font-size:13px;color:#6b655c;margin:4px 0 16px;line-height:1.45}
 .owner-in{margin-top:0}
-.owner-in input{flex:1;min-width:0}
+.owner-in .pw-wrap{flex:1;min-width:0;--eye:var(--ink)}
+.owner-in input{width:100%}
 .owner-in .btn{width:auto;flex:none;min-height:0;padding:0 18px}
 .dbg{margin:0 0 16px}
 .dbg summary{font-size:14px;font-weight:600;color:#4a453e;cursor:pointer;padding:6px 0}
@@ -182,11 +183,21 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 .setup li{counter-increment:s;position:relative;padding:0 0 14px 40px;font-size:15px;line-height:1.45;color:rgba(250,247,242,.9)}
 .setup li::before{content:counter(s);position:absolute;left:0;top:-2px;width:27px;height:27px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-weight:700;font-size:13px;display:grid;place-items:center}
 .setup a{color:var(--gold)}
+.setup .pw-wrap{margin-bottom:12px}
+.setup .pw-wrap input{margin-bottom:0}
 .setup input{width:100%;border:1.5px solid rgba(201,168,76,.55);border-radius:14px;background:rgba(0,0,0,.25);padding:15px 14px;font-size:16px;color:var(--cream);margin-bottom:12px;outline:none}
 .setup input:focus{border-color:var(--gold)}
 .setup .btn.gold{background:var(--gold);color:var(--ink);border-color:var(--gold)}
 .setup .err{color:#f1b9a8;font-size:14px;min-height:20px;margin:10px 0 0}
 .setup .fine{font-size:13px;color:rgba(250,247,242,.55);margin-top:16px}
+/* show/hide password */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:52px!important}
+.eye{position:absolute;right:4px;top:0;bottom:0;margin:auto 0;width:44px;height:44px;border:0;background:transparent;padding:0;display:grid;place-items:center;color:var(--eye,#fff);cursor:pointer;opacity:.85}
+.eye:hover,.eye:focus-visible{opacity:1}
+.eye svg{width:22px;height:22px}
+.eye .i-hide,.eye[aria-pressed="true"] .i-show{display:none}
+.eye[aria-pressed="true"] .i-hide{display:block}
 [hidden]{display:none !important}
 @media (prefers-reduced-motion:reduce){.bubble,.reticle{transition:none}.bubble.pop,.sheet{animation:none}}
 </style>
@@ -277,7 +288,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <label class="field"><span>How long to hold still before it prices</span>
     <select id="sSens"><option value="quick">Short (fastest)</option><option value="normal">Normal</option><option value="steady">Longer (fewer accidental scans)</option></select></label>
   <div class="field" id="ownerRow"><span>Owner? Unlock team activity on this phone</span>
-    <div class="row owner-in"><input id="sOwner" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Owner password"><button id="sOwnerGo" class="btn" type="button">Unlock</button></div>
+    <div class="row owner-in"><div class="pw-wrap"><input id="sOwner" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Owner password"><button class="eye" type="button" aria-label="Show password" aria-pressed="false"><svg class="i-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="i-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div><button id="sOwnerGo" class="btn" type="button">Unlock</button></div>
     <p class="small" id="sOwnerMsg" style="margin:6px 0 0"></p></div>
   <button id="sTeam" class="btn gold" type="button" hidden style="margin-bottom:14px">Team activity</button>
   <p class="small" id="sStats"></p>
@@ -293,7 +304,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
     <h1>Point. Hold. <em>Price.</em></h1>
     <p>Aim your camera at an item and hold steady for a moment. A price pops up on screen, no photos to take.</p>
     <p id="passMsg" style="margin-bottom:14px">Enter the scanner password to unlock it. You only need to do this once on this phone.</p>
-    <input id="keyIn" type="password" autocomplete="current-password" autocapitalize="characters" spellcheck="false" placeholder="Scanner password">
+    <div class="pw-wrap" id="keyWrap"><input id="keyIn" type="password" autocomplete="current-password" autocapitalize="characters" spellcheck="false" placeholder="Scanner password"><button class="eye" type="button" aria-label="Show password" aria-pressed="false"><svg class="i-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="i-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div>
     <input id="whoIn" type="text" autocomplete="given-name" autocapitalize="words" spellcheck="false" maxlength="40" placeholder="Your name">
     <button id="keySave" class="btn gold" type="button">Unlock scanner</button>
     <p class="err" id="keyErr"></p>
@@ -893,7 +904,7 @@ $('#hExport').addEventListener('click', async () => {
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
   $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens;
-  applyRole(); $('#sOwner').value = ''; $('#sOwnerMsg').textContent = '';
+  applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
   $('#dbg').hidden = !lastScan;
@@ -1101,7 +1112,7 @@ $('#camRetry').addEventListener('click', start);
 function showSetupForm(needPass, msg) {
   paused = true;
   setup.hidden = false; $('#setupKey').hidden = false; $('#setupCam').hidden = true;
-  $('#keyIn').hidden = !needPass; $('#keyIn').value = '';
+  $('#keyWrap').hidden = !needPass; $('#keyIn').value = ''; resetEyes();
   $('#whoIn').value = S.who || '';
   if (msg) $('#passMsg').textContent = msg;
   $('#keySave').textContent = needPass ? 'Unlock scanner' : 'Start scanning';
@@ -1111,7 +1122,7 @@ function askPassword(msg) { showSetupForm(true, msg); }
 function askName() { showSetupForm(false, 'What\'s your name? Your scans are logged under it with the time.'); }
 $('#keySave').addEventListener('click', async () => {
   const btn = $('#keySave'), errEl = $('#keyErr');
-  const needPass = !$('#keyIn').hidden;
+  const needPass = !$('#keyWrap').hidden;
   const p = $('#keyIn').value.trim().toUpperCase();
   const who = $('#whoIn').value.replace(/\s+/g, ' ').trim().slice(0, 40);
   if (needPass && !p) { errEl.textContent = 'Enter the password first.'; return; }
@@ -1133,6 +1144,15 @@ $('#keySave').addEventListener('click', async () => {
   } finally { btn.disabled = false; btn.textContent = label; }
 });
 for (const id of ['#keyIn', '#whoIn']) $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#keySave').click(); });
+
+// show/hide password eye buttons
+for (const b of document.querySelectorAll('.eye')) b.addEventListener('click', () => {
+  const inp = b.parentElement.querySelector('input'); const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  b.setAttribute('aria-pressed', String(show)); b.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  inp.focus({ preventScroll: true });
+});
+function resetEyes() { for (const b of document.querySelectorAll('.eye')) { const i = b.parentElement.querySelector('input'); i.type = 'password'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'Show password'); } }
 
 histCount.textContent = history.length ? String(history.length) : '';
 applyRole();

@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://api.anthropic.com" crossorigin>
+<link rel="preconnect" href="https://qnsomzxhnagzjwjhetzu.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap">
@@ -216,10 +216,9 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
     <select id="sSens"><option value="quick">Short (fastest)</option><option value="normal">Normal</option><option value="steady">Longer (fewer accidental scans)</option></select></label>
   <label class="field"><span>AI model</span>
     <select id="sModel"><option value="claude-haiku-5-5">Fast (Claude Haiku), recommended</option><option value="claude-sonnet-5-5">More accurate (Claude Sonnet), slower</option></select></label>
-  <label class="field"><span>Anthropic API key</span>
-    <input id="sKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-ant-…"></label>
   <p class="small" id="sStats"></p>
-  <div class="stack"><button id="sSave" class="btn gold" type="button">Save</button><button class="btn" type="button" data-close>Cancel</button></div>
+  <div class="stack"><button id="sSave" class="btn gold" type="button">Save</button><button class="btn" type="button" data-close>Cancel</button>
+    <button id="sLock" class="btn danger" type="button">Lock scanner on this phone</button></div>
 </section>
 
 <!-- first run -->
@@ -228,16 +227,11 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
   <div id="setupKey">
     <h1>Point. Hold. <em>Price.</em></h1>
     <p>Aim your camera at an item and hold steady for a moment. A price pops up on screen, no photos to take.</p>
-    <p style="margin-bottom:14px">One-time setup: it needs an Anthropic API key so the AI can look at what you're pointing at.</p>
-    <ol>
-      <li>Go to <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> and sign in or make an account.</li>
-      <li>Under <b>Billing</b>, add a little credit. $5 covers hundreds of scans.</li>
-      <li>Under <b>API keys</b>, create a key, copy it, and paste it here.</li>
-    </ol>
-    <input id="keyIn" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste key (starts with sk-ant-)">
-    <button id="keySave" class="btn gold" type="button">Save and start scanning</button>
+    <p id="passMsg" style="margin-bottom:14px">Enter the scanner password to unlock it. You only need to do this once on this phone.</p>
+    <input id="keyIn" type="password" autocomplete="current-password" autocapitalize="characters" spellcheck="false" placeholder="Scanner password">
+    <button id="keySave" class="btn gold" type="button">Unlock scanner</button>
     <p class="err" id="keyErr"></p>
-    <p class="fine">Your key is saved only on this phone and is sent only to Anthropic.</p>
+    <p class="fine">Better Selling With Bailey team use only.</p>
   </div>
   <div id="setupCam" hidden>
     <h1>Camera needed</h1>
@@ -253,9 +247,10 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 'use strict';
 
 /* ---------- config ---------- */
-const API = 'https://api.anthropic.com/v1/messages';
+// Scans go through Bailey's private relay, which checks the password and holds the AI key.
+const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
-const DEFAULTS = { key: '', model: 'claude-haiku-5-5', mode: 'tag', sens: 'normal', notes: '' };
+const DEFAULTS = { model: 'claude-haiku-5-5', mode: 'tag', sens: 'normal', notes: '' };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -286,6 +281,22 @@ const store = {
   set(k, v) { try { localStorage.setItem(PREFIX + k, JSON.stringify(v)); return true; } catch (e) { return false; } }
 };
 let S = Object.assign({}, DEFAULTS, store.get('settings', {}));
+if ('key' in S) { delete S.key; store.set('settings', S); }   // older version kept an AI key on the phone; no longer needed
+
+// The password is remembered two ways so the phone doesn't ask again.
+const COOKIE = 'bsbscan';
+function getPass() {
+  let p = '';
+  try { p = localStorage.getItem(PREFIX + 'pass') || ''; } catch (e) {}
+  if (!p) { const m = document.cookie.match(new RegExp('(?:^|; )' + COOKIE + '=([^;]*)')); if (m) p = decodeURIComponent(m[1]); }
+  return p;
+}
+function setPass(p) {
+  try { if (p) localStorage.setItem(PREFIX + 'pass', p); else localStorage.removeItem(PREFIX + 'pass'); } catch (e) {}
+  document.cookie = COOKIE + '=' + encodeURIComponent(p) + '; path=/scanner/; max-age=' + (p ? 34560000 : 0) + '; secure; samesite=strict';
+}
+let PASS = getPass();
+if (PASS) setPass(PASS);   // refresh both copies
 let history = store.get('history', []);
 if (!Array.isArray(history)) history = [];
 let nullHashes = [];
@@ -450,7 +461,7 @@ function body(b64) {
     ] }]
   };
 }
-function apiError(status, message) { const e = new Error(message || 'Error ' + status); e.status = status; return e; }
+function apiError(status, message, type) { const e = new Error(message || 'Error ' + status); e.status = status; e.type = type || ''; return e; }
 
 async function priceIt(shot, id, hash, replace) {
   const t0 = performance.now();
@@ -459,10 +470,10 @@ async function priceIt(shot, id, hash, replace) {
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
-      headers: { 'content-type': 'application/json', 'x-api-key': S.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'content-type': 'application/json', 'x-scanner-pass': PASS },
       body: JSON.stringify(body(shot.b64))
     });
-    if (!res.ok) { let m = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; } catch (e) {} throw apiError(res.status, m); }
+    if (!res.ok) { let m = '', ty = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; ty = (j.error && j.error.type) || ''; } catch (e) {} throw apiError(res.status, m, ty); }
     const reader = res.body.getReader(), dec = new TextDecoder();
     let buf = '';
     const handle = (line) => {
@@ -570,19 +581,22 @@ function showNone() {
 function showError(err) {
   current = null; scanning(false);
   let msg = 'Something went wrong. Tap to retry', status = 'Tap the bubble to retry';
-  const s = err && err.status, m = (err && err.message || '').toLowerCase();
+  const s = err && err.status, ty = err && err.type, m = (err && err.message || '').toLowerCase();
+  let goSettings = false;
+  if (ty === 'bad_password') { unlock(); askPassword('That password no longer works. Enter the current one.'); return; }
   if (err && err.name === 'AbortError') msg = 'Took too long. Tap to retry';
   else if (!s) { msg = 'No signal. Tap to retry'; status = 'Check your signal or Wi-Fi'; }
-  else if (s === 401 || s === 403) { msg = 'API key not accepted'; status = 'Check your key in Settings'; }
-  else if (m.includes('credit')) { msg = 'Out of API credit'; status = 'Add credit at console.anthropic.com'; }
-  else if (s === 404 || m.includes('model')) { msg = 'AI model not available'; status = 'Pick another model in Settings'; }
+  else if (ty === 'not_connected') { msg = 'AI key not connected yet'; status = 'Connect the AI key in Supabase'; }
+  else if (ty === 'key_rejected') { msg = 'AI key stopped working'; status = 'Reconnect the AI key in Supabase'; }
+  else if (m.includes('credit')) { msg = 'Out of AI credit'; status = 'Add credit at console.anthropic.com'; }
+  else if (s === 404 || m.includes('model')) { msg = 'AI model not available'; status = 'Pick another model in Settings'; goSettings = true; }
   else if (s === 429) msg = 'Too many scans at once. Tap to retry';
   else if (s === 529 || s >= 500) msg = 'AI is busy. Tap to retry';
   bPrice.textContent = '!';
   bName.textContent = msg;
   popIn('err');
   setStatus(status, true);
-  bubble.dataset.err = (s === 401 || s === 403 || s === 404) ? 'settings' : 'retry';
+  bubble.dataset.err = goSettings ? 'settings' : 'retry';
 }
 
 bubble.addEventListener('click', () => {
@@ -710,7 +724,7 @@ $('#hExport').addEventListener('click', async () => {
 });
 
 function openSettings() {
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sModel').value = S.model; $('#sKey').value = S.key;
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sModel').value = S.model;
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
   openSheet($('#setSheet'));
@@ -719,10 +733,14 @@ $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
   S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.model = $('#sModel').value;
-  const k = $('#sKey').value.trim(); if (k) S.key = k;
   store.set('settings', S);
   closeSheets(true);
   if (modeChanged && current) showEntry(current);
+});
+$('#sLock').addEventListener('click', () => {
+  closeSheets(true); unlock();
+  PASS = ''; setPass('');
+  askPassword('Scanner locked. Enter the password to unlock it again.');
 });
 
 /* ---------- pause / torch / wake ---------- */
@@ -774,16 +792,32 @@ async function start() {
   await startCamera();
 }
 $('#camRetry').addEventListener('click', start);
-$('#keySave').addEventListener('click', () => {
-  const k = $('#keyIn').value.trim();
-  if (!k) { $('#keyErr').textContent = 'Paste your key first.'; return; }
-  if (!/^sk-ant-/.test(k)) { $('#keyErr').textContent = 'That doesn\'t look like an Anthropic key. It should start with sk-ant-'; return; }
-  S.key = k; store.set('settings', S); start();
+function askPassword(msg) {
+  paused = true;
+  setup.hidden = false; $('#setupKey').hidden = false; $('#setupCam').hidden = true;
+  if (msg) $('#passMsg').textContent = msg;
+  $('#keyErr').textContent = ''; $('#keyIn').value = '';
+}
+$('#keySave').addEventListener('click', async () => {
+  const btn = $('#keySave'), errEl = $('#keyErr');
+  const p = $('#keyIn').value.trim().toUpperCase();
+  if (!p) { errEl.textContent = 'Enter the password first.'; return; }
+  btn.disabled = true; btn.textContent = 'Checking…'; errEl.textContent = '';
+  try {
+    const res = await fetch(API + '?check=1', { method: 'POST', headers: { 'x-scanner-pass': p } });
+    if (res.status === 401) { errEl.textContent = 'Wrong password. Try again.'; return; }
+    if (!res.ok) { errEl.textContent = 'The scanner isn\'t responding right now. Try again in a minute.'; return; }
+    PASS = p; setPass(p);
+    paused = false; document.body.classList.remove('paused'); pauseBtn.textContent = 'Pause';
+    start();
+  } catch (e) {
+    errEl.textContent = 'Couldn\'t reach the scanner. Check your signal or Wi-Fi.';
+  } finally { btn.disabled = false; btn.textContent = 'Unlock scanner'; }
 });
 $('#keyIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#keySave').click(); });
 
 histCount.textContent = history.length ? String(history.length) : '';
-if (!S.key) { setup.hidden = false; $('#setupKey').hidden = false; $('#setupCam').hidden = true; }
+if (!PASS) askPassword();
 else start();
 })();
 </script>

@@ -211,6 +211,58 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 .eye svg{width:22px;height:22px}
 .eye .i-hide,.eye[aria-pressed="true"] .i-show{display:none}
 .eye[aria-pressed="true"] .i-hide{display:block}
+/* set aside for Dorian */
+#dAsideBtn{margin:0 0 14px}
+.aside-state{border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:14px;line-height:1.45}
+.aside-state b{display:block;font-size:15.5px}
+.aside-state span{display:block;color:#5f5a52;margin-top:2px}
+.aside-state.open{background:#fff4dc;border:1px solid #efd18e}
+.aside-state.done{background:#e6f4ea;border:1px solid #b6dcc0}
+.aside-state.done b{color:#245c35}
+.linkbtn{border:0;background:none;padding:8px 0 0;color:var(--gold-deep);font-weight:700;font-size:14px;text-decoration:underline;cursor:pointer}
+.h-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:9px;margin-right:6px;vertical-align:1px}
+.h-tag.open{background:#fbecd5;color:#8a5a12}
+.h-tag.done{background:#e3f4e7;color:#2f7a45}
+.off-aside{display:inline-block;color:var(--gold);font-weight:700;font-size:15px;text-decoration:none;padding:9px 16px;border:1px solid rgba(201,168,76,.55);border-radius:22px}
+/* home screen */
+.install{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.5);border-radius:16px;padding:16px 16px 6px;margin:0 0 24px}
+.install>b{display:block;font-size:17px;color:var(--cream);margin-bottom:12px}
+.install ol{margin:0 0 6px}
+.install .btn{margin:0 0 8px}
+.install .linkbtn{color:rgba(250,247,242,.75);padding:4px 0 10px}
+.install-hint{display:inline-flex;align-items:center;gap:8px;border:1px dashed rgba(250,247,242,.4);background:transparent;color:rgba(250,247,242,.85);border-radius:20px;padding:8px 14px;font-size:14px;font-weight:600}
+.install-hint svg{width:18px;height:18px}
+.steps{margin:6px 0 14px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 12px 38px;font-size:15px;line-height:1.45}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--gold);font-weight:700;font-size:13px;display:grid;place-items:center}
+.kbd{display:inline-block;min-width:22px;padding:0 5px;border:1px solid #cfc5b2;border-radius:6px;background:#fff;color:var(--ink);font-weight:700;text-align:center}
+/* first-run walkthrough */
+.tour{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:calc(var(--st) + 20px) 20px calc(var(--sb) + 20px);background:rgba(10,9,8,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.tour-card{width:100%;max-width:380px;background:var(--ink);border:1px solid rgba(201,168,76,.45);border-radius:24px;padding:24px 22px 16px;color:var(--cream);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.tour-art{height:178px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:16px}
+.tour h2{font:700 25px/1.2 'Playfair Display',Georgia,serif;margin:0 0 10px}
+.tour p{margin:0;color:rgba(250,247,242,.85);font-size:15.5px;line-height:1.5}
+.tour-dots{display:flex;gap:7px;justify-content:center;margin:20px 0 12px}
+.tour-dots i{width:8px;height:8px;border-radius:4px;background:rgba(250,247,242,.25);transition:width .2s}
+.tour-dots i.on{background:var(--gold);width:22px}
+.tour-btns{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tour-skip{border:0;background:none;color:rgba(250,247,242,.7);font-weight:600;font-size:15px;padding:12px 6px}
+.tour-next{min-height:52px;padding:0 30px;font-size:17px}
+.ta-ret{position:relative;width:132px;height:132px;display:grid;place-items:center}
+.ta-ret i{position:absolute;width:30px;height:30px;border:3px solid var(--gold)}
+.ta-ret i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0;border-top-left-radius:12px}
+.ta-ret i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0;border-top-right-radius:12px}
+.ta-ret i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0;border-bottom-left-radius:12px}
+.ta-ret i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;border-bottom-right-radius:12px}
+.ta-ret svg{width:62px;height:62px;color:var(--cream);opacity:.9}
+.ta-pill{font-size:13px;font-weight:600;padding:6px 14px;border-radius:16px;background:rgba(250,247,242,.1);border:1px solid rgba(250,247,242,.2)}
+.ta-bub{min-width:200px;padding:12px 20px;border-radius:20px;border:2px solid var(--gold);background:#1d1a16;box-shadow:0 10px 26px rgba(0,0,0,.45)}
+.ta-bub b{display:block;font:900 48px/1 'Playfair Display',Georgia,serif;color:var(--gold)}
+.ta-bub span{display:block;margin-top:6px;font-size:13.5px;color:rgba(250,247,242,.92)}
+.ta-bub em{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:12px;background:rgba(240,176,72,.16);border:1px solid rgba(240,176,72,.55);color:#f6c56b;font-size:12.5px;font-weight:700;font-style:normal}
+.ta-list{list-style:none;margin:0;padding:0;width:100%;max-width:280px;text-align:left}
+.ta-list li{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:6px;border-radius:12px;background:rgba(250,247,242,.07);font-size:14.5px;font-weight:600}
+.ta-list svg{width:20px;height:20px;color:var(--gold);flex:none}
 [hidden]{display:none !important}
 @media (prefers-reduced-motion:reduce){.bubble,.reticle{transition:none}.bubble.pop,.sheet{animation:none}}
 </style>
@@ -223,7 +275,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <div class="brand"><span class="b">B</span><span>Price Scanner<small>BETTER SELLING WITH BAILEY</small></span></div>
   <div class="actions">
     <button id="torchBtn" class="icon-btn" aria-label="Flashlight" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 2h8v4l-2.5 4v12h-3V10L8 6z"/><path d="M8 6h8"/></svg></button>
-    <button id="teamBtn" class="icon-btn" aria-label="Team activity" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6M3 20h18"/></svg></button>
+    <button id="teamBtn" class="icon-btn" aria-label="Team activity" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6M3 20h18"/></svg><span id="teamCount" class="count"></span></button>
     <button id="histBtn" class="icon-btn" aria-label="Scanned items"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span id="histCount" class="count"></span></button>
     <button id="setBtn" class="icon-btn" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
@@ -239,6 +291,8 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <p class="off-count" id="offCount"></p>
   <button id="clockOutBtn" class="clock-out" type="button" hidden>Clock out</button>
   <p class="off-msg" id="offMsg" role="status"></p>
+  <a id="offAside" class="off-aside" href="activity/#look" hidden></a>
+  <button id="installHint" class="install-hint" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 8v7M9 12l3 3 3-3"/></svg>Add to your home screen</button>
 </section>
 
 <button id="bubble" class="bubble" type="button" aria-live="polite"><span class="price" id="bPrice"></span><span class="name" id="bName"></span><span class="flag" id="bFlag"></span><span class="again" id="bAgain" role="button">Already scanned. Scan again?</span></button>
@@ -272,6 +326,8 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
     <div class="box"><span>Sells online for</span><b id="dRange"></b><em>Typical eBay sold</em></div>
   </div>
   <p id="dUpside" class="upside-box" hidden></p>
+  <button id="dAsideBtn" class="btn" type="button">Set aside for Dorian</button>
+  <div id="dAsideState" class="aside-state" hidden><b id="dAsideTitle"></b><span id="dAsideSub"></span><button id="dAsideUndo" class="linkbtn" type="button">Take it back</button></div>
   <p id="dNote" class="note"></p>
   <p id="dSeen" class="seen-line" hidden></p>
   <div class="stack">
@@ -302,6 +358,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <label class="field"><span>Your pricing rules (the AI follows these)</span>
     <textarea id="sNotes" rows="4" placeholder="e.g. Tag most things around half of eBay sold. Glassware $1–5 unless it's a known pattern. Price furniture to move."></textarea></label>
   <label class="field check-row"><input id="sDouble" type="checkbox"><span>Double-check every price<small>Two AI looks per scan for steadier prices and to catch valuable items. Uses about twice the AI credit.</small></span></label>
+  <label class="field check-row"><input id="sSpeak" type="checkbox"><span>Say the price out loud<small>Reads each price aloud so you can keep your eyes and hands on the item.</small></span></label>
   <label class="field"><span>How long to hold still before it prices</span>
     <select id="sSens"><option value="quick">Short (fastest)</option><option value="normal">Normal</option><option value="steady">Longer (fewer accidental scans)</option></select></label>
   <label class="field"><span>Keep the price up after you move away</span>
@@ -309,17 +366,40 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <div class="field" id="ownerRow"><span>Owner? Unlock team activity on this phone</span>
     <div class="row owner-in"><div class="pw-wrap"><input id="sOwner" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Owner password"><button class="eye" type="button" aria-label="Show password" aria-pressed="false"><svg class="i-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="i-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div><button id="sOwnerGo" class="btn" type="button">Unlock</button></div>
     <p class="small" id="sOwnerMsg" style="margin:6px 0 0"></p></div>
-  <button id="sTeam" class="btn gold" type="button" hidden style="margin-bottom:14px">Team activity</button>
+  <button id="sTeam" class="btn gold" type="button" hidden style="margin-bottom:10px">Team activity</button>
+  <a id="sSetupPage" class="btn" href="setup/" hidden style="margin-bottom:14px">Set up a new employee's phone</a>
+  <div class="row" style="margin:0 0 14px"><button id="sTour" class="btn" type="button">How it works</button><button id="sInstall" class="btn" type="button" hidden>Add to home screen</button></div>
   <p class="small" id="sStats"></p>
   <details class="dbg" id="dbg" hidden><summary>Last scan (troubleshooting)</summary><p class="small" id="dbgMeta"></p><img id="dbgImg" alt="What the AI saw"><pre id="dbgText"></pre></details>
   <div class="stack"><button id="sSave" class="btn gold" type="button">Save</button><button class="btn" type="button" data-close>Cancel</button>
     <button id="sLock" class="btn danger" type="button">Lock scanner on this phone</button></div>
 </section>
 
+<!-- add to home screen -->
+<section id="installSheet" class="sheet" hidden aria-label="Add to home screen">
+  <div class="grab"></div>
+  <h2>Add to your home screen</h2>
+  <p class="sub" style="margin-bottom:14px">Then the scanner opens with one tap, full screen, already signed in.</p>
+  <ol class="steps" id="installSheetSteps"></ol>
+  <div class="stack"><button id="installSheetBtn" class="btn gold" type="button" hidden>Add to home screen</button><button class="btn" type="button" data-close>Done</button></div>
+</section>
+
+<!-- walkthrough -->
+<section id="tour" class="tour" hidden role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+  <div class="tour-card">
+    <div class="tour-art" id="tourArt" aria-hidden="true"></div>
+    <h2 id="tourTitle"></h2>
+    <p id="tourText"></p>
+    <div class="tour-dots" id="tourDots"><i></i><i></i><i></i></div>
+    <div class="tour-btns"><button id="tourSkip" class="tour-skip" type="button">Skip</button><button id="tourNext" class="start-btn tour-next" type="button">Next</button></div>
+  </div>
+</section>
+
 <!-- first run -->
 <section id="setup" class="setup" hidden>
   <div class="logo">B</div>
   <div id="setupKey">
+    <div id="installCard" class="install" hidden><b>First, add the scanner to your home screen</b><ol id="installSteps"></ol><button id="installBtn" class="btn gold" type="button" hidden>Add to home screen</button><button id="installSkip" class="linkbtn" type="button">Not now, use it in the browser</button></div>
     <h1>Point. Hold. <em>Price.</em></h1>
     <p>Aim your camera at an item and hold steady for a moment. A price pops up on screen, no photos to take.</p>
     <p id="passMsg" style="margin-bottom:14px">Enter the scanner password to unlock it. You only need to do this once on this phone.</p>
@@ -347,7 +427,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
 const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
-const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5' };
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -438,6 +518,34 @@ let lastP = -1;
 function setReticle(p) { if (Math.abs(p - lastP) > .03 || (p === 0 && lastP !== 0)) { reticle.style.setProperty('--p', p.toFixed(2)); lastP = p; } }
 function scanning(on) { reticle.classList.toggle('scanning', on); }
 function haptic() { try { navigator.vibrate && navigator.vibrate(22); } catch (e) {} }
+// Say the price out loud (the phone's own voice; free, works offline).
+const canSpeak = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance === 'function';
+let speechReady = false;
+function primeSpeech() {   // phones only allow speech after a tap, so the first (silent) one happens on a tap
+  if (!canSpeak || speechReady || S.speak === false) return;
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); speechReady = true; } catch (e) {}
+}
+function say(text) {
+  if (!canSpeak || S.speak === false || !text) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 1.08;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+const dollars = (n) => { n = Math.round(+n); return n === 1 ? '1 dollar' : n.toLocaleString('en-US') + ' dollars'; };
+function spoken(e) {
+  if (!e) return '';
+  const resale = S.mode === 'resale' && e.low != null && e.high != null;
+  let t;
+  if (resale) t = Math.round(e.low) === Math.round(e.high) ? dollars(e.low) : Math.round(e.low) + ' to ' + dollars(e.high);
+  else if (e.price != null) t = dollars(e.price);
+  else return '';
+  if (e.flag && e.flag.status === 'done') t = 'Dorian says ' + t;
+  else if (e.conf === 'low' && !e.edited) t = 'About ' + t;
+  if (upsideOf(e)) t += '. Check value';
+  return t;
+}
 function saveHistory() {
   if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
   if (!store.set('history', history)) {           // storage full: drop older thumbnails and retry
@@ -799,7 +907,7 @@ async function priceIt(shot, id, hash, replace) {
     if (key === shownKey) return;
     const first = !shownKey; shownKey = key;
     showEntry(m, true, !first);
-    if (first) { markLatency(performance.now() - t0); haptic(); }
+    if (first) { markLatency(performance.now() - t0); haptic(); say(spoken(m)); }
   };
   const runs = parts.map((_, i) => streamAI(shot.b64, '', (t) => {
       if (!parts[i]) { const p = parsePartial(t); if (p) { parts[i] = p; tryShow(); } }
@@ -854,7 +962,7 @@ async function closeup(id, shot, seq) {
   if (!r) { if (errs.length === n) showError(errs[0]); else { showNone(); bName.textContent = 'Couldn\'t read the close-up. Try again'; } return; }
   Object.assign(e, r, { name: e.renamed ? e.name : r.name, edited: false, repriced: Date.now(), closeup: shot.thumb });
   saveHistory();
-  showEntry(e); haptic();
+  showEntry(e); haptic(); say(spoken(e));
   setStatus('Updated from the close-up · tap for details');
 }
 
@@ -918,7 +1026,8 @@ function showEntry(e, partial, quiet) {
   const resale = S.mode === 'resale' && e.low != null && e.high != null;
   const up = upsideOf(e);
   bPrice.textContent = (rough ? '~' : '') + (resale ? range(e.low, e.high) : money(e.price));
-  bName.textContent = rough ? 'Rough guess · ' + e.name : e.match === 'similar' && !e.edited ? 'Similar items · ' + e.name : e.name;
+  bName.textContent = e.flag && e.flag.status === 'done' ? 'Dorian’s price · ' + e.name : e.flag ? 'Set aside for Dorian · ' + e.name
+    : rough ? 'Rough guess · ' + e.name : e.match === 'similar' && !e.edited ? 'Similar items · ' + e.name : e.name;
   $('#bFlag').textContent = up ? 'Check value · could be ' + money(up) : '';
   const cls = (rough ? 'low' : '') + (resale ? ' range' : '') + (up ? ' flagged' : '');
   if (quiet && bubble.classList.contains('on')) bubble.className = 'bubble on ' + cls;   // update in place, no pop
@@ -929,7 +1038,7 @@ function showEntry(e, partial, quiet) {
 function showRepeat(e) {
   showEntry(e);
   bubble.classList.add('repeat');
-  haptic();
+  haptic(); say('Already scanned. ' + spoken(e));
   setStatus('Scanned already · tap “Scan again” if it’s a different item');
 }
 function showNone() {
@@ -999,6 +1108,7 @@ function openDetail(e) {
   fillDetail(e);
   $('#dRescan').hidden = !(current && current.id === e.id && lockRef);
   openSheet($('#detailSheet'));
+  if (e.flag && e.flag.status === 'open') syncFlags(true);
   fitName();
 }
 function fillDetail(e) {
@@ -1015,6 +1125,7 @@ function fillDetail(e) {
   const up = upsideOf(e);
   $('#dUpside').hidden = !up;
   $('#dUpside').textContent = up ? 'Could be worth up to ' + money(up) + ' if it checks out. Look into it before tagging.' : '';
+  fillAside(e);
   $('#dSeen').hidden = !e.seen;
   $('#dSeen').textContent = e.seen ? 'Read on the item: "' + e.seen + '"' : '';
   $('#dComps').href = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(e.q || e.name) + '&LH_Sold=1&LH_Complete=1';
@@ -1066,7 +1177,7 @@ $('#dReprice').addEventListener('click', async () => {
       msg.textContent = 'Re-priced with your details.';
     }
     refreshViews(e);
-    haptic();
+    haptic(); say(spoken(e));
   } catch (err) {
     dbg.text = (err && err.partialText) || ''; dbg.err = errText(err);
     msg.className = 'd-msg bad';
@@ -1121,6 +1232,7 @@ function renderHistory() {
     const mid = document.createElement('div'); mid.className = 'h-mid';
     const b = document.createElement('b'); b.textContent = e.name;
     const sm = document.createElement('small'); sm.textContent = when(e.t) + (e.facts ? ' · ' + (e.facts.length > 40 ? e.facts.slice(0, 40) + '…' : e.facts) : e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
+    if (e.flag) { const tg = document.createElement('span'); tg.className = 'h-tag ' + (e.flag.status === 'done' ? 'done' : 'open'); tg.textContent = e.flag.status === 'done' ? 'Dorian priced' : 'Set aside'; sm.prepend(tg); }
     mid.append(b, sm);
     const pr = document.createElement('span'); pr.className = 'h-price';
     pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
@@ -1134,7 +1246,7 @@ $('#hList').addEventListener('click', (ev) => {
   const li = ev.target.closest('li[data-id]'); if (!li) return;
   const e = history.find((x) => x.id === li.dataset.id); if (e) openDetail(e);
 });
-$('#histBtn').addEventListener('click', () => { renderHistory(); openSheet($('#histSheet')); });
+$('#histBtn').addEventListener('click', () => { renderHistory(); openSheet($('#histSheet')); syncFlags(true); });
 
 let clearArmed = 0;
 $('#hClear').addEventListener('click', (ev) => {
@@ -1151,8 +1263,8 @@ function csvCell(v) {
 }
 $('#hExport').addEventListener('click', async () => {
   if (!history.length) return;
-  const rows = [['Item', 'Details', 'Tag price', 'Could be worth', 'Online low', 'Online high', 'Confidence', 'Check', 'Read on item', 'Scanned', 'Scanned by']];
-  for (const e of history.slice().reverse()) rows.push([e.name, e.facts || '', e.price, upsideOf(e) || '', e.low, e.high, e.conf, e.note, e.seen || '', new Date(e.t).toLocaleString('en-US'), e.who || '']);
+  const rows = [['Item', 'Details', 'Tag price', 'Could be worth', 'Online low', 'Online high', 'Confidence', 'Check', 'Read on item', 'Set aside', 'Scanned', 'Scanned by']];
+  for (const e of history.slice().reverse()) rows.push([e.name, e.facts || '', e.price, upsideOf(e) || '', e.low, e.high, e.conf, e.note, e.seen || '', !e.flag ? '' : e.flag.status === 'done' ? 'Dorian: ' + money(e.flag.price) + (e.flag.note ? ' · ' + e.flag.note : '') : 'Waiting for Dorian', new Date(e.t).toLocaleString('en-US'), e.who || '']);
   const csv = rows.map((r) => r.map(csvCell).join(',')).join('\n');
   const name = 'scanned-items-' + new Date().toISOString().slice(0, 10) + '.csv';
   const blob = new Blob([csv], { type: 'text/csv' });
@@ -1166,7 +1278,8 @@ $('#hExport').addEventListener('click', async () => {
 
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5');
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false;
+  $('#sSpeak').closest('label').hidden = !canSpeak; $('#sInstall').hidden = !installable();
   applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
@@ -1181,7 +1294,7 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
-  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value;
+  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
   closeSheets(true);
@@ -1191,7 +1304,8 @@ $('#sSave').addEventListener('click', () => {
 function setOwnerPass(p) { try { if (p) localStorage.setItem('bsb_owner_pass', p); else localStorage.removeItem('bsb_owner_pass'); } catch (e) {} }
 function applyRole() {
   const owner = S.role === 'owner';
-  $('#teamBtn').hidden = !owner; $('#sTeam').hidden = !owner; $('#ownerRow').hidden = owner;
+  $('#teamBtn').hidden = !owner; $('#sTeam').hidden = !owner; $('#ownerRow').hidden = owner; $('#sSetupPage').hidden = !owner;
+  if (owner) ownerCount(); else { $('#teamCount').textContent = ''; $('#offAside').hidden = true; }
 }
 const openTeam = () => { location.href = 'activity/'; };
 $('#teamBtn').addEventListener('click', openTeam);
@@ -1253,7 +1367,9 @@ function stopScanner() {
 function showOff() {
   document.body.classList.add('off');
   $('#offPanel').hidden = false;
-  renderOff();
+  renderOff(); updateInstall(); maybeTour();
+  if (S.role === 'owner') ownerCount();
+  syncFlags(false);
   if (needsClock()) refreshClock();
 }
 
@@ -1322,7 +1438,7 @@ $('#clockOutBtn').addEventListener('click', async () => {
 setInterval(() => { if (!$('#offPanel').hidden && shift) renderOff(); }, 30000);
 
 pauseBtn.addEventListener('click', stopScanner);
-$('#startBtn').addEventListener('click', () => start());
+$('#startBtn').addEventListener('click', () => { primeSpeech(); start(); });
 torchBtn.addEventListener('click', async () => {
   if (!track) return;
   torchOn = !torchOn;
@@ -1380,10 +1496,12 @@ function showSetupForm(needPass, msg) {
   if (msg) $('#passMsg').textContent = msg;
   $('#keySave').textContent = needPass ? 'Unlock scanner' : 'Start scanning';
   $('#keyErr').textContent = '';
+  updateInstall();
 }
 function askPassword(msg) { showSetupForm(true, msg); }
 function askName() { showSetupForm(false, 'What\'s your name? Your scans are logged under it with the time.'); }
 $('#keySave').addEventListener('click', async () => {
+  primeSpeech();
   const btn = $('#keySave'), errEl = $('#keyErr');
   const needPass = !$('#keyWrap').hidden;
   const p = $('#keyIn').value.trim().toUpperCase();
@@ -1416,6 +1534,180 @@ for (const b of document.querySelectorAll('.eye')) b.addEventListener('click', (
   inp.focus({ preventScroll: true });
 });
 function resetEyes() { for (const b of document.querySelectorAll('.eye')) { const i = b.parentElement.querySelector('input'); i.type = 'password'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'Show password'); } }
+
+/* ---------- set aside for Dorian ---------- */
+// Employees send anything they're unsure about (photo + the AI's guess) to the owner's list.
+// The owner answers with a tag price on the Team activity page; the answer comes back here.
+function apiHeaders() { return { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || '') }; }
+function asideReason(e) {
+  return e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
+}
+function fillAside(e) {
+  const f = e.flag, btn = $('#dAsideBtn'), box = $('#dAsideState');
+  btn.hidden = !!f; box.hidden = !f;
+  btn.className = 'btn' + (!f && (upsideOf(e) || e.split || e.conf === 'low') ? ' goldfill' : '');
+  if (!f) return;
+  box.className = 'aside-state ' + (f.status === 'done' ? 'done' : 'open');
+  if (f.status === 'done') {
+    $('#dAsideTitle').textContent = f.price != null ? 'Dorian: tag it ' + money(f.price) : 'Dorian looked at it';
+    $('#dAsideSub').textContent = (f.note ? '“' + f.note + '” · ' : '') + 'Answered ' + ago(f.answered || Date.now());
+  } else {
+    $('#dAsideTitle').textContent = 'Set aside for Dorian';
+    $('#dAsideSub').textContent = 'Sent ' + ago(f.at || Date.now()) + '. Leave it untagged for now. His price shows up here.';
+  }
+  $('#dAsideUndo').hidden = f.status === 'done';
+}
+$('#dAsideBtn').addEventListener('click', async () => {
+  const e = detailEntry; if (!e) return;
+  const btn = $('#dAsideBtn'), msg = $('#dMsg');
+  btn.disabled = true; btn.textContent = 'Sending…'; msg.textContent = ''; msg.className = 'd-msg';
+  try {
+    const photo = shots.get(e.id) || (e.thumb ? e.thumb.split(',')[1] : '');
+    const res = await fetch(API + '?flag=add', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({
+      eid: e.id, item: e.name, price: e.price, upside: upsideOf(e) || 0, low: e.low, high: e.high, conf: e.conf, match: e.match,
+      seen: e.seen || '', note: e.note || '', facts: e.facts || '', reason: asideReason(e), photo }) });
+    if (res.status === 401) throw Object.assign(new Error('pass'), { type: 'bad_password' });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || !j.flag) throw new Error('server');
+    e.flag = { id: j.flag.id, status: j.flag.status === 'done' ? 'done' : 'open', at: Date.now() };
+    if (j.flag.status === 'done') applyAnswer(e, j.flag);
+    saveHistory(); fillDetail(e); refreshViews(e); haptic();
+  } catch (err) {
+    msg.className = 'd-msg bad';
+    msg.textContent = err && err.type === 'bad_password' ? 'The scanner password changed. Close this and enter the new one.' : 'Couldn\'t send it. Check your signal and try again.';
+  } finally { btn.disabled = false; btn.textContent = 'Set aside for Dorian'; }
+});
+$('#dAsideUndo').addEventListener('click', async () => {
+  const e = detailEntry; if (!e || !e.flag) return;
+  const b = $('#dAsideUndo'); b.disabled = true;
+  try {
+    const res = await fetch(API + '?flag=cancel', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ id: e.flag.id }) });
+    if (!res.ok) throw new Error('server');
+    await syncFlags(true);
+    if (e.flag && e.flag.status === 'open') delete e.flag;     // still unanswered, so it's off his list now
+    saveHistory(); fillDetail(e); refreshViews(e);
+  } catch (err) { $('#dMsg').className = 'd-msg bad'; $('#dMsg').textContent = 'Couldn\'t reach the server. Try again.'; }
+  finally { b.disabled = false; }
+});
+function applyAnswer(e, f) {
+  e.flag.status = 'done'; e.flag.price = f.owner_price; e.flag.note = f.owner_note || ''; e.flag.answered = Date.parse(f.resolved_at) || Date.now();
+  if (f.owner_price != null) { e.price = f.owner_price; e.edited = true; }
+}
+let flagSyncAt = 0;
+async function syncFlags(force) {
+  const pend = history.filter((e) => e.flag && e.flag.id && e.flag.status === 'open');
+  if (!pend.length || !PASS) return;
+  if (!force && Date.now() - flagSyncAt < 60000) return;
+  flagSyncAt = Date.now();
+  try {
+    const res = await fetch(API + '?flag=mine', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ ids: pend.map((e) => e.flag.id) }) });
+    if (!res.ok) return;
+    const j = await res.json();
+    const got = new Map((j.flags || []).map((f) => [f.id, f]));
+    const answered = [];
+    for (const e of pend) { const f = got.get(e.flag.id); if (f && f.status === 'done') { applyAnswer(e, f); answered.push(e); } }
+    if (!answered.length) return;
+    saveHistory();
+    if (!$('#histSheet').hidden) renderHistory();
+    if (detailEntry && !$('#detailSheet').hidden && answered.includes(detailEntry)) fillDetail(detailEntry);
+    for (const e of answered) if (current && current.id === e.id) showEntry(e);
+    const e0 = answered[0];
+    const t = answered.length === 1 ? 'Dorian priced ' + e0.name + ': ' + money(e0.price) : 'Dorian priced ' + answered.length + ' items you set aside';
+    haptic();
+    if ($('#offPanel').hidden) setStatus(t); else offMsg(t);
+  } catch (e) {}
+}
+setInterval(() => { if (!document.hidden) syncFlags(false); }, 90000);
+// Owner: how many items are waiting in the set-aside list
+async function ownerCount() {
+  const op = ownerPassStored(); if (S.role !== 'owner' || !op) return;
+  try {
+    const res = await fetch(API + '?flags=1&count=1', { method: 'POST', headers: { 'x-owner-pass': op } });
+    if (!res.ok) return;
+    const j = await res.json(), n = j.open || 0;
+    $('#teamCount').textContent = n ? String(n) : '';
+    $('#offAside').hidden = !n;
+    $('#offAside').textContent = n + ' item' + (n === 1 ? '' : 's') + ' set aside for you ›';
+  } catch (e) {}
+}
+setInterval(() => { if (!document.hidden && S.role === 'owner') ownerCount(); }, 120000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { syncFlags(false); if (S.role === 'owner') ownerCount(); } });
+
+/* ---------- add to home screen ---------- */
+const UA = navigator.userAgent || '';
+const isIOS = /iPad|iPhone|iPod/.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAndroid = /Android/i.test(UA);
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', (ev) => { ev.preventDefault(); installEvt = ev; updateInstall(); });
+window.addEventListener('appinstalled', () => { installEvt = null; store.set('installed', Date.now()); updateInstall(); });
+const installable = () => (isIOS || isAndroid) && !isStandalone() && !store.get('installed', 0);
+function installSteps() {
+  if (isIOS) return [
+    'Tap the <b>Share</b> button <span class="kbd">⬆</span> (on newer iPhones, tap <span class="kbd">•••</span> first).',
+    'Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.',
+    'Open <b>Price Scanner</b> from your home screen and sign in there once.'];
+  if (installEvt) return ['Tap <b>Add to home screen</b> below, then <b>Install</b>.', 'Open <b>Price Scanner</b> from your home screen.'];
+  return ['Tap the menu <span class="kbd">⋮</span> at the top right.', 'Tap <b>Add to Home screen</b> or <b>Install app</b>.', 'Open <b>Price Scanner</b> from your home screen.'];
+}
+function fillSteps(ol) { ol.innerHTML = installSteps().map((t) => '<li>' + t + '</li>').join(''); }
+function updateInstall() {
+  const can = installable();
+  // first visit in the phone's browser: offer it before signing in (iPhones keep home-screen apps signed in separately)
+  const skip = store.get('installSkip', 0);
+  $('#installCard').hidden = !(can && !PASS && Date.now() - skip > 7 * 86400000);
+  if (!$('#installCard').hidden) fillSteps($('#installSteps'));
+  $('#installBtn').hidden = !installEvt;
+  $('#installHint').hidden = !(can && PASS && Date.now() - store.get('installHintSkip', 0) > 7 * 86400000);
+  $('#installSheetBtn').hidden = !installEvt;
+  if (!$('#installSheet').hidden) fillSteps($('#installSheetSteps'));
+}
+async function promptInstall() {
+  if (!installEvt) return;
+  const ev = installEvt; installEvt = null;
+  try { ev.prompt(); const r = await ev.userChoice; if (r && r.outcome === 'accepted') store.set('installed', Date.now()); } catch (e) {}
+  updateInstall();
+}
+function openInstall() { fillSteps($('#installSheetSteps')); $('#installSheetBtn').hidden = !installEvt; openSheet($('#installSheet')); }
+$('#installBtn').addEventListener('click', promptInstall);
+$('#installSheetBtn').addEventListener('click', async () => { await promptInstall(); closeSheets(true); });
+$('#installSkip').addEventListener('click', () => { store.set('installSkip', Date.now()); updateInstall(); });
+$('#installHint').addEventListener('click', openInstall);
+$('#sInstall').addEventListener('click', () => { closeSheets(true); openInstall(); });
+
+/* ---------- first-run walkthrough ---------- */
+const ICON = {
+  item: '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M24 8h16v6c0 3 6 6 6 14v22a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6V28c0-8 6-11 6-14z"/><path d="M18 34h28"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>',
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4M4 4h13l-2 4 2 4H4"/></svg>',
+  tag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>'
+};
+function tourSteps() {
+  return [
+    { title: 'Point and hold steady', art: '<div class="ta-ret"><i></i><i></i><i></i><i></i>' + ICON.item + '</div><span class="ta-pill">Hold steady…</span>',
+      text: (needsClock() ? 'Clock in, tap Start scanner, ' : 'Tap Start scanner, ') + 'then point at one item and hold still for a second. The price pops up on its own' + (canSpeak ? ' and the phone says it out loud' : '') + '. No buttons, no photos.' },
+    { title: 'Read the bubble', art: '<div class="ta-bub"><b>$25</b><span>Lionel 700E locomotive</span><em>Check value · could be $175</em></div>',
+      text: 'That’s the tag price. A ~ means a rough guess. “Check value” means it might be worth a lot more, so don’t tag it yet: set it aside for Dorian. Scan the same thing twice and it asks before pricing it again.' },
+    { title: 'Tap the price for more', art: '<ul class="ta-list"><li>' + ICON.edit + 'Fix the name, add details</li><li>' + ICON.zoom + 'Close-up of a label or mark</li><li>' + ICON.flag + 'Set aside for Dorian</li><li>' + ICON.tag + 'Real eBay sold prices</li></ul>',
+      text: 'Fix the name, add things like year or size, snap a close-up of a label, or set it aside for Dorian to price. Everything you scan is in your list at the top right.' }
+  ];
+}
+let tourAt = 0;
+function showTour(i) {
+  const steps = tourSteps(); tourAt = i;
+  const st = steps[i];
+  $('#tourArt').innerHTML = st.art; $('#tourTitle').textContent = st.title; $('#tourText').textContent = st.text;
+  [...$('#tourDots').children].forEach((d, k) => d.classList.toggle('on', k === i));
+  $('#tourNext').textContent = i === steps.length - 1 ? 'Got it' : 'Next';
+  $('#tourSkip').hidden = i === steps.length - 1;
+  $('#tour').hidden = false;
+}
+function endTour() { $('#tour').hidden = true; store.set('tour', 1); }
+$('#tourNext').addEventListener('click', () => { primeSpeech(); if (tourAt >= tourSteps().length - 1) endTour(); else showTour(tourAt + 1); });
+$('#tourSkip').addEventListener('click', endTour);
+$('#sTour').addEventListener('click', () => { closeSheets(true); showTour(0); });
+function maybeTour() { if (!store.get('tour', 0) && PASS && S.who && setup.hidden) showTour(0); }
 
 histCount.textContent = history.length ? String(history.length) : '';
 applyRole();

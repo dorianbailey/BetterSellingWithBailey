@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#191714">
+<title>Team Scanning Activity · Better Selling With Bailey</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<link rel="preconnect" href="https://qnsomzxhnagzjwjhetzu.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+:root{--ink:#191714;--gold:#C9A84C;--gold-deep:#8A6A1C;--cream:#FAF7F2;--line:#e6dfd2;--muted:#6f685e;--soft:#f2ece1;--bad:#b3412e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--cream);color:var(--ink);font-family:'Public Sans',system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+.top{background:var(--ink);color:var(--cream);padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 18px}
+.top-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.b{width:36px;height:36px;border-radius:9px;border:1px solid rgba(201,168,76,.65);color:var(--gold);font:700 22px/34px 'Playfair Display',Georgia,serif;text-align:center;flex:none}
+.top h1{font:700 22px/1.2 'Playfair Display',Georgia,serif;margin:0}
+.top small{display:block;font-size:12px;letter-spacing:.06em;color:rgba(250,247,242,.65);margin-top:2px}
+.top .spacer{flex:1}
+.top a{color:var(--gold);font-size:14px;font-weight:600;text-decoration:none}
+main{max-width:1100px;margin:0 auto;padding:20px 20px calc(env(safe-area-inset-bottom,0px) + 40px)}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:2px}
+.tabs button{border:0;background:transparent;padding:8px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--gold)}
+.bar .spacer{flex:1}
+.updated{font-size:13px;color:var(--muted)}
+.ghost{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat span{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.stat b{display:block;font:900 30px/1.15 'Playfair Display',Georgia,serif;margin-top:4px;font-variant-numeric:tabular-nums}
+.stat em{display:block;font-style:normal;font-size:12.5px;color:var(--muted);margin-top:2px}
+h2{font:700 20px/1.2 'Playfair Display',Georgia,serif;margin:6px 0 12px}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:28px}
+.person{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:left;width:100%}
+.person:hover{border-color:#d6c9a8}
+.person.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.35)}
+.p-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.p-name{font:700 19px/1.2 'Playfair Display',Georgia,serif}
+.p-count{font:900 26px/1 'Playfair Display',Georgia,serif;font-variant-numeric:tabular-nums}
+.p-count small{font:600 12px 'Public Sans',sans-serif;color:var(--muted);margin-left:4px}
+.p-span{font-size:13.5px;color:var(--muted);margin-top:4px}
+.p-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.p-facts div{background:var(--soft);border-radius:10px;padding:8px 10px}
+.p-facts span{display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.p-facts b{display:block;font-size:15px;margin-top:2px;font-variant-numeric:tabular-nums}
+.p-breaks{font-size:13px;color:var(--muted);margin-top:10px}
+.p-breaks.warn{color:#8a5a12}
+.hours{display:flex;align-items:flex-end;gap:3px;height:54px;margin-top:14px;padding-bottom:16px;position:relative}
+.hours .h{flex:1;position:relative;height:100%;display:flex;align-items:flex-end}
+.hours .h i{display:block;width:100%;background:var(--gold);border-radius:3px 3px 0 0;min-height:0}
+.hours .h.zero i{background:#eee5d3;height:3px!important}
+.hours .h em{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-style:normal;font-size:10px;color:var(--muted);white-space:nowrap}
+.list-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.list-head .filter{font-size:14px;color:var(--muted)}
+.list-head .filter button{border:0;background:none;color:var(--gold-deep);font-weight:700;cursor:pointer;padding:0;margin-left:4px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+th{border-top:0;background:var(--soft);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.time{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
+td.gap{white-space:nowrap;color:var(--muted);font-size:13px}
+td.gap.long{color:#8a5a12;font-weight:600}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;padding:2px 7px;border-radius:10px;background:#efe8da;color:#5d4b16;margin-left:6px;vertical-align:1px}
+.miss{color:var(--muted);font-style:italic}
+.empty{background:#fff;border:1px dashed #d8cdb6;border-radius:14px;padding:28px;text-align:center;color:var(--muted)}
+.more{margin-top:10px;text-align:center}
+/* login */
+.gate{max-width:420px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px 24px}
+.gate h2{margin:0 0 8px}
+.gate p{color:var(--muted);margin:0 0 16px;line-height:1.5}
+.gate input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;margin-bottom:12px;outline:none}
+.gate input:focus{border-color:var(--gold)}
+.gate button{width:100%;min-height:50px;border-radius:12px;border:0;background:var(--ink);color:var(--gold);font-weight:700;font-size:15.5px;cursor:pointer}
+.gate .err{color:var(--bad);font-size:14px;min-height:20px;margin:10px 0 0}
+[hidden]{display:none!important}
+@media (max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .people{grid-template-columns:1fr}
+  .hide-sm{display:none}
+  th,td{padding:9px 8px}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="b">B</div>
+  <div><h1>Team scanning activity</h1><small>BETTER SELLING WITH BAILEY · OWNER VIEW</small></div>
+  <div class="spacer"></div>
+  <a href="../">Open scanner ›</a>
+</div></header>
+
+<main>
+  <section id="gate" class="gate" hidden>
+    <h2>Owner sign-in</h2>
+    <p id="gateMsg">Enter the owner password to see who scanned what, and when.</p>
+    <input id="ownerIn" type="password" autocomplete="current-password" autocapitalize="characters" spellcheck="false" placeholder="Owner password">
+    <button id="ownerGo" type="button">Show activity</button>
+    <p class="err" id="gateErr"></p>
+  </section>
+
+  <section id="app" hidden>
+    <div class="bar">
+      <div class="tabs" role="group" aria-label="Date range">
+        <button type="button" data-range="today" aria-pressed="true">Today</button>
+        <button type="button" data-range="yesterday" aria-pressed="false">Yesterday</button>
+        <button type="button" data-range="7" aria-pressed="false">7 days</button>
+        <button type="button" data-range="30" aria-pressed="false">30 days</button>
+      </div>
+      <div class="spacer"></div>
+      <span class="updated" id="updated"></span>
+      <button class="ghost" id="refresh" type="button">Refresh</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span>Items scanned</span><b id="sTotal">0</b><em id="sTotalSub"></em></div>
+      <div class="stat"><span>People scanning</span><b id="sPeople">0</b><em id="sPeopleSub"></em></div>
+      <div class="stat"><span>Team pace</span><b id="sPace">–</b><em>items per hour, whole team</em></div>
+      <div class="stat"><span>Typical gap</span><b id="sGap">–</b><em>between scans, breaks left out</em></div>
+    </div>
+
+    <h2>By person</h2>
+    <div class="people" id="people"></div>
+
+    <div class="list-head"><h2>Every scan</h2><span class="filter" id="filter"></span></div>
+    <div id="listWrap"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
+const KEY = 'bsb_owner_pass';
+const BREAK_MIN = 20;          // a gap longer than this counts as a break, not working time
+const $ = (s) => document.querySelector(s);
+let OWNER = ''; try { OWNER = localStorage.getItem(KEY) || ''; } catch (e) {}
+let rows = [], range = 'today', person = null, shown = 150, timer = null;
+
+const money = (n) => n == null ? '–' : '$' + Math.round(n).toLocaleString('en-US');
+const tfmt = (d) => d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+const dfmt = (d) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+function dur(sec) {
+  if (sec == null || !isFinite(sec)) return '–';
+  if (sec < 90) return Math.round(sec) + 's';
+  const m = Math.round(sec / 60); if (m < 90) return m + ' min';
+  const h = Math.floor(m / 60), r = m % 60; return h + 'h' + (r ? ' ' + r + 'm' : '');
+}
+function median(a) { if (!a.length) return null; const s = a.slice().sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+
+function bounds() {
+  const now = new Date(), start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (range === 'today') return [start, null, 2];
+  if (range === 'yesterday') return [new Date(start.getTime() - 86400000), start, 3];
+  const days = +range; return [new Date(start.getTime() - (days - 1) * 86400000), null, days + 1];
+}
+
+async function load() {
+  const [, , fetchDays] = bounds();
+  $('#updated').textContent = 'Loading…';
+  try {
+    const res = await fetch(API + '?activity=1&days=' + fetchDays, { method: 'POST', headers: { 'x-owner-pass': OWNER } });
+    if (res.status === 401) { OWNER = ''; try { localStorage.removeItem(KEY); } catch (e) {} gate('That owner password didn\'t work. Enter it again.'); return false; }
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) { gate(j.error && j.error.type === 'owner_not_set' ? 'No owner password has been set up yet.' : 'Couldn\'t load activity right now. Try again in a minute.'); return false; }
+    rows = (j.rows || []).map((r) => Object.assign(r, { at: new Date(r.created_at) }));
+    $('#updated').textContent = 'Updated ' + tfmt(new Date());
+    render();
+    return true;
+  } catch (e) {
+    $('#updated').textContent = 'Couldn\'t reach the server';
+    return false;
+  }
+}
+
+function inRange() {
+  const [a, b] = bounds();
+  return rows.filter((r) => r.at >= a && (!b || r.at < b)).sort((x, y) => x.at - y.at);
+}
+
+function statsFor(list) {
+  const scans = list.filter((r) => r.kind === 'scan' && r.ok);
+  const reprices = list.filter((r) => r.kind === 'reprice' && r.ok).length;
+  const misses = list.filter((r) => !r.ok).length;
+  const gaps = [], breaks = [];
+  let workSec = 0;
+  for (let i = 1; i < scans.length; i++) {
+    const g = (scans[i].at - scans[i - 1].at) / 1000;
+    if (g > BREAK_MIN * 60) breaks.push(g); else { gaps.push(g); workSec += g; }
+  }
+  const pace = workSec >= 300 ? scans.length / (workSec / 3600) : null;
+  const days = new Set(scans.map((r) => r.at.toDateString())).size;
+  return { scans, reprices, misses, gaps, breaks, workSec, pace, days, first: scans[0] && scans[0].at, last: scans.length && scans[scans.length - 1].at };
+}
+
+function render() {
+  const list = inRange();
+  const singleDay = range === 'today' || range === 'yesterday';
+  const team = statsFor(list);
+  const names = [...new Set(list.map((r) => r.scanner || 'Unknown'))];
+  // team pace = sum of each person's pace (people scan in parallel)
+  const per = names.map((n) => ({ name: n, st: statsFor(list.filter((r) => (r.scanner || 'Unknown') === n)) }))
+    .sort((a, b) => b.st.scans.length - a.st.scans.length);
+  const allGaps = per.flatMap((p) => p.st.gaps);
+  const paces = per.map((p) => p.st.pace).filter((x) => x);
+
+  $('#sTotal').textContent = team.scans.length.toLocaleString('en-US');
+  $('#sTotalSub').textContent = [team.reprices ? team.reprices + ' re-priced' : '', team.misses ? team.misses + ' no item found' : ''].filter(Boolean).join(' · ') || (singleDay ? dfmt(bounds()[0]) : 'last ' + range + ' days');
+  $('#sPeople').textContent = per.filter((p) => p.st.scans.length).length;
+  $('#sPeopleSub').textContent = singleDay ? dfmt(bounds()[0]) : 'last ' + range + ' days';
+  $('#sPace').textContent = paces.length ? Math.round(paces.reduce((a, b) => a + b, 0)) : '–';
+  $('#sGap').textContent = dur(median(allGaps));
+
+  // hour strip range shared by everyone on single-day views
+  let h0 = 24, h1 = -1;
+  if (singleDay) for (const r of list) { const h = r.at.getHours(); h0 = Math.min(h0, h); h1 = Math.max(h1, h); }
+  let maxPerHour = 1;
+  const hourCounts = {};
+  if (singleDay) for (const p of per) {
+    const c = new Array(24).fill(0); for (const r of p.st.scans) c[r.at.getHours()]++;
+    hourCounts[p.name] = c; maxPerHour = Math.max(maxPerHour, ...c);
+  }
+
+  const box = $('#people'); box.textContent = '';
+  if (!per.length) {
+    const d = document.createElement('div'); d.className = 'empty';
+    d.textContent = singleDay ? 'No scans ' + (range === 'today' ? 'yet today.' : 'yesterday.') : 'No scans in the last ' + range + ' days.';
+    box.appendChild(d);
+  }
+  for (const p of per) {
+    const st = p.st;
+    const card = document.createElement('button'); card.type = 'button';
+    card.className = 'person' + (person === p.name ? ' sel' : '');
+    card.addEventListener('click', () => { person = person === p.name ? null : p.name; shown = 150; render(); });
+    const span = !st.scans.length ? 'No priced scans'
+      : singleDay ? tfmt(st.first) + ' – ' + tfmt(st.last) + ' · ' + dur((st.last - st.first) / 1000) + ' span'
+      : st.days + ' day' + (st.days === 1 ? '' : 's') + ' · last scan ' + dfmt(st.last) + ' ' + tfmt(st.last);
+    const longest = st.breaks.length ? Math.max(...st.breaks) : null;
+    card.innerHTML = '<div class="p-head"><span class="p-name"></span><span class="p-count"></span></div><div class="p-span"></div>' +
+      '<div class="p-facts"><div><span>Pace</span><b class="f1"></b></div><div><span>Typical gap</span><b class="f2"></b></div><div><span>' + (singleDay ? 'Working time' : 'Per day') + '</span><b class="f3"></b></div></div>' +
+      '<div class="p-breaks"></div>';
+    card.querySelector('.p-name').textContent = p.name;
+    const cnt = card.querySelector('.p-count'); cnt.textContent = st.scans.length;
+    const sm = document.createElement('small'); sm.textContent = 'scans' + (st.reprices ? ' · ' + st.reprices + ' re-priced' : ''); cnt.appendChild(sm);
+    card.querySelector('.p-span').textContent = span;
+    card.querySelector('.f1').textContent = st.pace ? Math.round(st.pace) + '/hr' : '–';
+    card.querySelector('.f2').textContent = dur(median(st.gaps));
+    card.querySelector('.f3').textContent = singleDay ? dur(st.workSec) : (st.days ? Math.round(st.scans.length / st.days) + ' scans' : '–');
+    const br = card.querySelector('.p-breaks');
+    if (st.breaks.length) {
+      br.textContent = st.breaks.length + ' break' + (st.breaks.length === 1 ? '' : 's') + ' over ' + BREAK_MIN + ' min · longest ' + dur(longest) + ' · ' + dur(st.breaks.reduce((a, b) => a + b, 0)) + ' total';
+      if (singleDay && longest > 45 * 60) br.classList.add('warn');
+    } else br.textContent = st.scans.length > 1 ? 'No gaps over ' + BREAK_MIN + ' min' : '';
+    if (singleDay && h1 >= h0 && hourCounts[p.name]) {
+      const hrs = document.createElement('div'); hrs.className = 'hours';
+      for (let h = h0; h <= h1; h++) {
+        const n = hourCounts[p.name][h];
+        const col = document.createElement('div'); col.className = 'h' + (n ? '' : ' zero');
+        col.title = n + ' scan' + (n === 1 ? '' : 's') + ' ' + ((h % 12) || 12) + (h < 12 ? 'am' : 'pm');
+        const bar = document.createElement('i'); bar.style.height = Math.max(4, Math.round(n / maxPerHour * 38)) + 'px';
+        col.appendChild(bar);
+        if ((h - h0) % 2 === 0 || h1 - h0 < 6) { const lab = document.createElement('em'); lab.textContent = ((h % 12) || 12) + (h < 12 ? 'a' : 'p'); col.appendChild(lab); }
+        hrs.appendChild(col);
+      }
+      card.appendChild(hrs);
+    }
+    box.appendChild(card);
+  }
+
+  // every scan, newest first, with the gap since that person's previous scan
+  const f = $('#filter'); f.textContent = '';
+  if (person) { f.append('Showing ' + person + ' only'); const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Show everyone'; b.addEventListener('click', () => { person = null; render(); }); f.appendChild(b); }
+  const items = (person ? list.filter((r) => (r.scanner || 'Unknown') === person) : list).slice().reverse();
+  const prevByPerson = {};
+  const gapOf = new Map();
+  for (const r of list) { if (r.kind !== 'scan' || !r.ok) continue; const k = r.scanner || 'Unknown'; if (prevByPerson[k]) gapOf.set(r, (r.at - prevByPerson[k]) / 1000); prevByPerson[k] = r.at; }
+  const wrap = $('#listWrap'); wrap.textContent = '';
+  if (!items.length) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = 'Nothing to show for this range.'; wrap.appendChild(d); return; }
+  const t = document.createElement('table');
+  t.innerHTML = '<thead><tr><th>Time</th><th>Person</th><th>Item</th><th class="num">Tag price</th><th class="hide-sm">Since last scan</th></tr></thead>';
+  const tb = document.createElement('tbody');
+  for (const r of items.slice(0, shown)) {
+    const tr = document.createElement('tr');
+    const td = (cls, txt) => { const c = document.createElement('td'); if (cls) c.className = cls; if (txt != null) c.textContent = txt; tr.appendChild(c); return c; };
+    td('time', (singleDay ? '' : r.at.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ') + tfmt(r.at));
+    td('', r.scanner || 'Unknown');
+    const it = td('');
+    if (r.ok) { it.textContent = r.item || ''; if (r.kind === 'reprice') { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = 'RE-PRICED'; it.appendChild(tg); } }
+    else { it.className = 'miss'; it.textContent = 'No item found'; }
+    td('num', r.ok ? money(r.price) : '');
+    const g = gapOf.get(r);
+    const gc = td('gap hide-sm' + (g > BREAK_MIN * 60 ? ' long' : ''), g == null ? '' : dur(g));
+    if (g > BREAK_MIN * 60) gc.title = 'Break';
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb); wrap.appendChild(t);
+  if (items.length > shown) {
+    const m = document.createElement('div'); m.className = 'more';
+    const b = document.createElement('button'); b.className = 'ghost'; b.type = 'button'; b.textContent = 'Show more (' + (items.length - shown) + ' older)';
+    b.addEventListener('click', () => { shown += 300; render(); });
+    m.appendChild(b); wrap.appendChild(m);
+  }
+}
+
+function gate(msg) {
+  $('#app').hidden = true; $('#gate').hidden = false;
+  if (msg) $('#gateMsg').textContent = msg;
+  $('#ownerIn').focus();
+}
+async function signIn() {
+  const p = $('#ownerIn').value.trim();
+  if (!p) { $('#gateErr').textContent = 'Enter the owner password.'; return; }
+  $('#gateErr').textContent = ''; $('#ownerGo').disabled = true; $('#ownerGo').textContent = 'Checking…';
+  OWNER = p;
+  const ok = await load();
+  $('#ownerGo').disabled = false; $('#ownerGo').textContent = 'Show activity';
+  if (ok) { try { localStorage.setItem(KEY, p); } catch (e) {} showApp(); }
+  else if (!$('#gate').hidden && !$('#gateErr').textContent) $('#gateErr').textContent = 'That didn\'t work. Check the password and your connection.';
+}
+function showApp() {
+  $('#gate').hidden = true; $('#app').hidden = false;
+  clearInterval(timer);
+  timer = setInterval(() => { if (!document.hidden && range === 'today') load(); }, 60000);
+}
+$('#ownerGo').addEventListener('click', signIn);
+$('#ownerIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') signIn(); });
+$('#refresh').addEventListener('click', load);
+for (const b of document.querySelectorAll('.tabs button')) b.addEventListener('click', () => {
+  for (const x of document.querySelectorAll('.tabs button')) x.setAttribute('aria-pressed', String(x === b));
+  range = b.dataset.range; shown = 150; load();
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('#app').hidden && range === 'today') load(); });
+
+if (!OWNER) gate();
+else load().then((ok) => { if (ok) showApp(); });
+})();
+</script>
+</body>
+</html>

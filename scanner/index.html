@@ -103,6 +103,7 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 .d-name{display:block;width:100%;resize:none;overflow:hidden;font:700 22px/1.25 'Playfair Display',Georgia,serif;color:var(--ink);background:transparent;border:0;border-bottom:1.5px dashed #cdbf9f;border-radius:0;padding:2px 0 4px;margin:0;outline:none;-webkit-user-select:text;user-select:text}
 .d-name:focus{border-bottom:1.5px solid var(--gold)}
 .d-edit{display:block;font-size:11.5px;color:#8a8378;margin:4px 0 0}
+.d-when{display:block;font-size:12.5px;color:#5f5a52;margin:6px 0 0}
 .facts{margin:16px 0 10px}
 .facts textarea{min-height:64px}
 .btn.goldfill{background:var(--gold);border-color:var(--gold);color:var(--ink)}
@@ -201,6 +202,7 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
     <div class="d-id">
       <textarea id="dName" class="d-name" rows="1" aria-label="Item name" autocapitalize="words"></textarea>
       <span class="d-edit">Tap the name to fix it</span>
+      <span class="d-when" id="dWhen"></span>
       <span id="dConf" class="conf"></span>
     </div>
   </div>
@@ -234,6 +236,8 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 <section id="setSheet" class="sheet" hidden aria-label="Settings">
   <div class="grab"></div>
   <h2 style="margin-bottom:16px">Settings</h2>
+  <label class="field"><span>Your name (scans are logged under it)</span>
+    <input id="sWho" type="text" autocomplete="given-name" autocapitalize="words" maxlength="40"></label>
   <label class="field"><span>Price bubble shows</span>
     <select id="sMode"><option value="tag">Estate sale tag price</option><option value="resale">Online resale range (eBay)</option></select></label>
   <label class="field"><span>Your pricing rules (the AI follows these)</span>
@@ -256,9 +260,10 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
     <p>Aim your camera at an item and hold steady for a moment. A price pops up on screen, no photos to take.</p>
     <p id="passMsg" style="margin-bottom:14px">Enter the scanner password to unlock it. You only need to do this once on this phone.</p>
     <input id="keyIn" type="password" autocomplete="current-password" autocapitalize="characters" spellcheck="false" placeholder="Scanner password">
+    <input id="whoIn" type="text" autocomplete="given-name" autocapitalize="words" spellcheck="false" maxlength="40" placeholder="Your name">
     <button id="keySave" class="btn gold" type="button">Unlock scanner</button>
     <p class="err" id="keyErr"></p>
-    <p class="fine">Better Selling With Bailey team use only.</p>
+    <p class="fine">Better Selling With Bailey team use only. Scans are logged under your name with the time, for the team's records.</p>
   </div>
   <div id="setupCam" hidden>
     <h1>Camera needed</h1>
@@ -498,13 +503,13 @@ function apiError(status, message, type) { const e = new Error(message || 'Error
 
 // Sends one photo (plus optional extra instructions) and returns the AI's full reply text.
 // onText is called with the text so far as it streams in.
-async function streamAI(b64, extra, onText, timeoutMs) {
+async function streamAI(b64, extra, onText, timeoutMs, kind) {
   const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), timeoutMs || 20000);
   let text = '';
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
-      headers: { 'content-type': 'application/json', 'x-scanner-pass': PASS },
+      headers: { 'content-type': 'application/json', 'x-scanner-pass': PASS, 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-kind': kind || 'scan' },
       body: JSON.stringify(body(b64, extra))
     });
     if (!res.ok) { let m = '', ty = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; ty = (j.error && j.error.type) || ''; } catch (e) {} throw apiError(res.status, m, ty); }
@@ -565,7 +570,7 @@ async function priceIt(shot, id, hash, replace) {
     if (id === scanSeq) showNone();
     return;
   }
-  const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), hash, thumb: shot.thumb, model: S.model }, r);
+  const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', hash, thumb: shot.thumb, model: S.model }, r);
   rememberShot(entry.id, shot.b64);
   if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) history.splice(i, 1); }
   history.unshift(entry); saveHistory();
@@ -695,6 +700,7 @@ function openDetail(e) {
 }
 function fillDetail(e) {
   $('#dName').value = e.name;
+  $('#dWhen').textContent = 'Scanned ' + when(e.t) + (e.who ? ' by ' + e.who : '') + (e.repriced ? ' · re-priced ' + when(e.repriced) : '');
   const conf = $('#dConf');
   const similar = e.match === 'similar';
   conf.className = 'conf ' + (e.conf === 'low' ? 'low' : similar ? '' : e.conf);
@@ -738,7 +744,7 @@ $('#dReprice').addEventListener('click', async () => {
   const t0 = performance.now();
   const dbg = lastScan = { img: 'data:image/jpeg;base64,' + img, text: '', at: new Date(), ms: 0, err: '' };
   try {
-    const text = await streamAI(img, extra, null, 25000);
+    const text = await streamAI(img, extra, null, 25000, 'reprice');
     dbg.text = text; dbg.ms = performance.now() - t0;
     const r = parseFinal(text);
     if (!r) throw apiError(0, 'no price', 'no_price');
@@ -783,6 +789,10 @@ $('#dRemove').addEventListener('click', () => {
   closeSheets(true);
 });
 
+function when(t) {
+  const d = new Date(t), time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return d.toDateString() === new Date().toDateString() ? time : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + time;
+}
 function ago(t) {
   const m = Math.round((Date.now() - t) / 60000);
   if (m < 1) return 'just now'; if (m < 60) return m + ' min ago';
@@ -800,7 +810,7 @@ function renderHistory() {
     const img = document.createElement('img'); img.alt = ''; if (e.thumb) img.src = e.thumb;
     const mid = document.createElement('div'); mid.className = 'h-mid';
     const b = document.createElement('b'); b.textContent = e.name;
-    const sm = document.createElement('small'); sm.textContent = ago(e.t) + (e.facts ? ' · ' + (e.facts.length > 40 ? e.facts.slice(0, 40) + '…' : e.facts) : e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
+    const sm = document.createElement('small'); sm.textContent = when(e.t) + (e.facts ? ' · ' + (e.facts.length > 40 ? e.facts.slice(0, 40) + '…' : e.facts) : e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
     mid.append(b, sm);
     const pr = document.createElement('span'); pr.className = 'h-price';
     pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
@@ -831,8 +841,8 @@ function csvCell(v) {
 }
 $('#hExport').addEventListener('click', async () => {
   if (!history.length) return;
-  const rows = [['Item', 'Details', 'Tag price', 'Online low', 'Online high', 'Confidence', 'Check', 'Scanned']];
-  for (const e of history.slice().reverse()) rows.push([e.name, e.facts || '', e.price, e.low, e.high, e.conf, e.note, new Date(e.t).toLocaleString('en-US')]);
+  const rows = [['Item', 'Details', 'Tag price', 'Online low', 'Online high', 'Confidence', 'Check', 'Scanned', 'Scanned by']];
+  for (const e of history.slice().reverse()) rows.push([e.name, e.facts || '', e.price, e.low, e.high, e.conf, e.note, new Date(e.t).toLocaleString('en-US'), e.who || '']);
   const csv = rows.map((r) => r.map(csvCell).join(',')).join('\n');
   const name = 'scanned-items-' + new Date().toISOString().slice(0, 10) + '.csv';
   const blob = new Blob([csv], { type: 'text/csv' });
@@ -845,7 +855,7 @@ $('#hExport').addEventListener('click', async () => {
 });
 
 function openSettings() {
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sModel').value = S.model;
+  $('#sWho').value = S.who || ''; $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sModel').value = S.model;
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
   $('#dbg').hidden = !lastScan;
@@ -860,6 +870,7 @@ $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
   S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.model = $('#sModel').value;
+  const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who) S.who = who;
   store.set('settings', S);
   closeSheets(true);
   if (modeChanged && current) showEntry(current);
@@ -919,32 +930,45 @@ async function start() {
   await startCamera();
 }
 $('#camRetry').addEventListener('click', start);
-function askPassword(msg) {
+function showSetupForm(needPass, msg) {
   paused = true;
   setup.hidden = false; $('#setupKey').hidden = false; $('#setupCam').hidden = true;
+  $('#keyIn').hidden = !needPass; $('#keyIn').value = '';
+  $('#whoIn').value = S.who || '';
   if (msg) $('#passMsg').textContent = msg;
-  $('#keyErr').textContent = ''; $('#keyIn').value = '';
+  $('#keySave').textContent = needPass ? 'Unlock scanner' : 'Start scanning';
+  $('#keyErr').textContent = '';
 }
+function askPassword(msg) { showSetupForm(true, msg); }
+function askName() { showSetupForm(false, 'What\'s your name? Your scans are logged under it with the time.'); }
 $('#keySave').addEventListener('click', async () => {
   const btn = $('#keySave'), errEl = $('#keyErr');
+  const needPass = !$('#keyIn').hidden;
   const p = $('#keyIn').value.trim().toUpperCase();
-  if (!p) { errEl.textContent = 'Enter the password first.'; return; }
+  const who = $('#whoIn').value.replace(/\s+/g, ' ').trim().slice(0, 40);
+  if (needPass && !p) { errEl.textContent = 'Enter the password first.'; return; }
+  if (!who) { errEl.textContent = 'Enter your name too.'; $('#whoIn').focus(); return; }
+  const label = btn.textContent;
   btn.disabled = true; btn.textContent = 'Checking…'; errEl.textContent = '';
   try {
-    const res = await fetch(API + '?check=1', { method: 'POST', headers: { 'x-scanner-pass': p } });
-    if (res.status === 401) { errEl.textContent = 'Wrong password. Try again.'; return; }
-    if (!res.ok) { errEl.textContent = 'The scanner isn\'t responding right now. Try again in a minute.'; return; }
-    PASS = p; setPass(p);
+    if (needPass) {
+      const res = await fetch(API + '?check=1', { method: 'POST', headers: { 'x-scanner-pass': p } });
+      if (res.status === 401) { errEl.textContent = 'Wrong password. Try again.'; return; }
+      if (!res.ok) { errEl.textContent = 'The scanner isn\'t responding right now. Try again in a minute.'; return; }
+      PASS = p; setPass(p);
+    }
+    S.who = who; store.set('settings', S);
     paused = false; document.body.classList.remove('paused'); pauseBtn.textContent = 'Pause';
     start();
   } catch (e) {
     errEl.textContent = 'Couldn\'t reach the scanner. Check your signal or Wi-Fi.';
-  } finally { btn.disabled = false; btn.textContent = 'Unlock scanner'; }
+  } finally { btn.disabled = false; btn.textContent = label; }
 });
-$('#keyIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#keySave').click(); });
+for (const id of ['#keyIn', '#whoIn']) $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#keySave').click(); });
 
 histCount.textContent = history.length ? String(history.length) : '';
 if (!PASS) askPassword();
+else if (!S.who) askName();
 else start();
 })();
 </script>

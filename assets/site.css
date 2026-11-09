@@ -408,3 +408,7 @@ p { margin: 0; }
   .hero-ctas .btn { flex: 1 1 100%; }
   .tag { transform: rotate(-1deg); }
 }
+
+/* Optional add-on note in the pricing card */
+.addon { margin-top: 1.3rem; padding: 0.9rem 1rem; border-left: 3px solid var(--gold); background: var(--cream); border-radius: 0 10px 10px 0; font-size: 0.97rem; }
+.addon strong { color: var(--ink); }

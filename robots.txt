@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /scanner/
 
 Sitemap: https://bettersellingwithbailey.com/sitemap.xml

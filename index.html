@@ -673,20 +673,40 @@ var BSWB_EVENTS = [
     var c = document.querySelector('input[name="calc-rate"]:checked');
     return c ? parseFloat(c.value) : 0.40;
   }
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var shown = null, anim = null, wasAhead = null;
+  function rollTo(value) {
+    if (calm || shown === null) { shown = value; out.keep.textContent = money(value); return; }
+    var from = shown, start = null;
+    if (anim) cancelAnimationFrame(anim);
+    function frame(t) {
+      if (start === null) start = t;
+      var p = Math.min(1, (t - start) / 350), eased = 1 - Math.pow(1 - p, 3);
+      shown = from + (value - from) * eased;
+      out.keep.textContent = money(shown);
+      if (p < 1) anim = requestAnimationFrame(frame);
+    }
+    anim = requestAnimationFrame(frame);
+  }
   function render(gross) {
     var keep = Math.max(0, gross - gross * RATE - FLAT);
     var rate = compareRate();
     var theirs = gross * (1 - rate);
     var diff = keep - theirs;
     var pct = Math.round(rate * 100) + "%";
-    out.keep.textContent = money(keep);
+    rollTo(keep);
+    var ahead = diff >= 100;
+    if (wasAhead !== null && ahead !== wasAhead && !calm) {
+      out.vs.classList.remove("flash"); void out.vs.offsetWidth; out.vs.classList.add("flash");
+    }
+    wasAhead = ahead;
     out.gross.textContent = money(gross);
     out.commission.textContent = "−" + money(gross * RATE);
     if (diff >= 100) {
-      out.vs.className = "calc-vs";
+      out.vs.classList.remove("is-even");
       out.vs.innerHTML = "That's <strong>" + money(diff) + " more</strong> than a company charging " + pct + ", which would leave you " + money(theirs) + ".";
     } else {
-      out.vs.className = "calc-vs is-even";
+      out.vs.classList.add("is-even");
       out.vs.innerHTML = "On a sale this size, a company charging " + pct + " would leave you about " + money(theirs) +
         ". The flat fee is a bigger share of a small sale, so <strong>call me and we'll work out what makes sense.</strong>";
     }

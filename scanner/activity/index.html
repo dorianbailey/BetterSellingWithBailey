@@ -99,8 +99,46 @@ td.gap.long{color:#8a5a12;font-weight:600}
 .eye[aria-pressed="true"] .i-hide{display:block}
 .gate .pw-wrap{margin-bottom:12px}
 .gate .pw-wrap input{margin-bottom:0}
+/* set aside for you */
+.look{margin-bottom:30px}
+.look-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.look-head .n{display:inline-block;min-width:26px;height:26px;border-radius:13px;background:var(--gold);color:var(--ink);font-weight:800;font-size:14px;line-height:26px;text-align:center;padding:0 8px;vertical-align:3px}
+.look-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}
+.fl{display:flex;gap:14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:16px;padding:14px}
+.fl.done{border-left-color:#3fa35c}
+.fl img{width:110px;height:140px;object-fit:cover;border-radius:12px;background:#eee5d3;flex:none;cursor:zoom-in}
+.fl img.big{position:fixed;inset:0;margin:auto;width:auto;height:auto;max-width:94vw;max-height:90vh;z-index:50;border-radius:14px;box-shadow:0 0 0 100vmax rgba(0,0,0,.75);cursor:zoom-out}
+.fl .noimg{width:110px;height:140px;border-radius:12px;background:var(--soft);flex:none;display:grid;place-items:center;color:var(--muted);font-size:12px;text-align:center}
+.fl-mid{flex:1;min-width:0}
+.fl-name{font:700 18px/1.25 'Playfair Display',Georgia,serif;margin:0}
+.fl-ai{margin:6px 0 0;font-size:14px}
+.fl-ai b{font-size:16px}
+.fl-up{display:inline-block;margin-left:6px;font-size:12.5px;font-weight:700;color:#8a5a12;background:#fbecd5;border-radius:10px;padding:2px 8px}
+.fl-meta{margin:6px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
+.fl-meta q{color:var(--ink)}
+.fl-who{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.fl-why{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.02em;padding:2px 8px;border-radius:10px;background:var(--soft);color:#5d4b16;margin-left:4px}
+.fl-ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.fl-ans label{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:0 10px;font:900 20px 'Playfair Display',Georgia,serif}
+.fl-ans label:focus-within{border-color:var(--gold)}
+.fl-ans input.p{width:84px;border:0;outline:none;padding:9px 4px;font:inherit;background:transparent}
+.fl-ans input.t{flex:1 1 100%;order:5;min-width:0;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;outline:none}
+.fl-ans input.t:focus{border-color:var(--gold)}
+.fl-ans button{border:0;border-radius:12px;padding:11px 16px;font-weight:700;font-size:14.5px;cursor:pointer}
+.fl-ans .go{background:var(--ink);color:var(--gold)}
+.fl-ans .keep{background:var(--soft);color:var(--ink)}
+.fl-ans button:disabled{opacity:.6}
+.fl-res{margin-top:10px;font-size:14.5px;font-weight:700;color:#245c35}
+.fl-res small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+.fl-res button{border:0;background:none;color:var(--gold-deep);font-weight:700;padding:0;margin-left:8px;cursor:pointer;text-decoration:underline}
+.fl-err{color:var(--bad);font-size:13px;margin-top:6px}
+.look details{margin-top:14px}
+.look summary{cursor:pointer;font-weight:700;font-size:14.5px;color:var(--muted);padding:6px 0}
+.look .look-list{margin-top:10px}
 [hidden]{display:none!important}
 @media (max-width:760px){
+  .look-list{grid-template-columns:1fr}
+  .fl img,.fl .noimg{width:88px;height:112px}
   .stats{grid-template-columns:repeat(2,1fr)}
   .people{grid-template-columns:1fr}
   .hide-sm{display:none}
@@ -113,6 +151,7 @@ td.gap.long{color:#8a5a12;font-weight:600}
   <div class="b">B</div>
   <div><h1>Team scanning activity</h1><small>BETTER SELLING WITH BAILEY · OWNER VIEW</small></div>
   <div class="spacer"></div>
+  <a href="../setup/" style="margin-right:16px">Set up a phone</a>
   <a href="../">‹ Back to scanner</a>
 </div></header>
 
@@ -126,6 +165,12 @@ td.gap.long{color:#8a5a12;font-weight:600}
   </section>
 
   <section id="app" hidden>
+    <section id="look" class="look" hidden>
+      <div class="look-head"><h2>Set aside for you <span class="n" id="lookN"></span></h2></div>
+      <p class="updated" style="margin:-4px 0 14px">Your crew wasn’t sure about these. Give each a tag price; it shows up on their phone.</p>
+      <div class="look-list" id="lookList"></div>
+      <details id="lookDoneBox" hidden><summary id="lookDoneSum"></summary><div class="look-list" id="lookDone"></div></details>
+    </section>
     <div class="bar">
       <div class="tabs" role="group" aria-label="Date range">
         <button type="button" data-range="today" aria-pressed="true">Today</button>
@@ -185,6 +230,106 @@ function bounds() {
   const days = +range; return [new Date(start.getTime() - (days - 1) * 86400000), null, days + 1];
 }
 
+/* ---------- set aside for you ---------- */
+let flags = { open: [], done: [] };
+async function loadFlags() {
+  const a = document.activeElement;
+  if (a && a.closest && a.closest('.fl-ans')) return;   // don't redraw while a price is being typed
+  try {
+    const res = await fetch(API + '?flags=1', { method: 'POST', headers: { 'x-owner-pass': OWNER } });
+    if (!res.ok) return;
+    const j = await res.json();
+    flags = { open: j.open || [], done: j.done || [] };
+    renderFlags();
+  } catch (e) {}
+}
+const ago = (t) => {
+  const m = Math.round((Date.now() - t) / 60000);
+  if (m < 1) return 'just now'; if (m < 60) return m + ' min ago';
+  const h = Math.round(m / 60); if (h < 24) return h + ' hr ago';
+  return dfmt(new Date(t));
+};
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function flagCard(f) {
+  const card = el('div', 'fl' + (f.status === 'done' ? ' done' : ''));
+  if (f.photo) {
+    const img = el('img'); img.alt = f.item || 'Item photo'; img.src = 'data:image/jpeg;base64,' + f.photo;
+    img.addEventListener('click', () => img.classList.toggle('big'));
+    card.appendChild(img);
+  } else card.appendChild(el('div', 'noimg', 'No photo'));
+  const mid = el('div', 'fl-mid');
+  mid.appendChild(el('p', 'fl-name', f.item || 'Unnamed item'));
+  const ai = el('p', 'fl-ai'); ai.append('AI tag ', el('b', '', money(f.price)));
+  if (f.low != null && f.high != null) ai.append(' · sells online ' + money(f.low) + '–' + Math.round(f.high).toLocaleString('en-US'));
+  if (f.upside) ai.appendChild(el('span', 'fl-up', 'could be ' + money(f.upside)));
+  mid.appendChild(ai);
+  const meta = [];
+  if (f.seen) meta.push(['Read on it: ', f.seen]);
+  if (f.ai_note) meta.push(['Check: ', f.ai_note]);
+  if (f.facts) meta.push(['Their notes: ', f.facts]);
+  if (meta.length) { const m = el('p', 'fl-meta'); meta.forEach(([k, v], i) => { if (i) m.append(' · '); m.append(k); m.appendChild(el('q', '', v)); }); mid.appendChild(m); }
+  const who = el('p', 'fl-who', 'Set aside by ' + (f.scanner || 'someone') + ' · ' + ago(Date.parse(f.created_at)));
+  if (f.reason) who.appendChild(el('span', 'fl-why', f.reason));
+  mid.appendChild(who);
+  const err = el('p', 'fl-err'); err.hidden = true;
+  if (f.status === 'done') {
+    const r = el('div', 'fl-res', f.owner_price != null ? 'You tagged it ' + money(f.owner_price) : 'Answered');
+    const re = el('button', '', 'Change'); re.type = 'button';
+    re.addEventListener('click', () => answer(f, { reopen: true }, re, err));
+    r.appendChild(re);
+    r.appendChild(el('small', '', (f.owner_note ? '“' + f.owner_note + '” · ' : '') + 'answered ' + ago(Date.parse(f.resolved_at))));
+    mid.appendChild(r);
+  } else {
+    const row = el('div', 'fl-ans');
+    const lab = el('label'); lab.append('$');
+    const p = el('input', 'p'); p.type = 'number'; p.inputMode = 'numeric'; p.min = '0'; p.step = '1'; p.placeholder = String(f.upside || f.price || ''); p.setAttribute('aria-label', 'Tag price');
+    lab.appendChild(p);
+    const t = el('input', 't'); t.type = 'text'; t.maxLength = 300; t.placeholder = 'Note for ' + (f.scanner || 'them') + ' (optional)';
+    const go = el('button', 'go', 'Tag it'); go.type = 'button';
+    go.addEventListener('click', () => {
+      const v = p.value.trim();
+      if (!v) { err.hidden = false; err.textContent = 'Type a price first (or tap Keep).'; p.focus(); return; }
+      answer(f, { price: Math.round(+v), note: t.value.trim() }, go, err);
+    });
+    p.addEventListener('keydown', (e) => { if (e.key === 'Enter') go.click(); });
+    t.addEventListener('keydown', (e) => { if (e.key === 'Enter') go.click(); });
+    row.append(lab, t, go);
+    if (f.price != null) {
+      const keep = el('button', 'keep', 'Keep ' + money(f.price)); keep.type = 'button';
+      keep.addEventListener('click', () => answer(f, { price: f.price, note: t.value.trim() }, keep, err));
+      row.appendChild(keep);
+    }
+    mid.appendChild(row);
+  }
+  mid.appendChild(err);
+  card.appendChild(mid);
+  return card;
+}
+async function answer(f, body, btn, err) {
+  btn.disabled = true; err.hidden = true;
+  try {
+    const res = await fetch(API + '?flag=answer', { method: 'POST', headers: { 'content-type': 'application/json', 'x-owner-pass': OWNER }, body: JSON.stringify(Object.assign({ id: f.id }, body)) });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || !j.flag) throw new Error('server');
+    Object.assign(f, j.flag);
+    if (f.status === 'done') { flags.open = flags.open.filter((x) => x.id !== f.id); flags.done.unshift(f); }
+    else { flags.done = flags.done.filter((x) => x.id !== f.id); flags.open.unshift(f); }
+    renderFlags();
+  } catch (e) { err.hidden = false; err.textContent = 'Couldn’t save. Check your connection and try again.'; btn.disabled = false; }
+}
+function renderFlags() {
+  const n = flags.open.length;
+  $('#look').hidden = !n && !flags.done.length;
+  $('#lookN').textContent = n ? String(n) : '';
+  const list = $('#lookList'); list.textContent = '';
+  if (!n) list.appendChild(el('div', 'empty', 'Nothing waiting. Nice.'));
+  for (const f of flags.open) list.appendChild(flagCard(f));
+  $('#lookDoneBox').hidden = !flags.done.length;
+  $('#lookDoneSum').textContent = 'Answered in the last 2 weeks (' + flags.done.length + ')';
+  const d = $('#lookDone'); d.textContent = '';
+  for (const f of flags.done) d.appendChild(flagCard(f));
+}
+
 async function load() {
   const [, , fetchDays] = bounds();
   $('#updated').textContent = 'Loading…';
@@ -202,6 +347,7 @@ async function load() {
     });
     $('#updated').textContent = 'Updated ' + tfmt(new Date());
     render();
+    loadFlags();
     return true;
   } catch (e) {
     $('#updated').textContent = 'Couldn\'t reach the server';
@@ -429,7 +575,8 @@ async function signIn() {
 function showApp() {
   $('#gate').hidden = true; $('#app').hidden = false;
   clearInterval(timer);
-  timer = setInterval(() => { if (!document.hidden && range === 'today') load(); }, 60000);
+  timer = setInterval(() => { if (document.hidden) return; if (range === 'today') load(); else loadFlags(); }, 60000);
+  if (location.hash === '#look') setTimeout(() => { const l = $('#look'); if (l && !l.hidden) l.scrollIntoView({ behavior: 'smooth' }); }, 600);
 }
 $('#ownerGo').addEventListener('click', signIn);
 $('#ownerIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') signIn(); });

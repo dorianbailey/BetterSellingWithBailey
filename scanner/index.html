@@ -71,6 +71,10 @@ body.paused .reticle i{border-color:rgba(250,247,242,.45);opacity:.6}
 .bubble .flag{display:none;margin-top:7px;padding:4px 10px;border-radius:12px;background:rgba(240,176,72,.16);border:1px solid rgba(240,176,72,.55);color:#f6c56b;font-size:12.5px;font-weight:700;line-height:1.25}
 .bubble.flagged .flag{display:inline-block}
 .bubble.flagged{min-width:min(72vw,290px)}
+.bubble .again{display:none;margin-top:9px;padding:8px 13px;border-radius:14px;background:rgba(250,247,242,.1);border:1.5px solid rgba(250,247,242,.6);color:var(--cream);font-size:13.5px;font-weight:700;line-height:1.25}
+.bubble.repeat .again{display:block}
+.bubble.repeat{min-width:min(72vw,290px)}
+.bubble.on.linger{opacity:.8}
 .bubble.none .price{display:none}
 .bubble.none .name,.bubble.err .name{margin-top:0;white-space:normal}
 .bubble.err .price{font-size:30px;margin-bottom:6px}
@@ -237,7 +241,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <p class="off-msg" id="offMsg" role="status"></p>
 </section>
 
-<button id="bubble" class="bubble" type="button" aria-live="polite"><span class="price" id="bPrice"></span><span class="name" id="bName"></span><span class="flag" id="bFlag"></span></button>
+<button id="bubble" class="bubble" type="button" aria-live="polite"><span class="price" id="bPrice"></span><span class="name" id="bName"></span><span class="flag" id="bFlag"></span><span class="again" id="bAgain" role="button">Already scanned. Scan again?</span></button>
 
 <footer class="bottom">
   <div id="status" class="status" role="status"><span class="msg" id="statusMsg">Starting camera…</span><span class="lat" id="lat"></span></div>
@@ -300,6 +304,8 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <label class="field check-row"><input id="sDouble" type="checkbox"><span>Double-check every price<small>Two AI looks per scan for steadier prices and to catch valuable items. Uses about twice the AI credit.</small></span></label>
   <label class="field"><span>How long to hold still before it prices</span>
     <select id="sSens"><option value="quick">Short (fastest)</option><option value="normal">Normal</option><option value="steady">Longer (fewer accidental scans)</option></select></label>
+  <label class="field"><span>Keep the price up after you move away</span>
+    <select id="sKeep"><option value="3">3 seconds</option><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="next">Until the next item</option></select></label>
   <div class="field" id="ownerRow"><span>Owner? Unlock team activity on this phone</span>
     <div class="row owner-in"><div class="pw-wrap"><input id="sOwner" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Owner password"><button class="eye" type="button" aria-label="Show password" aria-pressed="false"><svg class="i-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="i-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div><button id="sOwnerGo" class="btn" type="button">Unlock</button></div>
     <p class="small" id="sOwnerMsg" style="margin:6px 0 0"></p></div>
@@ -341,7 +347,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
 const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
-const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true };
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5' };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -417,6 +423,9 @@ let paused = false, sheetOpen = null;
 let prev = null, stillMs = 0, lastTick = 0, lockRef = null, lastTrigger = 0;
 let scanSeq = 0, current = null, detailEntry = null;
 let lastScan = null;   // image + raw AI reply of the most recent scan, for troubleshooting
+let lingerTimer = 0;   // hides the price a few seconds after the camera moves off the item
+let lastItem = null;   // the most recent item sent to the AI: { sig, t, seq, pending, entryId }
+const SAME_WINDOW = 10 * 60 * 1000;   // only ask 'same item?' about something scanned in the last 10 minutes
 
 /* ---------- helpers ---------- */
 const money = (n) => (n == null || isNaN(n)) ? '–' : '$' + Math.round(+n).toLocaleString('en-US');
@@ -489,6 +498,70 @@ function findSaved(hash) {
   return bd <= MATCH_BITS ? best : null;
 }
 
+// "Is this the item I just scanned?" Compares the middle of the new view with the last scanned one,
+// allowing for the hand drifting, moving closer/farther and light changes. Both the wider view and the
+// middle of the ring (where the item sits) must line up, so a different item set down in the same spot
+// on the same table doesn't count as a repeat.
+const SAME_OUTER = .70, SAME_CORE = .80;
+const OUTER_WIN = [10, 38, 13, 51], CORE_WIN = [16, 32, 24, 40], ZOOMS = [.84, .92, 1, 1.09, 1.19];
+const SCX = AW / 2 - .5, SCY = AH / 2 - .5;
+const corrBuf = new Float32Array(28 * 38);
+function winOf(B, w) {
+  const n = (w[1] - w[0]) * (w[3] - w[2]), v = new Float32Array(n);
+  let m = 0, k = 0;
+  for (let y = w[2]; y < w[3]; y++) for (let x = w[0]; x < w[1]; x++) { v[k] = B[y * AW + x]; m += v[k++]; }
+  m /= n; let s = 0;
+  for (let i = 0; i < n; i++) { v[i] -= m; s += v[i] * v[i]; }
+  return { w, v, norm: Math.sqrt(s) + 1e-6 };
+}
+function corr(A, W, s, dx, dy) {
+  const w = W.w, n = W.v.length, a = corrBuf;
+  let m = 0, k = 0;
+  for (let y = w[2]; y < w[3]; y++) {
+    let Y = SCY + (y - SCY) * s + dy; Y = Y < 0 ? 0 : Y > AH - 1.001 ? AH - 1.001 : Y;
+    const yi = Y | 0, fy = Y - yi;
+    for (let x = w[0]; x < w[1]; x++) {
+      let X = SCX + (x - SCX) * s + dx; X = X < 0 ? 0 : X > AW - 1.001 ? AW - 1.001 : X;
+      const xi = X | 0, fx = X - xi, i = yi * AW + xi;
+      const val = (A[i] * (1 - fx) + A[i + 1] * fx) * (1 - fy) + (A[i + AW] * (1 - fx) + A[i + AW + 1] * fx) * fy;
+      a[k++] = val; m += val;
+    }
+  }
+  m /= n; let dot = 0, ss = 0;
+  for (let i = 0; i < n; i++) { const t = a[i] - m; dot += t * W.v[i]; ss += t * t; }
+  return dot / ((Math.sqrt(ss) + 1e-6) * W.norm);
+}
+function sameView(A, B) {
+  if (!A || !B) return { outer: -1, core: -1, same: false };
+  const O = winOf(B, OUTER_WIN), C = winOf(B, CORE_WIN);
+  let best = -2, bs = 1, bx = 0, by = 0;
+  for (const s of ZOOMS) for (let dy = -10; dy <= 10; dy += 2) for (let dx = -8; dx <= 8; dx += 2) {
+    const c = corr(A, O, s, dx, dy); if (c > best) { best = c; bs = s; bx = dx; by = dy; }
+  }
+  const x0 = bx, y0 = by;
+  for (let ddy = -1; ddy <= 1; ddy++) for (let ddx = -1; ddx <= 1; ddx++) {
+    const c = corr(A, O, bs, x0 + ddx, y0 + ddy); if (c > best) { best = c; bx = x0 + ddx; by = y0 + ddy; }
+  }
+  let core = -2;
+  if (best >= SAME_OUTER) for (let ddy = -2; ddy <= 2; ddy++) for (let ddx = -2; ddx <= 2; ddx++) core = Math.max(core, corr(A, C, bs, bx + ddx, by + ddy));
+  return { outer: best, core, same: best >= SAME_OUTER && core >= SAME_CORE };
+}
+
+// A smooth 48x64 grey copy of the view (averaged down from 4x, so tiny shakes and sensor noise don't change it).
+const sigCan = document.createElement('canvas'); sigCan.width = AW * 4; sigCan.height = AH * 4;
+const sigCtx = sigCan.getContext('2d', { willReadFrequently: true });
+function sigNow() {
+  try {
+    const r = cropRect(), W4 = AW * 4, H4 = AH * 4, g = new Float32Array(AW * AH);
+    sigCtx.imageSmoothingEnabled = true; sigCtx.imageSmoothingQuality = 'high';
+    sigCtx.drawImage(video, r[0], r[1], r[2], r[3], 0, 0, W4, H4);
+    const d = sigCtx.getImageData(0, 0, W4, H4).data;
+    for (let y = 0; y < H4; y++) for (let x = 0; x < W4; x++) { const j = (y * W4 + x) * 4; g[(y >> 2) * AW + (x >> 2)] += (d[j] * 77 + d[j + 1] * 150 + d[j + 2] * 29) >> 8; }
+    for (let i = 0; i < g.length; i++) g[i] /= 16;
+    return g;
+  } catch (e) { return null; }
+}
+
 /* ---------- main loop ---------- */
 function tick(now) {
   requestAnimationFrame(tick);
@@ -499,7 +572,7 @@ function tick(now) {
 
   if (lockRef) {                                     // a price is up: clear it once the camera moves away
     const raw = diff(f.px, lockRef.px);
-    if (raw > CHANGE_RAW || raw / (lockRef.grad + 1) > CHANGE_NORM) unlock();
+    if (raw > CHANGE_RAW || raw / (lockRef.grad + 1) > CHANGE_NORM) release();
     prev = f; return;
   }
   const motion = prev ? diff(f.px, prev.px) / (f.grad + 1) : 9;
@@ -517,22 +590,67 @@ function tick(now) {
 }
 
 function unlock() {
+  clearTimeout(lingerTimer);
   lockRef = null; stillMs = 0; scanSeq++; current = null; bestSharp = -1;
   bubble.className = 'bubble'; scanning(false); setReticle(0);
+}
+// The camera moved off the item. Leave the price up a few more seconds so it can still be read
+// (and if the price is still on its way, show it when it lands).
+function release() {
+  lockRef = null; stillMs = 0; bestSharp = -1; scanning(false); setReticle(0);
+  bubble.classList.remove('repeat');
+  if (!bubble.classList.contains('on')) return;
+  bubble.classList.add('linger');
+  if (!bubble.classList.contains('thinking')) scheduleHide();
+}
+function scheduleHide() {
+  clearTimeout(lingerTimer);
+  const k = S.keep || '5';
+  if (k === 'next') return;                       // stays until the next item is scanned
+  lingerTimer = setTimeout(hideBubble, (+k || 5) * 1000);
+}
+function hideBubble() {
+  clearTimeout(lingerTimer);
+  if (lockRef) return;
+  bubble.className = 'bubble'; current = null;
+}
+// Called whenever the bubble changes: if the camera has already moved on, start the countdown.
+function afterShow() {
+  clearTimeout(lingerTimer);
+  if (!lockRef) { bubble.classList.add('linger'); scheduleHide(); }
 }
 
 function trigger(f, fresh, replace) {
   lastTrigger = performance.now();
+  clearTimeout(lingerTimer);
   lockRef = f;
   if (closeupFor) { const eid = closeupFor; closeupFor = null; closeup(eid, capture(), ++scanSeq); return; }
   const hash = dhash(f.px);
-  const id = ++scanSeq;
+  const sig = sigNow();
   if (!fresh) {
+    // Same item as the one just scanned? Show its price again instead of paying for another AI look.
+    if (lastItem && Date.now() - lastItem.t < SAME_WINDOW && sameView(lastItem.sig, sig).same) {
+      const e = lastItem.entryId && history.find((x) => x.id === lastItem.entryId);
+      if (e) {
+        lastItem.t = Date.now();
+        if (current && current.id === e.id && bubble.classList.contains('on')) {   // its price is still up: just keep it there
+          bubble.classList.remove('linger'); setStatus('Tap the price for comps'); return;
+        }
+        ++scanSeq; showRepeat(e); return;
+      }
+      if (lastItem.pending) {                       // still pricing this very item: wait for that answer
+        if (lastItem.seq !== scanSeq || !bubble.classList.contains('on')) showThinking();
+        scanSeq = lastItem.seq; bubble.classList.remove('linger'); scanning(true); setStatus('Pricing…');
+        return;
+      }
+    }
     const saved = findSaved(hash);
-    if (saved) { showEntry(saved); setStatus('Already priced · tap price for details'); haptic(); return; }
-    if (nullHashes.some((h) => ham(h, hash) <= MATCH_BITS)) { showNone(); return; }
+    if (saved) { ++scanSeq; lastItem = { sig, t: Date.now(), seq: scanSeq, pending: false, entryId: saved.id }; showRepeat(saved); return; }
+    if (nullHashes.some((h) => ham(h, hash) <= MATCH_BITS)) { ++scanSeq; showNone(); return; }
   }
+  const id = ++scanSeq;
   const shot = capture();
+  lastItem = { sig, t: Date.now(), seq: id, pending: true, entryId: null };
   showThinking(); scanning(true); setStatus('Pricing…');
   priceIt(shot, id, hash, replace);
 }
@@ -696,6 +814,7 @@ async function priceIt(shot, id, hash, replace) {
 
   const r = mergeLooks(finals);
   if (!r) {
+    if (lastItem && lastItem.seq === id) lastItem = null;
     if (errCount === n) { if (id === scanSeq) showError(firstErr); return; }   // every look failed: show why
     nullHashes.push(hash); if (nullHashes.length > 40) nullHashes.shift();
     if (id === scanSeq) showNone();
@@ -705,6 +824,7 @@ async function priceIt(shot, id, hash, replace) {
   rememberShot(entry.id, shot.b64);
   if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) history.splice(i, 1); }
   history.unshift(entry); saveHistory();
+  if (lastItem && lastItem.seq === id) { lastItem.pending = false; lastItem.entryId = entry.id; lastItem.t = Date.now(); }
   if (id === scanSeq) { showEntry(entry, false, !!shownKey); if (!shownKey) haptic(); setStatus('Tap the price for comps'); }
 }
 
@@ -803,12 +923,20 @@ function showEntry(e, partial, quiet) {
   const cls = (rough ? 'low' : '') + (resale ? ' range' : '') + (up ? ' flagged' : '');
   if (quiet && bubble.classList.contains('on')) bubble.className = 'bubble on ' + cls;   // update in place, no pop
   else popIn(cls);
+  afterShow();
+}
+// The same item came up again: show its price and ask before paying for another scan.
+function showRepeat(e) {
+  showEntry(e);
+  bubble.classList.add('repeat');
+  haptic();
+  setStatus('Scanned already · tap “Scan again” if it’s a different item');
 }
 function showNone() {
   current = null; scanning(false);
   bPrice.textContent = '';
   bName.textContent = 'Couldn\'t make out an item. Tap to try again';
-  popIn('none');
+  popIn('none'); afterShow();
   setStatus('Hold steady on an item');
 }
 function showError(err) {
@@ -828,14 +956,15 @@ function showError(err) {
   else if (s === 529 || s >= 500) msg = 'AI is busy. Tap to retry';
   bPrice.textContent = '!';
   bName.textContent = msg;
-  popIn('err');
+  popIn('err'); afterShow();
   setStatus(status, true);
   bubble.dataset.err = goSettings ? 'settings' : 'retry';
 }
 
-bubble.addEventListener('click', () => {
+bubble.addEventListener('click', (ev) => {
   const c = bubble.className;
   if (c.includes('thinking')) return;
+  if (ev.target.closest('#bAgain')) { if (video.videoWidth) trigger(grab(), true); return; }   // yes, it's a different one: price it
   if (c.includes('err') && bubble.dataset.err === 'settings') { openSettings(); return; }
   if (c.includes('err') || c.includes('none')) { if (video.videoWidth) trigger(grab(), true); return; }
   if (current) openDetail(current);
@@ -1012,7 +1141,7 @@ $('#hClear').addEventListener('click', (ev) => {
   const btn = ev.currentTarget;
   if (!history.length) return;
   if (Date.now() - clearArmed > 3000) { clearArmed = Date.now(); btn.textContent = 'Tap again to clear'; setTimeout(() => { btn.textContent = 'Clear list'; }, 3000); return; }
-  history = []; nullHashes = []; saveHistory(); renderHistory(); btn.textContent = 'Clear list'; clearArmed = 0;
+  history = []; nullHashes = []; lastItem = null; saveHistory(); renderHistory(); btn.textContent = 'Clear list'; clearArmed = 0;
   if (lockRef) unlock();
 });
 function csvCell(v) {
@@ -1037,7 +1166,7 @@ $('#hExport').addEventListener('click', async () => {
 
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false;
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5');
   applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
@@ -1052,7 +1181,7 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
-  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked;
+  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
   closeSheets(true);

@@ -1,2586 +1,800 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="top">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-site-verification" content="6ftYRuqqpj_CyRqkRTh5P6lGVpL9DIBN-yUPMtbvhtA">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Estate sale management in Erie County, PA. We price, stage, promote, and run your sale so you keep the proceeds. Flat-rate pricing, free leftover removal.">
-<meta name="keywords" content="estate sale Erie PA, sale management Erie, garage sale management, specialty sale Erie, Better Selling with Bailey">
-<meta name="robots" content="index, follow">
+<title>Estate Sales in Erie County, PA | Better Selling With Bailey</title>
+<meta name="description" content="Owner-run estate sales in Erie County, PA. A flat $995 plus 20% of sales, free removal of leftovers, and you're paid when the sale ends. Insured, with a written contract.">
 <link rel="canonical" href="https://bettersellingwithbailey.com/">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="apple-touch-icon" href="/favicon.svg">
-
-<!-- Open Graph / Facebook / iMessage previews -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="favicon.svg">
+<meta name="theme-color" content="#191714">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bettersellingwithbailey.com/">
-<meta property="og:title" content="Better Selling With Bailey | Estate Sales in Erie County, PA">
-<meta property="og:description" content="We handle every aspect of your estate sale — pricing, staging, promotion, and cleanup — while you keep the proceeds. Top single-event sales over $16K. Serving Erie County and surrounding areas.">
 <meta property="og:site_name" content="Better Selling With Bailey">
-<meta property="og:image" content="https://bettersellingwithbailey.com/og-image.svg">
+<meta property="og:title" content="Estate Sales in Erie County, PA | Better Selling With Bailey">
+<meta property="og:description" content="I price, stage, advertise and run your estate sale, then clear out what's left. A flat $995 plus 20% of sales.">
+<meta property="og:image" content="https://bettersellingwithbailey.com/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-
-<!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Better Selling With Bailey | Estate Sales in Erie County, PA">
-<meta name="twitter:description" content="We handle every aspect of your estate sale — pricing, staging, promotion, and cleanup — while you keep the proceeds. Serving Erie County and surrounding areas.">
-<meta name="twitter:image" content="https://bettersellingwithbailey.com/og-image.svg">
-<title>Better Selling With Bailey | Estate Sales in Erie County, PA</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
---gold: #C9A84C;
---gold-light: #E8C97A;
---dark: #1A1A1A;
---dark-2: #2A2A2A;
---cream: #FAF7F2;
---text: #3A3A3A;
---text-light: #6B6B6B;
---white: #FFFFFF;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-font-family: 'Inter', sans-serif;
-background: var(--cream);
-color: var(--text);
-line-height: 1.6;
-}
-
-/* NAV */
-nav {
-position: fixed;
-top: 0; left: 0; right: 0;
-z-index: 1000;
-background: rgba(26,26,26,0.97);
-backdrop-filter: blur(8px);
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 0 5%;
-height: 68px;
-border-bottom: 1px solid rgba(201,168,76,0.25);
-transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.35s cubic-bezier(0.4,0,0.2,1);
-}
-nav.nav-hidden {
-opacity: 0;
-transform: translateY(-100%);
-pointer-events: none;
-}
-
-.nav-logo {
-font-family: 'Playfair Display', serif;
-color: var(--gold);
-font-size: calc(1.15rem * var(--logo-scale, 1));
-font-weight: 700;
-text-decoration: none;
-letter-spacing: 0.02em;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.nav-links {
-display: flex;
-gap: calc(1.8rem * var(--nav-scale, 1));
-list-style: none;
-}
-
-.nav-links a {
-color: #bbb;
-text-decoration: none;
-font-size: calc(0.85rem * var(--nav-scale, 1));
-font-weight: 500;
-letter-spacing: 0.05em;
-text-transform: uppercase;
-transition: color 0.2s;
-white-space: nowrap;
-}
-
-.nav-links a:hover { color: var(--gold); }
-
-.nav-cta {
-background: var(--gold) !important;
-color: var(--dark) !important;
-padding: calc(0.45rem * var(--nav-scale, 1)) calc(1.1rem * var(--nav-scale, 1)) !important;
-border-radius: 4px;
-font-weight: 700 !important;
-}
-
-.nav-cta:hover { background: var(--gold-light) !important; }
-
-/* HAMBURGER */
-.nav-hamburger {
-display: none;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-gap: 5px;
-width: 40px;
-height: 40px;
-background: none;
-border: none;
-cursor: pointer;
-padding: 6px;
-border-radius: 6px;
-transition: background 0.2s;
-}
-.nav-hamburger:hover { background: rgba(201,168,76,0.1); }
-.nav-hamburger span {
-display: block;
-width: 22px;
-height: 2px;
-background: #bbb;
-border-radius: 2px;
-transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s, background 0.2s;
-}
-.nav-hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--gold); }
-.nav-hamburger.is-open span:nth-child(2) { opacity: 0; }
-.nav-hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--gold); }
-
-/* MOBILE NAV DROPDOWN */
-.nav-mobile-menu {
-position: fixed;
-top: 68px;
-left: 0; right: 0;
-background: rgba(22,18,6,0.98);
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-border-bottom: 1px solid rgba(201,168,76,0.2);
-z-index: 999;
-max-height: 0;
-overflow: hidden;
-padding: 0;
-transition: max-height 0.32s cubic-bezier(0.4,0,0.2,1), padding 0.32s cubic-bezier(0.4,0,0.2,1);
-}
-.nav-mobile-menu.is-open {
-max-height: 480px;
-padding: 0.6rem 0 1rem;
-}
-.nav-mobile-menu a {
-display: block;
-padding: 0.75rem 5%;
-color: #bbb;
-font-size: 0.9rem;
-font-weight: 500;
-letter-spacing: 0.05em;
-text-transform: uppercase;
-text-decoration: none;
-transition: color 0.2s, background 0.2s;
-border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.nav-mobile-menu a:last-child { border-bottom: none; }
-.nav-mobile-menu a:hover { color: var(--gold); background: rgba(201,168,76,0.06); }
-.nav-mobile-menu a.nav-mobile-cta {
-margin: 0.6rem 5% 0;
-padding: 0.7rem 1.1rem;
-display: block;
-background: var(--gold);
-color: var(--dark) !important;
-border-radius: 6px;
-font-weight: 700;
-text-align: center;
-border-bottom: none;
-}
-.nav-mobile-menu a.nav-mobile-cta:hover { background: var(--gold-light); }
-/* HERO */
-.hero {
-min-height: 100vh;
-background: linear-gradient(135deg, #111 0%, #2D2000 55%, #111 100%);
-display: flex;
-align-items: center;
-justify-content: center;
-text-align: center;
-padding: 120px 5% 50px;
-position: relative;
-overflow: hidden;
-}
-
-.hero::before {
-content: '';
-position: absolute;
-inset: 0;
-background: radial-gradient(ellipse at center, rgba(201,168,76,0.18) 0%, transparent 65%);
-}
-
-.hero-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
-
-.hero-badge {
-display: inline-block;
-background: rgba(201,168,76,0.12);
-border: 1px solid rgba(201,168,76,0.35);
-color: var(--gold-light);
-font-size: 0.76rem;
-font-weight: 600;
-letter-spacing: 0.16em;
-text-transform: uppercase;
-padding: 0.38rem 1.1rem;
-border-radius: 100px;
-margin-bottom: 1.5rem;
-}
-
-.hero h1 {
-font-family: 'Playfair Display', serif;
-color: var(--white);
-font-size: clamp(2.2rem, 5.5vw, 4rem);
-line-height: 1.15;
-margin-bottom: 1.5rem;
-font-weight: 900;
-}
-
-.hero h1 span { color: var(--gold); }
-
-.hero-sub {
-color: #aaa;
-font-size: clamp(1rem, 2vw, 1.15rem);
-max-width: 640px;
-margin: 0 auto 2.5rem;
-line-height: 1.75;
-}
-
-.hero-stats {
-display: flex;
-justify-content: center;
-gap: 3rem;
-margin-bottom: 2.5rem;
-flex-wrap: wrap;
-}
-
-.hero-cta { display: flex; justify-content: center; flex-wrap: wrap; }
-.stat { text-align: center; }
-
-.stat-num {
-font-family: 'Playfair Display', serif;
-font-size: 2rem;
-color: var(--gold);
-font-weight: 700;
-display: block;
-line-height: 1.1;
-}
-
-.stat-label {
-font-size: 0.76rem;
-color: #888;
-letter-spacing: 0.07em;
-text-transform: uppercase;
-}
-
-.btn-primary {
-display: inline-block;
-background: var(--gold);
-color: var(--dark);
-font-weight: 700;
-font-size: 0.98rem;
-padding: 0.95rem 2.2rem;
-border-radius: 6px;
-text-decoration: none;
-letter-spacing: 0.03em;
-transition: all 0.2s;
-margin: 0.4rem;
-}
-
-.btn-primary:hover {
-background: var(--gold-light);
-transform: translateY(-2px);
-box-shadow: 0 8px 24px rgba(201,168,76,0.4);
-}
-
-.btn-outline {
-display: inline-block;
-background: transparent;
-color: var(--gold);
-font-weight: 600;
-font-size: 0.98rem;
-padding: 0.95rem 2.2rem;
-border-radius: 6px;
-text-decoration: none;
-letter-spacing: 0.03em;
-border: 2px solid var(--gold);
-margin: 0.4rem;
-transition: all 0.2s;
-}
-
-.btn-outline:hover { background: var(--gold); color: var(--dark); }
-
-/* SECTIONS */
-section { padding: 90px 5%; }
-
-.section-label {
-font-size: 0.75rem;
-font-weight: 700;
-letter-spacing: 0.2em;
-text-transform: uppercase;
-color: var(--gold);
-margin-bottom: 0.7rem;
-}
-
-.section-title {
-font-family: 'Playfair Display', serif;
-font-size: clamp(1.7rem, 3.5vw, 2.6rem);
-color: var(--dark);
-font-weight: 700;
-line-height: 1.2;
-margin-bottom: 1rem;
-}
-
-.section-intro {
-color: var(--text-light);
-font-size: 1rem;
-max-width: 580px;
-line-height: 1.75;
-}
-
-.inner { max-width: 1100px; margin: 0 auto; }
-.inner-narrow { max-width: 860px; margin: 0 auto; }
-/* HOW IT WORKS */
-.how-it-works { background: var(--white); }
-.how-it-works .header { text-align: center; margin-bottom: 3rem; }
-.how-it-works .header .section-intro { margin: 0 auto; }
-
-.steps {
-display: grid;
-grid-template-columns: repeat(3, 1fr);
-gap: 1.5rem;
-}
-
-.step {
-background: var(--cream);
-border-radius: 12px;
-padding: 1.8rem;
-border: 1px solid #E8E0D0;
-transition: all 0.2s;
-}
-
-.step:hover {
-box-shadow: 0 8px 28px rgba(0,0,0,0.07);
-border-color: rgba(201,168,76,0.3);
-}
-
-.step-num {
-width: 40px; height: 40px;
-background: var(--gold);
-color: var(--dark);
-border-radius: 50%;
-display: flex; align-items: center; justify-content: center;
-font-weight: 800;
-font-size: 1rem;
-margin-bottom: 1rem;
-font-family: 'Playfair Display', serif;
-flex-shrink: 0;
-}
-
-.step h3 {
-font-family: 'Playfair Display', serif;
-font-size: 1.05rem;
-color: var(--dark);
-margin-bottom: 0.5rem;
-}
-
-.step p { color: var(--text-light); font-size: 0.88rem; line-height: 1.65; }
-
-@media (max-width: 800px) {
-.steps { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 500px) {
-.steps { grid-template-columns: 1fr; }
-}
-
-/* INCLUDED */
-.included { background: var(--dark); }
-
-.included .section-header {
-text-align: center;
-margin-bottom: 3rem;
-}
-
-.included .section-title { color: var(--white); }
-.included .section-intro { color: #999; margin: 0 auto; }
-
-.pricing-tiers {
-display: grid;
-grid-template-columns: 1fr;
-max-width: 480px;
-margin-left: auto;
-margin-right: auto;
-gap: 2rem;
-margin-bottom: 3rem;
-}
-
-.pricing-tier {
-background: var(--dark-2);
-border-radius: 16px;
-padding: 2.2rem;
-border: 1px solid rgba(201,168,76,0.15);
-}
-
-.pricing-tier.tier-featured {
-border-color: rgba(201,168,76,0.4);
-}
-
-.tier-badge {
-display: inline-block;
-background: var(--gold);
-color: var(--dark);
-font-size: 0.7rem;
-font-weight: 700;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-padding: 0.25rem 0.75rem;
-border-radius: 100px;
-margin-bottom: 1rem;
-}
-
-.tier-badge-subtle {
-display: inline-block;
-background: rgba(201,168,76,0.12);
-color: var(--gold-light);
-border: 1px solid rgba(201,168,76,0.3);
-font-size: 0.7rem;
-font-weight: 700;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-padding: 0.25rem 0.75rem;
-border-radius: 100px;
-margin-bottom: 1rem;
-}
-
-.tier-title {
-font-family: 'Playfair Display', serif;
-font-size: 1.3rem;
-color: var(--white);
-font-weight: 700;
-margin-bottom: 0.4rem;
-}
-
-.price-tag {
-font-family: 'Playfair Display', serif;
-font-size: 3rem;
-color: var(--gold);
-font-weight: 900;
-margin: 1rem 0 0.25rem;
-line-height: 1;
-}
-
-.price-note { color: #777; font-size: 0.82rem; margin-bottom: 0.5rem; }
-
-.included-list { list-style: none; margin-top: 1.5rem; }
-
-.included-list li {
-display: flex;
-align-items: flex-start;
-gap: 0.75rem;
-color: #ccc;
-font-size: 0.92rem;
-margin-bottom: 0.8rem;
-line-height: 1.5;
-}
-
-.included-list li::before {
-content: '✓';
-color: var(--gold);
-font-weight: 700;
-font-size: 0.85rem;
-flex-shrink: 0;
-margin-top: 0.12rem;
-}
-
-.included-info {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 1.5rem;
-}
-
-.keep-100 {
-background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.04));
-border: 1px solid rgba(201,168,76,0.25);
-border-radius: 10px;
-padding: 1.6rem;
-}
-
-.keep-100 h3 {
-font-family: 'Playfair Display', serif;
-font-size: 1.25rem;
-color: var(--gold);
-margin-bottom: 0.6rem;
-}
-
-.keep-100 p { color: #bbb; font-size: 0.9rem; line-height: 1.65; }
-
-.info-card {
-background: rgba(255,255,255,0.03);
-border: 1px solid rgba(255,255,255,0.07);
-border-radius: 9px;
-padding: 1.25rem;
-}
-
-.info-card h4 {
-color: var(--white);
-font-size: 0.95rem;
-margin-bottom: 0.4rem;
-}
-
-.info-card p { color: #888; font-size: 0.86rem; line-height: 1.6; }
-
-/* IDEAL */
-.ideal { background: var(--cream); }
-.ideal .header { text-align: center; margin-bottom: 2.8rem; }
-.ideal .header .section-intro { margin: 0.5rem auto 0; }
-
-.category-list {
-display: grid;
-grid-template-columns: repeat(4, 1fr);
-gap: 0;
-border: 1px solid #DDD5C8;
-border-radius: 12px;
-overflow: hidden;
-}
-
-.category-item {
-display: flex;
-align-items: center;
-gap: 0.85rem;
-padding: 1.1rem 1.4rem;
-border-right: 1px solid #DDD5C8;
-border-bottom: 1px solid #DDD5C8;
-background: var(--white);
-transition: background 0.2s;
-}
-
-.category-item:hover {
-background: #F5EFE6;
-}
-
-.category-item:nth-child(4n) {
-border-right: none;
-}
-
-.category-item:nth-last-child(-n+4) {
-border-bottom: none;
-}
-
-.cat-dot {
-width: 7px;
-height: 7px;
-border-radius: 50%;
-background: var(--gold);
-flex-shrink: 0;
-}
-
-.category-item span {
-font-size: 0.9rem;
-font-weight: 500;
-color: var(--text);
-line-height: 1.3;
-}
-
-@media (max-width: 800px) {
-.category-list { grid-template-columns: repeat(2, 1fr); }
-.category-item:nth-child(4n) { border-right: 1px solid #DDD5C8; }
-.category-item:nth-child(2n) { border-right: none; }
-.category-item:nth-last-child(-n+4) { border-bottom: 1px solid #DDD5C8; }
-.category-item:nth-last-child(-n+2) { border-bottom: none; }
-}
-
-/* EVENTS */
-.events { background: var(--white); }
-.events .inner-narrow { text-align: center; }
-.events .section-intro { margin: 0.5rem auto 0; }
-
-.events-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-gap: 1.5rem;
-margin-top: 2.5rem;
-text-align: left;
-}
-
-.event-card {
-background: var(--cream);
-border-radius: 14px;
-border: 1px solid #E8E0D0;
-overflow: hidden;
-transition: all 0.2s;
-}
-
-.event-card:hover {
-border-color: rgba(201,168,76,0.4);
-box-shadow: 0 8px 28px rgba(0,0,0,0.07);
-transform: translateY(-3px);
-}
-
-.event-date-bar {
-background: var(--dark);
-padding: 0.85rem 1.4rem;
-display: flex;
-align-items: center;
-gap: 1rem;
-}
-
-.event-month {
-font-size: 0.65rem;
-font-weight: 700;
-letter-spacing: 0.15em;
-text-transform: uppercase;
-color: var(--gold);
-display: block;
-line-height: 1;
-margin-bottom: 0.18rem;
-}
-
-.event-day {
-font-family: 'Playfair Display', serif;
-font-size: 1.8rem;
-color: var(--white);
-font-weight: 700;
-line-height: 1;
-}
-
-.event-date-range {
-color: #aaa;
-font-size: 0.78rem;
-font-weight: 500;
-}
-
-.event-body {
-padding: 1.3rem 1.4rem 1.4rem;
-}
-
-.event-title {
-font-family: 'Playfair Display', serif;
-font-size: 1.1rem;
-color: var(--dark);
-font-weight: 700;
-margin-bottom: 0.5rem;
-line-height: 1.3;
-}
-
-.event-meta {
-display: flex;
-flex-direction: column;
-gap: 0.3rem;
-margin-bottom: 1rem;
-}
-
-.event-meta span {
-font-size: 0.83rem;
-color: var(--text-light);
-display: flex;
-align-items: flex-start;
-gap: 0.4rem;
-}
-
-.event-meta span::before {
-content: '';
-width: 5px;
-height: 5px;
-border-radius: 50%;
-background: var(--gold);
-flex-shrink: 0;
-margin-top: 0.42rem;
-}
-
-.event-desc {
-font-size: 0.88rem;
-color: var(--text-light);
-line-height: 1.65;
-margin-bottom: 1.1rem;
-}
-
-.event-link {
-display: inline-block;
-background: var(--gold);
-color: var(--dark);
-font-weight: 700;
-font-size: 0.82rem;
-padding: 0.5rem 1.1rem;
-border-radius: 5px;
-text-decoration: none;
-letter-spacing: 0.03em;
-transition: all 0.2s;
-}
-
-.event-link:hover {
-background: var(--gold-light);
-transform: translateY(-1px);
-}
-
-/* SOCIAL */
-.social-bar {
-background: var(--dark);
-padding: 1.6rem 5%;
-border-top: 1px solid rgba(201,168,76,0.15);
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 1rem;
-flex-wrap: wrap;
-}
-
-.social-bar p {
-color: #666;
-font-size: 0.8rem;
-letter-spacing: 0.08em;
-text-transform: uppercase;
-margin-right: 0.5rem;
-}
-
-.social-btn {
-display: inline-flex;
-align-items: center;
-gap: 0.5rem;
-background: rgba(255,255,255,0.05);
-border: 1px solid rgba(255,255,255,0.1);
-color: #ccc;
-font-size: 0.83rem;
-font-weight: 600;
-padding: 0.5rem 1.1rem;
-border-radius: 6px;
-text-decoration: none;
-transition: all 0.2s;
-}
-
-.social-btn:hover {
-background: rgba(201,168,76,0.12);
-border-color: rgba(201,168,76,0.35);
-color: var(--gold-light);
-}
-
-.social-btn svg {
-width: 15px;
-height: 15px;
-fill: currentColor;
-flex-shrink: 0;
-}
-
-/* NEWS */
-.news { background: var(--cream); }
-.news .inner-narrow { text-align: center; }
-.news .section-intro { margin: 0.5rem auto 0; }
-
-.news-card {
-background: var(--cream);
-border-radius: 14px;
-padding: 2.2rem;
-border-left: 4px solid var(--gold);
-text-align: left;
-margin-top: 2.2rem;
-}
-
-.news-source {
-font-size: 0.74rem;
-font-weight: 700;
-letter-spacing: 0.12em;
-text-transform: uppercase;
-color: var(--gold);
-margin-bottom: 0.8rem;
-}
-
-.news-headline {
-font-family: 'Playfair Display', serif;
-font-size: 1.4rem;
-color: var(--dark);
-margin-bottom: 0.9rem;
-font-weight: 700;
-}
-
-.news-excerpt { color: var(--text-light); font-size: 0.93rem; line-height: 1.72; }
-
-.news-link {
-display: inline-block;
-margin-top: 1rem;
-color: var(--gold);
-font-weight: 600;
-font-size: 0.88rem;
-text-decoration: none;
-}
-
-.news-link:hover { text-decoration: underline; }
-/* WEATHER */
-.weather { background: var(--dark); }
-.weather .inner-narrow { text-align: center; }
-.weather .section-title { color: var(--white); }
-.weather .section-intro { color: #999; margin: 0.5rem auto 0; }
-
-.weather-cards {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 1.5rem;
-margin-top: 2.5rem;
-text-align: left;
-}
-
-.weather-card {
-background: var(--dark-2);
-border-radius: 12px;
-padding: 1.8rem;
-border: 1px solid rgba(255,255,255,0.06);
-}
-
-.weather-card h3 {
-color: var(--white);
-margin-bottom: 0.8rem;
-font-size: 1rem;
-display: flex;
-align-items: center;
-gap: 0.5rem;
-flex-wrap: wrap;
-line-height: 1.4;
-}
-
-.weather-card p { color: #999; font-size: 0.88rem; line-height: 1.65; }
-
-
-/* CTA */
-.cta-section {
-background: linear-gradient(135deg, #0E0C00 0%, #2D2200 50%, #0E0C00 100%);
-text-align: center;
-padding: 100px 5%;
-position: relative;
-overflow: hidden;
-}
-
-.cta-section::before {
-content: '';
-position: absolute;
-inset: 0;
-background: radial-gradient(ellipse at center, rgba(201,168,76,0.18) 0%, transparent 60%);
-}
-
-.cta-section .inner-narrow { position: relative; z-index: 1; }
-
-.cta-section .section-title { color: var(--white); margin-bottom: 1rem; }
-
-.cta-section > .inner-narrow > p {
-color: #bbb;
-font-size: 1rem;
-margin: 0 auto 2.2rem;
-max-width: 540px;
-line-height: 1.7;
-}
-
-/* FOOTER */
-footer {
-background: #0E0E0E;
-color: #777;
-text-align: center;
-padding: 2.5rem 5%;
-font-size: 0.83rem;
-border-top: 1px solid rgba(201,168,76,0.12);
-line-height: 1.8;
-}
-
-.footer-logo {
-font-family: 'Playfair Display', serif;
-color: var(--gold);
-font-size: 1.1rem;
-margin-bottom: 0.6rem;
-display: block;
-}
-
-/* RESPONSIVE */
-@media (max-width: 800px) {
-.pricing-tiers { grid-template-columns: 1fr; }
-.included-info { grid-template-columns: 1fr; }
-.weather-cards { grid-template-columns: 1fr; }
-.nav-links { display: none; }
-.nav-hamburger { display: flex; }
-}
-
-/* STICKY SECTION NAV */
-#section-nav {
-  position: fixed;
-  top: 0;
-  left: 0; right: 0;
-  z-index: 999;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-  transform: translateY(-110%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-#section-nav.visible {
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.snav-inner {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: rgba(20, 16, 4, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(201,168,76,0.22);
-  border-radius: 100px;
-  padding: 4px 6px;
-  gap: 2px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.45);
-  margin-top: 8px;
-  max-width: calc(100vw - 32px);
-}
-
-.snav-pill {
-  position: absolute;
-  top: 4px;
-  left: 0;
-  height: calc(100% - 8px);
-  background: rgba(201,168,76,0.18);
-  border: 1px solid rgba(201,168,76,0.45);
-  border-radius: 100px;
-  transition: left 0.38s cubic-bezier(0.4, 0, 0.2, 1),
-              width 0.38s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.2s;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-}
-
-.snav-link {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  padding: 6px 14px;
-  border-radius: 100px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: #888;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.22s;
-  cursor: pointer;
-  background: none;
-  border: none;
-}
-
-.snav-link:hover { color: var(--gold-light); }
-.snav-link.snav-active { color: var(--gold); }
-
-@media (max-width: 768px) {
-  #section-nav { top: 60px; }
-  .snav-inner {
-    padding: 3px 4px;
-    gap: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .snav-inner::-webkit-scrollbar { display: none; }
-  .snav-link { padding: 5px 10px; font-size: 0.67rem; letter-spacing: 0.04em; }
-}
-
-@media (max-width: 480px) {
-  .snav-link { padding: 5px 8px; font-size: 0.63rem; }
-}
-
-/* FAQ */
-.faq { background: var(--dark); }
-.faq .faq-header { text-align: center; margin-bottom: 0.6rem; }
-.faq .faq-intro {
-color: #999;
-font-size: 0.98rem;
-text-align: center;
-max-width: 580px;
-margin: 0 auto 3rem;
-line-height: 1.75;
-}
-.faq-list { max-width: 780px; margin: 0 auto; }
-.faq-item {
-border-bottom: 1px solid rgba(201,168,76,0.15);
-border-radius: 6px;
-margin-bottom: 2px;
-transition: background 0.2s;
-}
-.faq-item:first-child { border-top: 1px solid rgba(201,168,76,0.15); }
-.faq-item:hover { background: rgba(255,255,255,0.03); }
-.faq-question {
-width: 100%;
-background: none;
-border: none;
-outline: none;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 1.2rem;
-padding: 1.25rem 1rem;
-text-align: left;
-color: var(--white);
-font-family: 'Inter', sans-serif;
-font-size: 0.97rem;
-font-weight: 600;
-line-height: 1.45;
-letter-spacing: 0.01em;
-transition: color 0.2s;
-}
-.faq-question:hover { color: var(--gold-light); }
-.faq-question:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
-.faq-question[aria-expanded="true"] { color: var(--gold); }
-.faq-icon {
-flex-shrink: 0;
-width: 22px;
-height: 22px;
-border: 1px solid rgba(201,168,76,0.35);
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 1rem;
-font-weight: 300;
-color: var(--gold);
-line-height: 1;
-user-select: none;
-transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s, border-color 0.2s;
-}
-.faq-question[aria-expanded="true"] .faq-icon {
-background: rgba(201,168,76,0.12);
-border-color: rgba(201,168,76,0.6);
-transform: rotate(45deg);
-}
-.faq-body {
-overflow: hidden;
-max-height: 0;
-transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.faq-body.faq-open { max-height: 500px; }
-.faq-answer {
-padding: 0 1rem 1.4rem 1rem;
-color: #eee;
-font-size: 0.91rem;
-line-height: 1.8;
-max-width: 680px;
-}
-.faq-cta {
-text-align: center;
-margin-top: 3.2rem;
-padding-top: 2.4rem;
-border-top: 1px solid rgba(201,168,76,0.12);
-}
-.faq-cta p { color: #888; font-size: 0.93rem; margin-bottom: 1.2rem; }
-@media (max-width: 600px) {
-.faq-question { font-size: 0.9rem; padding: 1.1rem 0.75rem; }
-.faq-answer { padding: 0 0.75rem 1.2rem; font-size: 0.88rem; }
-}
-
-/* EVENT POPUP MODAL */
-#ep-overlay {
-position: fixed;
-inset: 0;
-z-index: 10000;
-background: rgba(10,8,2,0.72);
-backdrop-filter: blur(4px);
--webkit-backdrop-filter: blur(4px);
-display: flex;
-align-items: center;
-justify-content: center;
-padding: 16px;
-opacity: 0;
-transition: opacity 0.32s cubic-bezier(0.4,0,0.2,1);
-pointer-events: none;
-}
-#ep-overlay.ep-visible {
-opacity: 1;
-pointer-events: auto;
-}
-#ep-modal {
-position: relative;
-background: var(--dark-2);
-border: 1px solid rgba(201,168,76,0.3);
-border-radius: 18px;
-width: 100%;
-max-width: 520px;
-max-height: 90vh;
-overflow-y: auto;
-overflow-x: hidden;
-scrollbar-width: thin;
-scrollbar-color: rgba(201,168,76,0.25) transparent;
-transform: scale(0.93) translateY(12px);
-transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
-box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(201,168,76,0.08);
-}
-#ep-overlay.ep-visible #ep-modal {
-transform: scale(1) translateY(0);
-}
-#ep-close {
-position: absolute;
-top: 14px;
-right: 14px;
-z-index: 2;
-width: 34px;
-height: 34px;
-border-radius: 50%;
-background: rgba(255,255,255,0.07);
-border: 1px solid rgba(255,255,255,0.12);
-color: #ccc;
-font-size: 1.1rem;
-line-height: 1;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-#ep-close:hover { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.4); color: var(--gold); }
-#ep-close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-#ep-img-wrap {
-position: relative;
-width: 100%;
-background: rgba(10,8,2,0.5);
-border-radius: 18px 18px 0 0;
-overflow: hidden;
-}
-#ep-img-wrap img {
-width: 100%;
-display: block;
-object-fit: cover;
-max-height: 260px;
-}
-#ep-img-wrap.ep-clickable { cursor: pointer; }
-#ep-img-hover-label {
-position: absolute;
-bottom: 0;
-left: 0;
-right: 0;
-background: rgba(0,0,0,0);
-color: transparent;
-padding: 10px 14px;
-font-size: 0.75rem;
-font-weight: 600;
-letter-spacing: 0.04em;
-text-align: right;
-transition: background 0.22s, color 0.22s;
-}
-#ep-img-wrap.ep-clickable:hover #ep-img-hover-label {
-background: rgba(0,0,0,0.38);
-color: rgba(232,201,122,0.95);
-}
-#ep-no-img { height: 10px; background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.04)); border-radius: 18px 18px 0 0; }
-#ep-body {
-padding: 1.6rem 1.8rem 1.8rem;
-}
-#ep-urgency {
-display: inline-block;
-font-size: 0.68rem;
-font-weight: 700;
-letter-spacing: 0.16em;
-text-transform: uppercase;
-padding: 0.28rem 0.85rem;
-border-radius: 100px;
-margin-bottom: 0.5rem;
-}
-#ep-urgency.ep-now { background: rgba(201,168,76,0.2); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.45); }
-#ep-urgency.ep-soon { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
-#ep-urgency.ep-next { background: rgba(255,255,255,0.05); color: #aaa; border: 1px solid rgba(255,255,255,0.1); }
-#ep-small-label {
-font-size: 0.72rem;
-font-weight: 600;
-letter-spacing: 0.14em;
-text-transform: uppercase;
-color: var(--gold);
-margin-bottom: 0.5rem;
-display: block;
-}
-#ep-title {
-font-family: 'Playfair Display', serif;
-font-size: clamp(1.1rem, 3vw, 1.4rem);
-color: var(--white);
-font-weight: 700;
-line-height: 1.25;
-margin-bottom: 1rem;
-}
-#ep-meta {
-display: flex;
-flex-direction: column;
-gap: 0.42rem;
-margin-bottom: 1rem;
-}
-.ep-meta-row {
-display: flex;
-align-items: flex-start;
-gap: 0.55rem;
-font-size: 0.86rem;
-color: #bbb;
-line-height: 1.45;
-}
-.ep-meta-dot {
-width: 6px;
-height: 6px;
-border-radius: 50%;
-background: var(--gold);
-flex-shrink: 0;
-margin-top: 0.42rem;
-}
-#ep-desc {
-font-size: 0.88rem;
-color: #999;
-line-height: 1.72;
-margin-bottom: 1.2rem;
-}
-#ep-fb-link {
-display: none;
-margin-bottom: 1.4rem;
-}
-#ep-fb-link a {
-color: var(--gold);
-font-size: 0.83rem;
-font-weight: 600;
-text-decoration: none;
-letter-spacing: 0.02em;
-}
-#ep-fb-link a:hover { text-decoration: underline; color: var(--gold-light); }
-#ep-cta {
-display: none;
-width: 100%;
-background: var(--gold);
-color: var(--dark);
-font-family: 'Inter', sans-serif;
-font-weight: 700;
-font-size: 0.95rem;
-padding: 0.9rem 1.5rem;
-border-radius: 7px;
-text-decoration: none;
-letter-spacing: 0.03em;
-text-align: center;
-transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-}
-#ep-cta:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,168,76,0.35); }
-#ep-cta:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
-@media (max-width: 560px) {
-#ep-modal { border-radius: 14px; max-height: 92vh; }
-#ep-img-wrap { border-radius: 14px 14px 0 0; }
-#ep-img-wrap img { max-height: 200px; }
-#ep-body { padding: 1.3rem 1.3rem 1.5rem; }
-#ep-title { font-size: 1.05rem; }
-.ep-meta-row { font-size: 0.82rem; }
-#ep-desc { font-size: 0.85rem; }
-}
-
-/* CONTACT FORM */
-.contact-form-wrap {
-  margin-top: 2.8rem;
-  text-align: left;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(201,168,76,0.2);
-  border-radius: 16px;
-  padding: 2.2rem 2.4rem;
-  max-width: 560px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.contact-form-wrap .form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-@media (max-width: 560px) {
-  .contact-form-wrap .form-row { grid-template-columns: 1fr; }
-  .contact-form-wrap { padding: 1.6rem 1.4rem; }
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-}
-.form-group label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #aaa;
-}
-.form-group input,
-.form-group textarea,
-.form-group select {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(201,168,76,0.2);
-  border-radius: 7px;
-  padding: 0.75rem 1rem;
-  color: var(--white);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.93rem;
-  line-height: 1.5;
-  outline: none;
-  transition: border-color 0.2s, background 0.2s;
-  width: 100%;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-  color: #555;
-}
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  border-color: rgba(201,168,76,0.55);
-  background: rgba(255,255,255,0.08);
-}
-.form-group textarea {
-  resize: vertical;
-  min-height: 110px;
-}
-.form-group select option {
-  background: #1a1a1a;
-  color: var(--white);
-}
-.form-submit-row {
-  margin-top: 0.5rem;
-}
-.form-submit-row .btn-primary {
-  width: 100%;
-  text-align: center;
-  border: none;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-}
-.form-success {
-  display: none;
-  text-align: center;
-  padding: 1.6rem 0 0.8rem;
-  color: var(--gold-light);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-.form-success .success-icon {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-/* TESTIMONIALS */
-.testimonials { background: var(--dark); }
-.testimonials .header { text-align: center; margin-bottom: 3rem; }
-.testimonials .section-title { color: var(--white); }
-.testimonials .section-intro { color: #999; margin: 0 auto; }
-.testimonials-badge-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  margin-bottom: 0.6rem;
-  flex-wrap: wrap;
-}
-.testimonials-stars { color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; }
-.testimonials-score { color: #ccc; font-size: 0.9rem; }
-.testimonial-carousel { position: relative; max-width: 760px; margin: 0 auto; }
-.testimonial-track { overflow: hidden; }
-.testimonial-slides {
-  display: flex;
-  transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
-}
-.testimonial-slide { flex: 0 0 100%; padding: 0 1rem; }
-.testimonial-card {
-  background: var(--dark-2);
-  border: 1px solid rgba(201,168,76,0.18);
-  border-radius: 14px;
-  padding: 2rem 2.2rem;
-  text-align: center;
-  min-height: 220px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.testimonial-stars { color: var(--gold); font-size: 1rem; letter-spacing: 2px; margin-bottom: 0.9rem; }
-.testimonial-text { color: #ddd; font-size: 0.98rem; line-height: 1.75; margin-bottom: 1.2rem; font-style: italic; }
-.testimonial-author { color: var(--gold-light); font-weight: 600; font-size: 0.9rem; }
-.testimonial-time { color: #777; font-size: 0.78rem; margin-top: 0.2rem; }
-.testimonial-nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(201,168,76,0.3);
-  color: var(--gold);
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-  z-index: 2;
-}
-.testimonial-nav-btn:hover { background: rgba(201,168,76,0.15); }
-.testimonial-prev { left: -10px; }
-.testimonial-next { right: -10px; }
-.testimonial-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.4rem; }
-.testimonial-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: background 0.2s;
-}
-.testimonial-dot.active { background: var(--gold); }
-.testimonials-google-link { display: block; text-align: center; margin-top: 2rem; color: #888; font-size: 0.85rem; }
-.testimonials-google-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
-.testimonials-google-link a:hover { text-decoration: underline; }
-@media (max-width: 600px) {
-  .testimonial-card { padding: 1.6rem 1.4rem; }
-  .testimonial-prev { left: 2px; }
-  .testimonial-next { right: 2px; }
-}
-
-/* ABOUT ME */
-.about-me {
-  background: var(--cream);
-}
-.about-me .inner {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 3.5rem;
-  align-items: flex-start;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.about-me-image-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.about-me-photo-frame {
-  width: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 3px solid var(--gold);
-  box-shadow: 0 8px 32px rgba(26,26,26,0.18), 0 2px 8px rgba(201,168,76,0.15);
-  background: var(--dark);
-}
-.about-me-photo-frame img {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-  aspect-ratio: 3/4;
-}
-.about-me-caption {
-  margin-top: 1.1rem;
-  text-align: center;
-}
-.about-me-caption .caption-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--dark);
-  display: block;
-  margin-bottom: 0.25rem;
-}
-.about-me-caption .caption-title {
-  font-size: 0.82rem;
-  color: var(--gold);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  display: block;
-  margin-bottom: 0.2rem;
-  text-transform: uppercase;
-}
-.about-me-caption .caption-detail {
-  font-size: 0.82rem;
-  color: var(--text-light);
-  display: block;
-  line-height: 1.6;
-}
-.about-me-content {
-  padding-top: 0.25rem;
-}
-.about-me-content p {
-  color: var(--text);
-  font-size: 1rem;
-  line-height: 1.85;
-  margin-bottom: 1.25rem;
-}
-.about-me-content p:last-child {
-  margin-bottom: 0;
-}
-.about-me-divider {
-  width: 60px;
-  height: 3px;
-  background: var(--gold);
-  border-radius: 2px;
-  margin: 1.5rem 0 2rem 0;
-}
-.about-me-bottom-divider {
-  border: none;
-  border-top: 1px solid #E8E0D0;
-  max-width: 860px;
-  margin: 3rem auto 0;
-}
-@media (max-width: 768px) {
-  .about-me .inner {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  .about-me-photo-frame {
-    max-width: 280px;
-    margin: 0 auto;
-  }
-}
-
-</style>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need to be present during the sale?","acceptedAnswer":{"@type":"Answer","text":"No. Most clients choose not to be present. Better Selling with Bailey handles setup, pricing, customer interactions, checkout, and cleanup so you can go about your day."}},{"@type":"Question","name":"Why wouldn't I just run the sale myself?","acceptedAnswer":{"@type":"Answer","text":"Running a successful sale takes significantly more work than most people expect. Proper pricing, advertising, setup, customer interactions, checkout, and cleanup all require time and experience. Better Selling with Bailey handles the entire process while helping maximize turnout and sell-through, allowing you to focus on other things."}},{"@type":"Question","name":"What kinds of items can be sold?","acceptedAnswer":{"@type":"Answer","text":"We work with a wide variety of items including tools, collectibles, LEGO, Star Wars items, hunting and fishing gear, Harley Davidson merchandise, vintage clothing, sports cards, video games, household goods, antiques, and more."}},{"@type":"Question","name":"How are items priced?","acceptedAnswer":{"@type":"Answer","text":"Items are researched and priced using current market data, recent sold listings, and years of real-world buying and selling experience to maximize sell-through while protecting value."}},{"@type":"Question","name":"How much inventory do I need?","acceptedAnswer":{"@type":"Answer","text":"Every situation is different, but generally the more inventory available, the more successful the event will be. A consultation can determine if your collection is a good fit."}},{"@type":"Question","name":"How much money can I expect to make?","acceptedAnswer":{"@type":"Answer","text":"Every sale is different and results depend on the quantity, quality, and demand for the items being sold. During the consultation process, realistic expectations can be provided based on your inventory, market demand, and comparable past sales."}},{"@type":"Question","name":"What happens to unsold items?","acceptedAnswer":{"@type":"Answer","text":"You decide. Items can be kept, donated, removed, or handled according to a plan we discuss before the sale."}},{"@type":"Question","name":"How far in advance should I book?","acceptedAnswer":{"@type":"Answer","text":"The earlier the better. Sale dates, especially during spring and summer, can fill quickly. Booking in advance gives more time for promotion and preparation."}},{"@type":"Question","name":"What if it rains?","acceptedAnswer":{"@type":"Answer","text":"Weather is monitored closely leading up to the event. Rain insurance options may be available depending on the sale package selected."}},{"@type":"Question","name":"Do you provide advertising and promotion?","acceptedAnswer":{"@type":"Answer","text":"Yes. Better Selling with Bailey creates and manages advertising across multiple platforms to help attract as many qualified buyers as possible."}},{"@type":"Question","name":"What areas do you serve?","acceptedAnswer":{"@type":"Answer","text":"We primarily provide estate sale services throughout Erie County and surrounding areas, but additional locations may be considered depending on the size and scope of the sale."}},{"@type":"Question","name":"How do I get started?","acceptedAnswer":{"@type":"Answer","text":"Simply reach out directly to discuss your inventory, goals, and determine whether a Better Selling with Bailey event is the right fit."}}]}
-</script>
+<meta name="twitter:title" content="Estate Sales in Erie County, PA | Better Selling With Bailey">
+<meta name="twitter:description" content="I price, stage, advertise and run your estate sale, then clear out what's left. A flat $995 plus 20% of sales.">
+<meta name="twitter:image" content="https://bettersellingwithbailey.com/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "Better Selling With Bailey", "description": "Owner-run estate sale management in Erie County, PA. A flat $995 fee plus 20% of sales, with pricing, staging, advertising, sale days and removal of leftovers included. Removing large furniture is an optional $295.", "url": "https://bettersellingwithbailey.com/", "telephone": "+18143238239", "email": "bettersellingwithbailey@gmail.com", "image": "https://bettersellingwithbailey.com/assets/photos/collectibles-garage-sale.jpg", "logo": "https://bettersellingwithbailey.com/favicon.svg", "priceRange": "$995 flat fee + 20% commission", "address": {"@type": "PostalAddress", "addressLocality": "North East", "addressRegion": "PA", "addressCountry": "US"}, "areaServed": [{"@type": "City", "name": "Erie, PA"}, {"@type": "City", "name": "Millcreek, PA"}, {"@type": "City", "name": "Harborcreek, PA"}, {"@type": "City", "name": "North East, PA"}, {"@type": "City", "name": "Fairview, PA"}, {"@type": "City", "name": "Girard, PA"}, {"@type": "City", "name": "Edinboro, PA"}, {"@type": "City", "name": "Corry, PA"}, {"@type": "AdministrativeArea", "name": "Erie County, Pennsylvania"}], "founder": {"@type": "Person", "name": "Dorian Bailey", "alumniOf": "Penn State Behrend"}, "sameAs": ["https://www.facebook.com/bettersellingwithbailey/"]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does it cost?", "acceptedAnswer": {"@type": "Answer", "text": "A flat $995 fee plus 20% of total sales. Pricing, staging, advertising, running the sale and removing leftovers are all included, and the walkthrough before you book is free. The one optional extra is $295 to haul away large furniture. For comparison, Erie estate sale companies typically charge 35% to 50% commission."}}, {"@type": "Question", "name": "When do I pay the $995?", "acceptedAnswer": {"@type": "Answer", "text": "Usually when we book your sale dates. If that's hard, it can come out of the sale proceeds instead. Either way, the 20% is figured on total sales, so the math is the same."}}, {"@type": "Question", "name": "When do I get paid?", "acceptedAnswer": {"@type": "Answer", "text": "As soon as the sale ends."}}, {"@type": "Question", "name": "Do I need to be there during the sale?", "acceptedAnswer": {"@type": "Answer", "text": "No. Most clients aren't. I handle setup, pricing, customers, checkout and cleanup."}}, {"@type": "Question", "name": "Are you insured? Do you use a contract?", "acceptedAnswer": {"@type": "Answer", "text": "Yes to both. Every sale has a written contract, and the business is insured."}}, {"@type": "Question", "name": "Is there a minimum sale size?", "acceptedAnswer": {"@type": "Answer", "text": "No. Smaller sales are welcome. Because the $995 is a flat fee, it's a bigger share of a small sale, so I'll walk you through the numbers first and help you decide whether a managed sale makes sense."}}, {"@type": "Question", "name": "Is the sale held inside or outside?", "acceptedAnswer": {"@type": "Answer", "text": "Usually inside the home, which works year-round. A garage or yard sale is an option too, especially if you're still living in the house."}}, {"@type": "Question", "name": "What happens to things that don't sell?", "acceptedAnswer": {"@type": "Answer", "text": "You decide. Keep them, donate them, or have them removed at no charge. Large furniture is the one exception: hauling it away is an optional $295, and you don't have to decide until the sale ends."}}, {"@type": "Question", "name": "What if it rains?", "acceptedAnswer": {"@type": "Answer", "text": "Weather only matters for outdoor sales. If severe weather forces a cancellation before the sale starts, you get a 90% refund of fees paid, or you can put them toward a new date. The other 10% covers planning and advertising already done. Whenever possible, I'll reschedule rather than cancel."}}, {"@type": "Question", "name": "How do you price items?", "acceptedAnswer": {"@type": "Answer", "text": "With current market data, recent sold listings (not asking prices) and years of buying and selling experience."}}, {"@type": "Question", "name": "What kinds of items sell best?", "acceptedAnswer": {"@type": "Answer", "text": "Tools, collectibles, LEGO, Star Wars, sports and trading cards, video games, hunting and fishing gear, Harley-Davidson merchandise, vintage clothing, antiques and household goods all do well."}}, {"@type": "Question", "name": "What areas do you serve?", "acceptedAnswer": {"@type": "Answer", "text": "Erie County, including Erie, Millcreek, Harborcreek, North East, Fairview, Girard, Edinboro and Corry. Larger sales outside the county are considered case by case."}}, {"@type": "Question", "name": "How far ahead should I book?", "acceptedAnswer": {"@type": "Answer", "text": "As early as you can. I take on 2 to 3 sales a month, and spring and summer dates fill first."}}, {"@type": "Question", "name": "Why not just run the sale myself?", "acceptedAnswer": {"@type": "Answer", "text": "You can, but pricing, advertising, setup, staffing and cleanup take far more time than most people expect. I handle all of it, and careful pricing and promotion help the sale bring in more."}}]}</script>
 </head>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Better Selling With Bailey",
-  "description": "Estate sale and sale management services in Erie County, PA. We handle pricing, staging, promotion, selling, cleanup, and optional leftover removal — you keep the proceeds.",
-  "url": "https://bettersellingwithbailey.com/",
-  "email": "bettersellingwithbailey@gmail.com",
-  "telephone": "+18143238239",
-  "areaServed": {
-    "@type": "AdministrativeArea",
-    "name": "Erie County, Pennsylvania"
-  },
-  "serviceType": "Estate Sale Management",
-  "priceRange": "$995",
-  "sameAs": [
-    "https://www.facebook.com/bettersellingwithbailey/"
-  ]
-}
-</script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Dorian Bailey",
-      "jobTitle": "Founder",
-      "worksFor": {
-        "@type": "LocalBusiness",
-        "name": "Better Selling With Bailey"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "North East",
-        "addressRegion": "PA",
-        "addressCountry": "US"
-      },
-      "url": "https://bettersellingwithbailey.com/",
-      "email": "bettersellingwithbailey@gmail.com",
-      "sameAs": [
-        "https://www.facebook.com/bettersellingwithbailey/"
-      ],
-      "alumniOf": {
-        "@type": "EducationalOrganization",
-        "name": "Penn State Behrend"
-      },
-      "knowsAbout": ["estate sales", "sale management", "collectibles pricing", "garage sales", "specialty sales"]
-    }
-  </script>
-<body>
-<!-- Better Selling With Bailey -->
-<nav>
-<a href="/" class="nav-logo">Better Selling With Bailey</a>
-<ul class="nav-links">
-<li><a href="#news">News</a></li>
-<li><a href="#ideal">Ideal For</a></li>
-<li><a href="#events">Events</a></li>
-<li><a href="#how-it-works">How It Works</a></li>
-<li><a href="#about">About</a></li>
-<li><a href="#included">Pricing</a></li>
-<li><a href="#testimonials">Reviews</a></li>
-<li><a href="#weather">Weather</a></li>
-<li><a href="/blog/">Blog</a></li>
-<li><a href="#faq">FAQ</a></li>
-<li><a href="#contact" class="nav-cta">Get Started</a></li>
-</ul>
-<button class="nav-hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-mobile-menu">
-<span></span><span></span><span></span>
-</button>
-</nav>
-<div class="nav-mobile-menu" id="nav-mobile-menu" role="navigation" aria-label="Mobile navigation">
-<a href="#news" class="nav-mobile-link">News</a>
-<a href="#ideal" class="nav-mobile-link">Ideal For</a>
-<a href="#events" class="nav-mobile-link">Events</a>
-<a href="#how-it-works" class="nav-mobile-link">How It Works</a>
-<a href="#about" class="nav-mobile-link">About</a>
-<a href="#included" class="nav-mobile-link">Pricing</a>
-<a href="#testimonials" class="nav-mobile-link">Reviews</a>
-<a href="#weather" class="nav-mobile-link">Weather</a>
-<a href="/blog/" class="nav-mobile-link">Blog</a>
-<a href="#faq" class="nav-mobile-link">FAQ</a>
-<a href="#contact" class="nav-mobile-cta nav-mobile-link">Get Started</a>
-</div>
+<body class="has-action-bar">
 
-<!-- STICKY SECTION NAV -->
-<div id="section-nav" role="navigation" aria-label="Page sections">
-  <div class="snav-inner">
-    <div class="snav-pill" id="snav-pill"></div>
-    <a href="#news" class="snav-link" data-section="news">News</a>
-    <a href="#ideal" class="snav-link" data-section="ideal">Ideal For</a>
-    <a href="#events" class="snav-link" data-section="events">Events</a>
-    <a href="#how-it-works" class="snav-link" data-section="how-it-works">How It Works</a>
-    <a href="#included" class="snav-link" data-section="included">Pricing</a>
-<a href="#testimonials" class="snav-link" data-section="testimonials">Reviews</a>
-    <a href="#weather" class="snav-link" data-section="weather">Weather</a>
-    <a href="#faq" class="snav-link" data-section="faq">FAQ</a>
-    <a href="#contact" class="snav-link" data-section="contact">Get Started</a>
+<div class="announce" id="announce" hidden></div>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Better Selling With Bailey, home"><svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#191714"/><g font-family="Playfair Display, Georgia, serif" font-weight="700" fill="#C9A84C"><text x="8" y="19" font-size="15">B</text><text x="15.5" y="26.5" font-size="15">S</text><text x="22" y="34" font-size="15">B</text></g></svg><span class="brand-name">Better Selling With Bailey</span></a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#recent-sales">Recent sales</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="blog/">Blog</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-phone" href="tel:+18143238239">(814) 323-8239</a>
+      <a class="btn btn-gold" href="#contact">Book a free walkthrough</a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
   </div>
-</div>
+  <div class="nav-panel" id="nav-panel">
+    <a href="#how-it-works">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#recent-sales">Recent sales</a>
+    <a href="#about">About</a>
+    <a href="#faq">FAQ</a>
+    <a href="blog/">Blog</a>
+    <a class="panel-phone" href="tel:+18143238239">Call (814) 323-8239</a>
+    <a class="btn btn-gold" href="#contact">Book a free walkthrough</a>
+  </div>
+</header>
 
+<main id="main">
+
+<!-- HERO -->
 <section class="hero">
-<div class="hero-inner">
-<span class="hero-badge">Estate Sale Management — Erie County, PA</span>
-<h1>Erie County Estate Sales, Made Simple.<br><span>Keep More of the Sales.</span><br>We'll Even Remove What's Left for Free.</h1>
-<div class="hero-stats">
-<div class="stat"><span class="stat-num">$35K+</span><span class="stat-label">Total Sales Returned to Sellers</span></div>
-<div class="stat"><span class="stat-num">$16K+</span><span class="stat-label">Top Single Event Sales</span></div>
-<div class="stat"><span class="stat-num">20%</span><span class="stat-label">Sales Commission</span></div>
-<div class="stat"><span class="stat-num">$0</span><span class="stat-label">Leftover Removal Cost</span></div>
-</div>
-<div class="hero-cta">
-<a href="#contact" class="btn-primary">Book Your Sale</a>
-<a href="#included" class="btn-outline">See What's Included</a>
-</div>
-</div>
-</section>
-
-<section class="news" id="news">
-<div class="inner-narrow">
-<p class="section-label">As Seen In</p>
-<h2 class="section-title">In the News</h2>
-<p class="section-intro">Our sales draw real crowds and real interest &mdash; even in challenging weather conditions.</p>
-<div class="news-card">
-<p class="news-source">YourErie.com &middot; Local News &middot; May 2026</p>
-<h3 class="news-headline">Star Wars Sale Draws Crowd in North East</h3>
-<p class="news-excerpt">A Star Wars collector's sale in North East drew enthusiastic buyers even through heavy rain and wind. Organizers reported a strong turnout, with fans eager to browse a collection spanning action figures, books, and sealed LEGO sets &mdash; showcasing just how powerfully a well-run specialty sale can bring a community together and generate real results.</p>
-<a href="https://www.yourerie.com/news/local-news/star-wars-sale-draws-crowd-in-north-east/" target="_blank" rel="noopener noreferrer" class="news-link">Read the Full Story &rarr;</a>
-</div>
-</div>
-</section>
-
-<section class="ideal" id="ideal">
-<div class="inner">
-<div class="header">
-<p class="section-label">Best-Performing Categories</p>
-<h2 class="section-title">Ideal For</h2>
-<p class="section-intro">These categories consistently attract buyers at our Erie County estate sales and typically provide the strongest opportunity to generate meaningful proceeds.</p>
-</div>
-<div class="category-list">
-<div class="category-item"><span class="cat-dot"></span><span>Clothing Collections</span></div>
-<div class="category-item"><span class="cat-dot"></span><span>Toys &amp; LEGO Collections</span></div>
-<div class="category-item"><span class="cat-dot"></span><span>Video Games &amp; Electronics</span></div>
-<div class="category-item"><span class="cat-dot"></span><span>Antiques &amp; Vintage Items</span></div>
-<div class="category-item"><span class="cat-dot"></span><span>Sports Cards &amp; Collectibles</span></div>
-<div class="category-item"><span class="cat-dot"></span><span>Trading Card Collections</span></div>
-<div class="category-item"><span class="cat-dot"></span><span>General Household Items</span></div>
-<div class="category-item"><span class="cat-dot"></span><span>Tools &amp; Equipment</span></div>
-</div>
-</div>
-</section>
-
-<section class="events" id="events">
-<div class="inner-narrow">
-<p class="section-label">On the Calendar</p>
-<h2 class="section-title">Upcoming Events</h2>
-<p class="section-intro">Browse our scheduled sales below and follow us on Facebook to stay up to date on new events as they are announced.</p>
-<div class="events-grid" id="events-grid">
-<!-- Event cards rendered dynamically by BSWB_EVENTS -->
-</div>
-</div>
-</section>
-
-<section class="how-it-works" id="how-it-works">
-<div class="inner">
-<div class="header">
-<p class="section-label">The Process</p>
-<h2 class="section-title">Everything Handled, Start to Finish</h2>
-<p class="section-intro">Every estate sale is hosted at your home in Erie County, and you don't need to be present during the event unless you choose to be — we take care of everything.</p>
-</div>
-<div class="steps">
-<div class="step">
-<div class="step-num">1</div>
-<h3>Pricing &amp; Organization</h3>
-<p>We assess and price all of your sale items strategically to maximize value and attract the right buyers.</p>
-</div>
-<div class="step">
-<div class="step-num">2</div>
-<h3>Staging &amp; Setup</h3>
-<p>Your merchandise is organized and staged professionally to create an appealing, easy-to-browse shopping environment.</p>
-</div>
-<div class="step">
-<div class="step-num">3</div>
-<h3>Promotion &amp; Advertising</h3>
-<p>We handle all marketing and advertising to drive traffic and bring the right buyers to your event.</p>
-</div>
-<div class="step">
-<div class="step-num">4</div>
-<h3>Day-of Management</h3>
-<p>Our team handles all customer interactions, sales, and event coordination throughout the entire event.</p>
-</div>
-<div class="step">
-<div class="step-num">5</div>
-<h3>Cleanup &amp; Removal</h3>
-<p>At the end of the sale, we handle teardown. Unsold items can be removed free of charge &mdash; your choice.</p>
-</div>
-<div class="step">
-<div class="step-num">6</div>
-<h3>You Keep the Proceeds</h3>
-<p>The earnings from the sale go directly to you, minus any applicable commission per your chosen service tier.</p>
-</div>
-</div>
-</div>
-</section>
-
-<section class="included" id="included">
-<div class="inner">
-<div class="section-header">
-<p class="section-label">Transparent Pricing</p>
-<h2 class="section-title">One Flat Rate. No Hidden Fees.</h2>
-<p class="section-intro">One simple, transparent pricing plan that includes our full suite of estate sale management services.</p>
-</div>
-
-<div class="pricing-tiers">
-<div class="pricing-tier">
-<span class="tier-badge-subtle">Budget-Friendly Option</span>
-<div class="tier-title">Standard Commission</div>
-<div class="price-tag">$995</div>
-<p class="price-note">Flat fee + 20% commission on total sales revenue</p>
-<ul class="included-list">
-<li>Pricing of all sale items</li>
-<li>Organizing and staging merchandise</li>
-<li>Professional promotion and advertising</li>
-<li>Sale setup and teardown</li>
-<li>Customer interactions and sales management</li>
-<li>General event oversight and coordination</li>
-<li>Free removal of unwanted remaining inventory after the sale</li>
-</ul>
-<div style="margin-top:1.6rem;">
-<a href="#contact" class="btn-primary" style="display:block;text-align:center;padding:0.8rem 1.5rem;font-size:0.93rem;">Book Your Sale &rarr;</a>
-</div>
-</div>
-</div>
-
-<div class="included-info">
-<div class="keep-100">
-<h3>How Our Pricing Works</h3>
-<p>A single flat fee of $995 plus a 20% commission on total sales revenue — simple, transparent, and easy to understand before your sale even begins.</p>
-</div>
-<div style="display:flex; flex-direction:column; gap:0.9rem;">
-<div class="info-card">
-<h4>What Happens After the Sale?</h4>
-<p>At the conclusion of the event, you decide what happens next. Keep any remaining items you wish to retain, or have us remove the remaining inventory completely free of charge.</p>
-</div>
-<div class="info-card">
-<h4>Hosted at Your Home</h4>
-<p>Many clients view this service as a garage, basement, attic, or collection cleanout &mdash; with the added benefit of potentially making money in the process. Even if your primary goal is reclaiming your space, the sale gives your items an opportunity to generate income before they're removed.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<section class="testimonials" id="testimonials">
-<div class="inner-narrow">
-<div class="header">
-<p class="section-label">Google Reviews</p>
-<h2 class="section-title">What Our Clients Say</h2>
-<div class="testimonials-badge-row" id="testimonials-badge-row"></div>
-<p class="section-intro" style="margin:0 auto;">Real feedback from real clients, pulled directly from our Google Business Profile.</p>
-</div>
-<div class="testimonial-carousel">
-<button class="testimonial-nav-btn testimonial-prev" id="tm-prev" aria-label="Previous review">&#8249;</button>
-<div class="testimonial-track">
-<div class="testimonial-slides" id="tm-slides">
-<!-- slides injected by JS from reviews.json -->
-</div>
-</div>
-<button class="testimonial-nav-btn testimonial-next" id="tm-next" aria-label="Next review">&#8250;</button>
-</div>
-<div class="testimonial-dots" id="tm-dots"></div>
-<p class="testimonials-google-link">See all of our reviews on <a href="https://www.google.com/search?q=Better+Selling+With+Bailey+reviews" target="_blank" rel="noopener">Google</a>.</p>
-</div>
-</section>
-
-<section class="about-me" id="about">
-<div class="inner">
-  <div class="about-me-image-col">
-    <div class="about-me-photo-frame">
-      <img src="/dorian-bailey-headshot.jpg" alt="Dorian Bailey, Founder of Better Selling With Bailey" loading="lazy">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Estate sales in Erie County, PA</span>
+      <h1>Clearing out a home? <em>Keep more</em> of what it sells for.</h1>
+      <p class="hero-lead">I price, stage, advertise and run your estate sale, then clear out what's left. You pay a flat $995 plus 20% of sales, where Erie estate sale companies typically take 35% to 50%.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-gold" href="#contact">Book a free walkthrough</a>
+        <a class="btn btn-ghost" href="tel:+18143238239"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.6a1 1 0 01-.25 1z" fill="currentColor"/></svg>Call (814) 323-8239</a>
+      </div>
+      <ul class="checks">
+        <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Insured</li>
+        <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Written contract</li>
+        <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Paid when the sale ends</li>
+        <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Free leftover removal</li>
+      </ul>
     </div>
-    <div class="about-me-caption">
-      <span class="caption-name">Dorian Bailey</span>
-      <span class="caption-title">Founder, Better Selling With Bailey</span>
-      <span class="caption-detail">North East, Pennsylvania</span>
-      <span class="caption-detail">Penn State Behrend | Marketing &amp; MIS</span>
+    <div class="hero-media">
+      <figure class="hero-photo">
+        <img src="assets/photos/collectibles-garage-sale.jpg" width="1206" height="676" alt="A garage set up for a sale, with shelves and tables of Star Wars collectibles and boxed LEGO sets, and helpers in yellow shirts">
+        <figcaption>A recent collector sale</figcaption>
+      </figure>
+      <div class="tag" aria-label="Pricing summary">
+        <span class="tag-string" aria-hidden="true"></span>
+        <span class="tag-label">Your price</span>
+        <div class="tag-price"><span class="big">$995</span><span class="plus">+ 20%</span></div>
+        <p class="tag-sub">Flat fee, plus 20% of total sales</p>
+        <ul class="tag-rows">
+          <li class="muted"><span>Typical Erie rate</span><span>35&ndash;50%</span></li>
+          <li><span>Leftover removal</span><span>Free</span></li>
+          <li><span>Large furniture</span><span>Optional $295</span></li>
+          <li><span>You're paid</span><span>Same day</span></li>
+        </ul>
+      </div>
     </div>
   </div>
-  <div class="about-me-content">
-    <p class="section-label">The Person Behind the Sale</p>
-    <h2 class="section-title">About Me</h2>
-    <div class="about-me-divider"></div>
-    <p>My name is Dorian Bailey, and I’m the founder of Better Selling With Bailey, an estate sale and sale management company serving Erie County, Pennsylvania.</p>
-    <p>As a lifelong resident of North East, Pennsylvania, I’ve always believed in the value of community, hard work, and treating people fairly. I graduated from North East High School and am currently studying Marketing and Management Information Systems at Penn State Behrend.</p>
-    <p>Long before Better Selling With Bailey existed, I spent years buying, selling, researching, and pricing items of all kinds. What began as a personal interest eventually grew into a passion for helping others navigate the selling process and get the most value from the items they no longer need.</p>
-    <p>When I created Better Selling With Bailey, I wanted to build a business that felt personal. In an industry where clients are often passed between different employees, I wanted to offer something different: a direct, one-on-one experience from start to finish.</p>
-    <p>When you work with Better Selling With Bailey, you’ll work directly with me. From our initial consultation to the final day of the sale, I am personally involved in the planning, pricing, promotion, and execution of every event. Some clients prefer to collaborate on pricing and be involved in the decision-making process, while others would rather leave those details in my hands. Either approach is welcome. My goal is to create a process that fits your comfort level and goals.</p>
-    <p>I believe communication and transparency are essential. Selling personal belongings can be an emotional and sometimes overwhelming process. Whether you’re downsizing, settling an estate, helping a family member, or simply clearing out years of accumulated items, you deserve clear communication, honest guidance, and a partner you can trust.</p>
-    <p>At its core, Better Selling With Bailey is about helping people. It’s about creating successful sales, building relationships, and making what can feel like a daunting process as simple and stress-free as possible.</p>
-    <p>Whether you’re downsizing, settling an estate, or simply ready to clear some space, I’m committed to making the process as smooth and stress-free as possible.</p>
+</section>
+
+<section class="proof" aria-label="Results so far">
+  <div class="wrap">
+    <div class="proof-item"><span class="proof-num">$35K+</span><span class="proof-label">Returned to sellers</span></div>
+    <div class="proof-item"><span class="proof-num">$16K+</span><span class="proof-label">Top single sale</span></div>
+    <div class="proof-item"><span class="proof-num">5.0 <span class="stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span></span><span class="proof-label">5 Google reviews</span></div>
+    <div class="proof-item"><span class="proof-num">2&ndash;3</span><span class="proof-label">Sales a month, each with my full attention</span></div>
   </div>
-</div>
-<hr class="about-me-bottom-divider">
 </section>
 
-<section class="weather" id="weather">
-<div class="inner-narrow">
-<p class="section-label">Peace of Mind</p>
-<h2 class="section-title">Weather &amp; Cancellation Policy</h2>
-<p class="section-intro">Outdoor sales are subject to weather conditions. Here is what you need to know.</p>
-<div class="weather-cards">
-<div class="weather-card">
-<h3>Cancellation &amp; Refund Policy</h3>
-<p>If severe weather is expected and a sale must be canceled before the event begins, clients will receive a <strong style="color:var(--gold-light)">90% refund</strong> of any fees paid, or may choose to apply those funds toward a future sale date.</p>
-<p style="margin-top:0.8rem;">The remaining <strong style="color:var(--gold-light)">10% is non-refundable</strong> and covers the time, planning, preparation, scheduling, advertising, and administrative work completed leading up to the event.</p>
-</div>
-<div class="weather-card">
-<h3>Rescheduling &amp; Safety</h3>
-<p>Whenever possible, Better Selling with Bailey will work with clients to reschedule the sale for a future available date rather than canceling outright.</p>
-<p style="margin-top:0.8rem;">Weather-related decisions are made with the safety of customers, staff, merchandise, and property in mind. All weather-related cancellation decisions are made at the sole discretion of Better Selling with Bailey.</p>
-</div>
-</div>
-<div class="weather-card" style="margin-top:1.5rem; background:var(--dark-2); border-radius:12px; padding:1.8rem; border:1px solid rgba(255,255,255,0.06);">
-<h3 style="color:var(--white); margin-bottom:0.8rem; font-size:1rem;">Examples of Severe Weather</h3>
-<p style="color:#999; font-size:0.88rem; line-height:1.65;">Severe weather may include sustained heavy rainfall, a high likelihood of rain throughout the majority of sale hours, severe thunderstorms, lightning, flooding concerns, high winds, weather advisories or warnings, or other conditions that would significantly impact attendance, safety, or the ability to conduct the sale effectively.</p>
-</div>
-</div>
+<!-- WHO I HELP -->
+<section class="section" id="who">
+  <span id="ideal"></span>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Who I help</span>
+      <h2>Three reasons people call me</h2>
+      <p>Most clients are clearing a family home, moving somewhere smaller, or selling a collection they've built over the years.</p>
+    </div>
+    <div class="paths">
+      <article class="path">
+        <h3>Settling an estate</h3>
+        <p>When a parent passes away or moves into care, the house usually has to be emptied before it can be sold. I handle the whole sale, and you don't need to be there for any of it.</p>
+        <ul>
+          <li>Pricing, staging, advertising and sale days handled</li>
+          <li>You're paid as soon as the sale ends</li>
+          <li>Leftovers kept, donated or removed free</li>
+        </ul>
+        <a class="more" href="#how-it-works">How it works &rarr;</a>
+      </article>
+      <article class="path">
+        <h3>Downsizing or moving</h3>
+        <p>Moving to a smaller home or a senior community? Set aside what you're keeping and I'll sell the rest on your schedule.</p>
+        <ul>
+          <li>Sale inside the home, or in the garage or yard</li>
+          <li>Be as involved in pricing as you like</li>
+          <li>Book early: I take on only 2 to 3 sales a month</li>
+        </ul>
+        <a class="more" href="#pricing">See pricing &rarr;</a>
+      </article>
+      <article class="path">
+        <h3>Selling a collection</h3>
+        <p>LEGO, Star Wars, sports and trading cards, video games, tools, hunting and fishing gear, Harley-Davidson. I price from what collectors actually pay.</p>
+        <ul>
+          <li>Researched against recent sold listings</li>
+          <li>Advertised to collectors, not just bargain hunters</li>
+          <li>My Star Wars collector sale drew a crowd through rain and wind</li>
+        </ul>
+        <a class="more" href="#recent-sales">Recent sales &rarr;</a>
+      </article>
+    </div>
+  </div>
 </section>
 
-<section class="blog-cta-band" style="background:var(--cream); padding:60px 5%; text-align:center;">
-<h3 style="font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--dark); margin-bottom:0.75rem;">Want More Estate Sale Tips?</h3>
-<p style="color:var(--text-light); margin-bottom:1.5rem; max-width:500px; margin-left:auto; margin-right:auto;">Local insights on estate sales, downsizing, and antiques in Erie County.</p>
-<a href="/blog/" class="btn-primary">Read Our Blog Posts</a>
+<!-- CALCULATOR -->
+<section class="section calc" id="calculator">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Do the math</span>
+      <h2>See what you'd keep</h2>
+      <p>Move the slider to your best guess of what everything will sell for. Not sure? I'll give you a realistic range at your free walkthrough.</p>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-input">
+        <label for="calc-amount">Estimated total sales</label>
+        <div class="calc-amount"><span aria-hidden="true">$</span><input id="calc-amount" type="text" inputmode="numeric" value="15,000" autocomplete="off"></div>
+        <input class="calc-range" id="calc-range" type="range" min="2000" max="60000" step="500" value="15000" aria-label="Estimated total sales">
+        <div class="calc-scale" aria-hidden="true"><span>$2,000</span><span>$60,000</span></div>
+        <fieldset class="calc-compare">
+          <legend>Compare with a company charging</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="calc-rate" value="0.35"><span>35%</span></label>
+            <label class="chip"><input type="radio" name="calc-rate" value="0.40" checked><span>40%</span></label>
+            <label class="chip"><input type="radio" name="calc-rate" value="0.50"><span>50%</span></label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="calc-results" aria-live="polite">
+        <div class="calc-keep-label">You'd keep</div>
+        <div class="calc-keep" id="calc-keep">$11,005</div>
+        <ul class="calc-lines">
+          <li><span>Total sales</span><span id="calc-gross">$15,000</span></li>
+          <li><span>20% commission</span><span id="calc-commission">&minus;$3,000</span></li>
+          <li><span>Flat fee</span><span>&minus;$995</span></li>
+        </ul>
+        <p class="calc-vs" id="calc-vs">That's <strong>$2,005 more</strong> than a company charging 40%, which would leave you $9,000.</p>
+        <p class="calc-note">Typical rates come from <a href="https://www.homelight.com/blog/estate-sale-companies-erie-pa/" rel="noopener">HomeLight's guide to Erie estate sale companies</a>, which puts commissions at 35% to 50%. Your result depends on what sells.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
-<section class="faq" id="faq">
-<div class="inner-narrow">
-<div class="faq-header">
-<p class="section-label">Common Questions</p>
-<h2 class="section-title" style="color:var(--white)">Frequently Asked Questions</h2>
-</div>
-<p class="faq-intro">Have questions? Here are answers to some of the most common things people ask before booking a sale.</p>
-<div class="faq-list" role="list">
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-1" id="faq-q-1">
-Do I need to be present during the sale?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-1" role="region" aria-labelledby="faq-q-1">
-<p class="faq-answer">No. Most clients choose not to be present. Better Selling with Bailey handles setup, pricing, customer interactions, checkout, and cleanup so you can go about your day.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-2" id="faq-q-2">
-Why wouldn&rsquo;t I just run the sale myself?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-2" role="region" aria-labelledby="faq-q-2">
-<p class="faq-answer">Running a successful sale takes significantly more work than most people expect. Proper pricing, advertising, setup, customer interactions, checkout, and cleanup all require time and experience. Better Selling with Bailey handles the entire process while helping maximize turnout and sell-through, allowing you to focus on other things.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-3" id="faq-q-3">
-What kinds of items can be sold?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-3" role="region" aria-labelledby="faq-q-3">
-<p class="faq-answer">We work with a wide variety of items including tools, collectibles, LEGO, Star Wars items, hunting and fishing gear, Harley Davidson merchandise, vintage clothing, sports cards, video games, household goods, antiques, and more.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-4" id="faq-q-4">
-How are items priced?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-4" role="region" aria-labelledby="faq-q-4">
-<p class="faq-answer">Items are researched and priced using current market data, recent sold listings, and years of real-world buying and selling experience to maximize sell-through while protecting value.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-5" id="faq-q-5">
-How much inventory do I need?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-5" role="region" aria-labelledby="faq-q-5">
-<p class="faq-answer">Every situation is different, but generally the more inventory available, the more successful the event will be. A consultation can determine if your collection is a good fit.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-6" id="faq-q-6">
-How much money can I expect to make?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-6" role="region" aria-labelledby="faq-q-6">
-<p class="faq-answer">Every sale is different and results depend on the quantity, quality, and demand for the items being sold. During the consultation process, realistic expectations can be provided based on your inventory, market demand, and comparable past sales.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-7" id="faq-q-7">
-What happens to unsold items?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-7" role="region" aria-labelledby="faq-q-7">
-<p class="faq-answer">You decide. Items can be kept, donated, removed, or handled according to a plan we discuss before the sale.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-8" id="faq-q-8">
-How far in advance should I book?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-8" role="region" aria-labelledby="faq-q-8">
-<p class="faq-answer">The earlier the better. Sale dates, especially during spring and summer, can fill quickly. Booking in advance gives more time for promotion and preparation.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-9" id="faq-q-9">
-What if it rains?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-9" role="region" aria-labelledby="faq-q-9">
-<p class="faq-answer">Weather is monitored closely leading up to the event. If severe weather requires cancellation before the sale begins, clients receive a 90% refund of fees paid or may apply those funds toward a future date. Whenever possible, Better Selling with Bailey will work to reschedule rather than cancel outright. See the Weather &amp; Cancellation Policy section for full details.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-10" id="faq-q-10">
-Do you provide advertising and promotion?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-10" role="region" aria-labelledby="faq-q-10">
-<p class="faq-answer">Yes. Better Selling with Bailey creates and manages advertising across multiple platforms to help attract as many qualified buyers as possible.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-11" id="faq-q-11">
-What areas do you serve?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-11" role="region" aria-labelledby="faq-q-11">
-<p class="faq-answer">We primarily provide estate sale services throughout Erie County and surrounding areas, but additional locations may be considered depending on the size and scope of the sale.</p>
-</div>
-</div>
-
-<div class="faq-item" role="listitem">
-<button class="faq-question" aria-expanded="false" aria-controls="faq-a-12" id="faq-q-12">
-How do I get started?
-<span class="faq-icon" aria-hidden="true">+</span>
-</button>
-<div class="faq-body" id="faq-a-12" role="region" aria-labelledby="faq-q-12">
-<p class="faq-answer">Simply reach out directly to discuss your inventory, goals, and determine whether a Better Selling with Bailey event is the right fit.</p>
-</div>
-</div>
-</div>
-<div class="faq-cta">
-<p>Still have questions? Contact Bailey today.</p>
-<a href="#contact" class="btn-primary">Get in Touch</a>
-</div>
-</div>
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="wrap steps-grid">
+    <div class="steps-aside">
+      <span class="eyebrow">How it works</span>
+      <h2 style="font-size:clamp(1.85rem,3.4vw,2.6rem)">From first call to a cleared-out house</h2>
+      <p style="margin-top:1rem;color:var(--muted)">Be as hands-on or hands-off as you like. Most clients aren't at the sale at all.</p>
+      <p class="note">I take on only 2 to 3 sales a month, so every sale gets my personal attention. Spring and summer dates go first.</p>
+    </div>
+    <ol class="steps">
+      <li><div><h3>Free walkthrough</h3><p>We walk through the home together, free of charge. I'll ask about your goals and timeline and give you honest expectations for what the sale could bring.</p></div></li>
+      <li><div><h3>Plan and contract</h3><p>We pick the sale dates and put the agreement in a written contract, so you know exactly what you're paying and when.</p></div></li>
+      <li><div><h3>Pricing and setup</h3><p>I research and price every item using recent sold listings, then set everything out so it's easy to shop. Sales are usually held inside the home; a garage or yard sale works too.</p></div></li>
+      <li><div><h3>Advertising</h3><p>I promote the sale on multiple platforms so the right buyers and collectors show up.</p></div></li>
+      <li><div><h3>Sale days</h3><p>My team and I handle customers, checkout and coordination from open to close. You don't need to be there.</p></div></li>
+      <li><div><h3>Paid and cleared</h3><p>You're paid as soon as the sale ends. Anything left is kept, donated or removed at no charge, your choice. Hauling away large furniture is an optional $295, and you can decide once the sale is over.</p></div></li>
+    </ol>
+  </div>
 </section>
 
-<section class="cta-section" id="contact">
-<div class="inner-narrow">
-<p class="section-label">Ready to Get Started?</p>
-<h2 class="section-title">The Bottom Line</h2>
-<p>If you&rsquo;re looking to reclaim valuable space, reduce clutter, and potentially generate thousands of dollars without doing the work yourself, this service was designed for you. Fill out the form below and Bailey will be in touch shortly.</p>
-<div class="contact-form-wrap">
-<form id="contact-form" novalidate>
-<div class="form-row">
-<div class="form-group">
-<label for="cf-name">Your Name</label>
-<input type="text" id="cf-name" name="name" placeholder="Jane Smith" required>
-</div>
-<div class="form-group">
-<label for="cf-phone">Phone Number</label>
-<input type="tel" id="cf-phone" name="phone" placeholder="(814) 555-0100">
-</div>
-</div>
-<div class="form-group">
-<label for="cf-email">Email Address</label>
-<input type="email" id="cf-email" name="email" placeholder="you@example.com" required>
-</div>
-<div class="form-group">
-<label for="cf-interest">I&rsquo;m interested in&hellip;</label>
-<select id="cf-interest" name="interest">
-<option value="">Select an option</option>
-<option value="Standard Commission">Standard Commission &mdash; $995 + 20% commission</option>
-<option value="Not sure yet">Not sure yet &mdash; just exploring</option>
-</select>
-</div>
-<div class="form-group">
-<label for="cf-message">Tell me a bit about your sale</label>
-<textarea id="cf-message" name="message" placeholder="What kinds of items do you have? Rough quantity? Preferred dates?"></textarea>
-</div>
-<div class="form-submit-row">
-<button type="submit" class="btn-primary">Send Message</button>
-</div>
-</form>
-<div class="form-success" id="form-success">
-<span class="success-icon">&#10003;</span>
-Message sent! Bailey will be in touch with you soon.
-</div>
-</div>
-</div>
+<!-- PRICING -->
+<section class="section section-alt" id="pricing">
+  <span id="included"></span>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Pricing</span>
+      <h2>One simple price, no surprises</h2>
+      <p>Advertising, staffing and cleanup are included. The only extra is optional: hauling away large furniture.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-head"><div class="amt">$995 <span>+ 20%</span></div><p>Flat fee, plus 20% of total sales</p></div>
+        <ul class="included">
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Research and pricing of every item</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Organizing and staging the sale</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Advertising on multiple platforms</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Setup and teardown</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Staffing, customers and checkout on sale days</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Payment as soon as the sale ends</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free removal of leftover items you don't want to keep</span></li>
+        </ul>
+        <div class="addon"><strong>Optional: large furniture removal, $295.</strong> Everything else is hauled away free. You don't have to decide until the sale is over and you can see what's left.</div>
+        <a class="btn btn-gold" href="#contact">Book a free walkthrough</a>
+      </div>
+      <div class="pricing-side">
+        <h3>Two ways to pay the flat fee</h3>
+        <div class="pay-options">
+          <div class="pay-option"><h4>Before the sale</h4><p>Pay the $995 when we book your dates.</p></div>
+          <div class="pay-option"><h4>From the proceeds</h4><p>Have the $995 taken out of the sale total instead.</p></div>
+        </div>
+        <p style="margin-top:1rem">Either way, the 20% is figured on your total sales, so the math comes out the same.</p>
+        <ul class="promises">
+          <li><strong>Insured</strong>Your sale is covered by my business insurance.</li>
+          <li><strong>Written contract</strong>Fees and dates are in writing before anything happens.</li>
+          <li><strong>Paid when the sale ends</strong>No waiting weeks for a check.</li>
+          <li><strong>No minimum</strong>Smaller sales are welcome. I'll walk you through the numbers first so you can decide.</li>
+        </ul>
+        <p class="compare-line">For comparison, <a href="https://www.homelight.com/blog/estate-sale-companies-erie-pa/" rel="noopener">HomeLight</a> reports that Erie estate sale companies typically charge 35% to 50% commission and want $5,000 to $10,000 in expected sales.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
-<div class="social-bar">
-<p>Follow Us</p>
-<a href="https://www.facebook.com/bettersellingwithbailey/" target="_blank" rel="noopener" class="social-btn">
-<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-Facebook Page
-</a>
-</div>
-<footer>
-<span class="footer-logo">Better Selling With Bailey</span>
-<p>Estate Sale &amp; Sale Management Services in Erie County, PA &middot; Flat-rate pricing &middot; Free leftover removal</p>
-<p style="margin-top:0.6rem;"><a href="mailto:bettersellingwithbailey@gmail.com" style="color:var(--gold);text-decoration:none;font-weight:500;">bettersellingwithbailey@gmail.com</a></p>
-  <p style="margin-top:0.4rem;"><a href="tel:+18143238239" style="color:var(--gold);text-decoration:none;font-weight:500;">(814) 323-8239</a></p>
-<p style="margin-top:0.5rem; font-size:0.8rem;">&copy; 2026 Better Selling With Bailey &middot; All rights reserved</p>
+<!-- RECENT SALES -->
+<section class="section" id="recent-sales">
+  <span id="news"></span>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Recent sales</span>
+      <h2>What a Bailey sale looks like</h2>
+      <p>A few recent sales from around Erie County.</p>
+    </div>
+    <ul class="ledger">
+      <li>
+        <figure><img src="assets/photos/star-wars-sale-tv-crew.jpg" width="759" height="1000" loading="lazy" alt="A local TV news camera filming tables of boxed Star Wars collectibles under a tent"></figure>
+        <div>
+          <div class="when">May 2026 <span>&middot; North East</span></div>
+          <h3>Star Wars collector sale</h3>
+          <p>Action figures, books and sealed LEGO sets. The sale drew a crowd through heavy rain and wind, and local news came out to cover it.</p>
+          <div class="tags"><span>Collectibles</span><span>LEGO</span><span>Toys</span></div>
+          <p><a class="link" href="https://www.yourerie.com/news/local-news/star-wars-sale-draws-crowd-in-north-east/" rel="noopener">Read the YourErie story &rarr;</a></p>
+        </div>
+      </li>
+      <li>
+        <figure><img src="assets/photos/outdoor-sports-sale-gear-table.jpg" width="750" height="1000" loading="lazy" alt="A table of hunting packs, boots, calls and accessories set out in a pole barn"></figure>
+        <div>
+          <div class="when">July 2026 <span>&middot; Erie</span></div>
+          <h3>Hunting, fishing, Harley and outdoor sports sale</h3>
+          <p>Three days and hundreds of items, with brands like KUIU, Klim, Shimano, Patagonia, Polaris and Ski-Doo.</p>
+          <div class="tags"><span>Hunting and fishing</span><span>Harley-Davidson</span><span>Outdoor gear</span></div>
+        </div>
+      </li>
+      <li>
+        <figure><img src="assets/photos/estate-sale-christmas-garage.jpg" width="750" height="1000" loading="lazy" alt="A garage lined with tables of Christmas decorations, with tools hanging on the wall behind"></figure>
+        <div>
+          <div class="when">August 2026 <span>&middot; North East</span></div>
+          <h3>Whole-home estate sale</h3>
+          <p>Harley-Davidson items, Christmas d&eacute;cor, collectibles and household goods from throughout the home.</p>
+          <div class="tags"><span>Estate</span><span>Holiday d&eacute;cor</span><span>Household</span></div>
+        </div>
+      </li>
+    </ul>
+    <div class="gallery">
+      <figure><img src="assets/photos/harley-davidson-jackets.jpg" width="750" height="1000" loading="lazy" alt="A rack of Harley-Davidson leather jackets"><figcaption>Harley-Davidson leather jackets, ready for buyers</figcaption></figure>
+      <figure><img src="assets/photos/outdoor-sports-sale-gear-closeup.jpg" width="750" height="1000" loading="lazy" alt="Close-up of hunting gear, holsters, rope and calls laid out on a table"><figcaption>Hunting and outdoor gear, sorted and priced</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="section section-alt" id="reviews">
+  <span id="testimonials"></span>
+  <div class="wrap">
+    <div class="reviews-top">
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">Reviews</span>
+        <h2>What clients say</h2>
+      </div>
+      <a class="rating-badge" id="rating-badge" href="https://www.google.com/search?q=Better+Selling+With+Bailey+reviews" rel="noopener"><span class="stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span id="rating-text">5.0 from 5 Google reviews</span></a>
+    </div>
+    <div class="review-grid" id="review-grid">
+        <figure class="review">
+          <div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote><p>&ldquo;Was awesome experience. Everything was done for me. Great turnout for the sale. Was better than I hoped for. The local TV station even came out and did a story on the sale.&rdquo;</p></blockquote>
+          <figcaption>Google review</figcaption>
+        </figure>
+        <figure class="review">
+          <div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote><p>&ldquo;Ran a giant garage sale for me and it went off without a hitch. Great advertising and phenomenal work setting things up and execution of the sale.&rdquo;</p></blockquote>
+          <figcaption>Google review</figcaption>
+        </figure>
+    </div>
+    <p style="margin-top:1.4rem"><a href="https://www.google.com/search?q=Better+Selling+With+Bailey+reviews" rel="noopener"><strong>Read all reviews on Google &rarr;</strong></a></p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="wrap about-grid">
+    <div>
+      <div class="about-photo"><img src="dorian-bailey-headshot.jpg" width="900" height="1200" loading="lazy" alt="Dorian Bailey, founder of Better Selling With Bailey, smiling outdoors in a black polo with the BSB logo"></div>
+      <p class="about-caption"><strong>Dorian Bailey</strong> &middot; Founder &middot; North East, PA</p>
+    </div>
+    <div class="about-text">
+      <span class="eyebrow">About</span>
+      <h2>You'll work with me, start to finish</h2>
+      <p>I'm Dorian Bailey. I grew up in North East, graduated from North East High School, and study Marketing and Management Information Systems at Penn State Behrend.</p>
+      <p>Long before this business existed, I spent years buying, selling, researching and pricing items of all kinds. Better Selling With Bailey grew out of that, with one rule: you work directly with me, from the first walkthrough to the last day of the sale. My helpers and I run every sale together, and I take on only 2 to 3 sales a month so each one gets my full attention.</p>
+      <p>Selling a lifetime of belongings can feel overwhelming. Some clients want a say in every price; others would rather hand it all to me. Either way works. What you can count on is clear communication and honest guidance the whole way through.</p>
+      <p class="sign">Dorian Bailey</p>
+    </div>
+  </div>
+</section>
+
+<!-- UPCOMING SALES -->
+<section class="section section-alt" id="events">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">For shoppers</span>
+      <h2>Upcoming public sales</h2>
+      <p>Sales are open to the public. Follow on Facebook to hear about new sales first.</p>
+    </div>
+    <div class="events-list" id="events-list">
+      <div class="events-empty">
+        <p>No public sales are on the calendar right now. The next one will be posted here and on Facebook.</p>
+        <a class="btn btn-ghost" href="https://www.facebook.com/bettersellingwithbailey/" rel="noopener">Follow on Facebook</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="section" aria-labelledby="partners-title" style="padding-bottom:0">
+  <div class="wrap">
+    <div class="partners">
+      <div>
+        <span class="eyebrow" style="color:var(--gold)">For professionals</span>
+        <h2 id="partners-title">Realtors, attorneys and senior communities</h2>
+        <p>Have a client who needs a home cleared before a listing or a move? I'll work to your timeline, keep your client updated, and leave the house cleared out.</p>
+      </div>
+      <a class="btn btn-gold" href="#contact" data-situation="Realtor, attorney or senior community">Refer a client</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="wrap faq-grid">
+    <div class="faq-aside">
+      <span class="eyebrow">FAQ</span>
+      <h2 style="font-size:clamp(1.85rem,3.4vw,2.6rem)">Questions people ask before booking</h2>
+      <p>Don't see yours? Call <a href="tel:+18143238239">(814) 323-8239</a> or <a href="#contact">send a message</a>.</p>
+    </div>
+    <div class="faq-list">
+        <details>
+          <summary>How much does it cost?</summary>
+          <div class="faq-answer"><p>A flat $995 fee plus 20% of total sales. Pricing, staging, advertising, running the sale and removing leftovers are all included, and the walkthrough before you book is free. The one optional extra is $295 to haul away large furniture. For comparison, Erie estate sale companies typically charge 35% to 50% commission.</p></div>
+        </details>
+        <details>
+          <summary>When do I pay the $995?</summary>
+          <div class="faq-answer"><p>Usually when we book your sale dates. If that&#x27;s hard, it can come out of the sale proceeds instead. Either way, the 20% is figured on total sales, so the math is the same.</p></div>
+        </details>
+        <details>
+          <summary>When do I get paid?</summary>
+          <div class="faq-answer"><p>As soon as the sale ends.</p></div>
+        </details>
+        <details>
+          <summary>Do I need to be there during the sale?</summary>
+          <div class="faq-answer"><p>No. Most clients aren&#x27;t. I handle setup, pricing, customers, checkout and cleanup.</p></div>
+        </details>
+        <details>
+          <summary>Are you insured? Do you use a contract?</summary>
+          <div class="faq-answer"><p>Yes to both. Every sale has a written contract, and the business is insured.</p></div>
+        </details>
+        <details>
+          <summary>Is there a minimum sale size?</summary>
+          <div class="faq-answer"><p>No. Smaller sales are welcome. Because the $995 is a flat fee, it&#x27;s a bigger share of a small sale, so I&#x27;ll walk you through the numbers first and help you decide whether a managed sale makes sense.</p></div>
+        </details>
+        <details>
+          <summary>Is the sale held inside or outside?</summary>
+          <div class="faq-answer"><p>Usually inside the home, which works year-round. A garage or yard sale is an option too, especially if you&#x27;re still living in the house.</p></div>
+        </details>
+        <details>
+          <summary>What happens to things that don&#x27;t sell?</summary>
+          <div class="faq-answer"><p>You decide. Keep them, donate them, or have them removed at no charge. Large furniture is the one exception: hauling it away is an optional $295, and you don&#x27;t have to decide until the sale ends.</p></div>
+        </details>
+        <details id="weather">
+          <summary>What if it rains?</summary>
+          <div class="faq-answer"><p>Weather only matters for outdoor sales. If severe weather forces a cancellation before the sale starts, you get a 90% refund of fees paid, or you can put them toward a new date. The other 10% covers planning and advertising already done. Whenever possible, I&#x27;ll reschedule rather than cancel.</p></div>
+        </details>
+        <details>
+          <summary>How do you price items?</summary>
+          <div class="faq-answer"><p>With current market data, recent sold listings (not asking prices) and years of buying and selling experience. Read more in <a href="blog/how-we-price-estate-sale-items/">how I price items</a>.</p></div>
+        </details>
+        <details>
+          <summary>What kinds of items sell best?</summary>
+          <div class="faq-answer"><p>Tools, collectibles, LEGO, Star Wars, sports and trading cards, video games, hunting and fishing gear, Harley-Davidson merchandise, vintage clothing, antiques and household goods all do well.</p></div>
+        </details>
+        <details>
+          <summary>What areas do you serve?</summary>
+          <div class="faq-answer"><p>Erie County, including Erie, Millcreek, Harborcreek, North East, Fairview, Girard, Edinboro and Corry. Larger sales outside the county are considered case by case.</p></div>
+        </details>
+        <details>
+          <summary>How far ahead should I book?</summary>
+          <div class="faq-answer"><p>As early as you can. I take on 2 to 3 sales a month, and spring and summer dates fill first.</p></div>
+        </details>
+        <details>
+          <summary>Why not just run the sale myself?</summary>
+          <div class="faq-answer"><p>You can, but pricing, advertising, setup, staffing and cleanup take far more time than most people expect. I handle all of it, and careful pricing and promotion help the sale bring in more.</p></div>
+        </details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section section-alt" id="contact">
+  <div class="wrap contact-grid">
+    <div>
+      <span class="eyebrow">Get started</span>
+      <h2 style="font-size:clamp(1.85rem,3.4vw,2.6rem)">Tell me about your sale</h2>
+      <p style="margin-top:1rem">Send a few details and I'll get back to you personally to set up a free walkthrough. Prefer to talk? Give me a call.</p>
+      <ul class="contact-direct">
+        <li><span>Phone</span><a href="tel:+18143238239">(814) 323-8239</a></li>
+        <li><span>Email</span><a href="mailto:bettersellingwithbailey@gmail.com">bettersellingwithbailey@gmail.com</a></li>
+        <li><span>Facebook</span><a href="https://www.facebook.com/bettersellingwithbailey/" rel="noopener">Better Selling With Bailey</a></li>
+        <li><span>Service area</span>Erie County, PA</li>
+      </ul>
+    </div>
+    <div class="form-card">
+      <form id="contact-form" action="https://formsubmit.co/bettersellingwithbailey@gmail.com" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="New sale inquiry from bettersellingwithbailey.com">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://bettersellingwithbailey.com/?sent=1#contact">
+        <div class="hp" aria-hidden="true"><label for="cf-company">Leave this empty</label><input type="text" id="cf-company" name="_honey" tabindex="-1" autocomplete="off"></div>
+        <div class="form-grid">
+          <div class="field full"><label for="cf-name">Your name</label><input id="cf-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="cf-phone">Phone</label><input id="cf-phone" name="phone" type="tel" autocomplete="tel" placeholder="(814) 555-0100"></div>
+          <div class="field"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
+          <div class="field full"><label for="cf-situation">What's the situation?</label>
+            <select id="cf-situation" name="situation">
+              <option value="">Choose one</option>
+              <option>Settling an estate</option>
+              <option>Downsizing or moving</option>
+              <option>Selling a collection</option>
+              <option>Realtor, attorney or senior community</option>
+              <option>Something else</option>
+            </select></div>
+          <div class="field"><label for="cf-value">Rough value <span class="opt">(a guess is fine)</span></label>
+            <select id="cf-value" name="estimated_value">
+              <option value="">Not sure</option>
+              <option>Under $5,000</option>
+              <option>$5,000 to $10,000</option>
+              <option>$10,000 to $20,000</option>
+              <option>Over $20,000</option>
+            </select></div>
+          <div class="field"><label for="cf-timing">When do you need it done?</label>
+            <select id="cf-timing" name="timing">
+              <option value="">Not sure yet</option>
+              <option>As soon as possible</option>
+              <option>In 1 to 2 months</option>
+              <option>In 3 months or more</option>
+              <option>Just exploring</option>
+            </select></div>
+          <div class="field"><label for="cf-town">Town</label><input id="cf-town" name="town" type="text" autocomplete="address-level2" placeholder="e.g. Millcreek"></div>
+          <div class="field"><label for="cf-source">How did you hear about me?</label>
+            <select id="cf-source" name="heard_about">
+              <option value="">Choose one</option>
+              <option>Google search</option>
+              <option>Facebook</option>
+              <option>A past client, or a sale I went to</option>
+              <option>Realtor, attorney or senior community</option>
+              <option>EstateSales.NET</option>
+              <option>Other</option>
+            </select></div>
+          <div class="field full"><label for="cf-message">Anything else? <span class="opt">(optional)</span></label><textarea id="cf-message" name="message" placeholder="What kinds of items? Any dates in mind?"></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gold" type="submit" id="cf-submit">Send my details</button>
+          <p class="form-fine">Name, plus a phone number or email, is all I need. Your details go only to me.</p>
+        </div>
+        <p class="form-status" id="form-status" role="status" hidden></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="#top"><svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#191714"/><g font-family="Playfair Display, Georgia, serif" font-weight="700" fill="#C9A84C"><text x="8" y="19" font-size="15">B</text><text x="15.5" y="26.5" font-size="15">S</text><text x="22" y="34" font-size="15">B</text></g></svg><span class="brand-name">Better Selling With Bailey</span></a>
+        <p class="footer-about">Owner-run estate sales in Erie County, PA. A flat $995 plus 20% of sales, with free removal of leftovers.</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+18143238239">(814) 323-8239</a></li>
+          <li><a href="mailto:bettersellingwithbailey@gmail.com">bettersellingwithbailey@gmail.com</a></li>
+          <li><a href="https://www.facebook.com/bettersellingwithbailey/" rel="noopener">Facebook</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#recent-sales">Recent sales</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="blog/">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Service area</h4>
+        <ul>
+          <li>Erie</li>
+          <li>Millcreek</li>
+          <li>Harborcreek</li>
+          <li>North East</li>
+          <li>Fairview</li>
+          <li>Girard</li>
+          <li>Edinboro</li>
+          <li>Corry</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>&copy; 2026 Better Selling With Bailey</span>
+      <span>Insured &middot; Written contract &middot; Paid when the sale ends</span>
+    </div>
+  </div>
 </footer>
+<div class="action-bar" aria-label="Quick contact">
+  <a class="btn btn-ghost" href="tel:+18143238239"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.6a1 1 0 01-.25 1z" fill="currentColor"/></svg>Call</a>
+  <a class="btn btn-gold" href="#contact">Book a free walkthrough</a>
+</div>
 
+<script src="assets/site.js" defer></script>
 <script>
-(function() {
-  var items = document.querySelectorAll('.faq-item');
-  items.forEach(function(item) {
-    var btn = item.querySelector('.faq-question');
-    var body = item.querySelector('.faq-body');
-    if (!btn || !body) return;
-    btn.addEventListener('click', function() {
-      var isOpen = btn.getAttribute('aria-expanded') === 'true';
-      items.forEach(function(other) {
-        var ob = other.querySelector('.faq-question');
-        var od = other.querySelector('.faq-body');
-        if (ob && od && ob !== btn) {
-          ob.setAttribute('aria-expanded', 'false');
-          od.classList.remove('faq-open');
-        }
-      });
-      btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-      body.classList.toggle('faq-open', !isOpen);
-    });
-    btn.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        var all = Array.from(document.querySelectorAll('.faq-question'));
-        var idx = all.indexOf(btn);
-        var next = e.key === 'ArrowDown' ? all[idx+1] : all[idx-1];
-        if (next) next.focus();
-      }
-    });
-  });
-})();
-</script>
-<script>
-(function() {
-  var nav = document.getElementById('section-nav');
-  var pill = document.getElementById('snav-pill');
-  var links = Array.from(document.querySelectorAll('.snav-link'));
-  var sectionIds = links.map(function(l){ return l.dataset.section; });
-  var activeIndex = -1;
-
-  function updatePill(index) {
-    if (index < 0 || index >= links.length) { pill.style.opacity = '0'; return; }
-    var link = links[index];
-    var inner = link.closest('.snav-inner');
-    var innerRect = inner.getBoundingClientRect();
-    var linkRect = link.getBoundingClientRect();
-    var leftOffset = linkRect.left - innerRect.left + inner.scrollLeft;
-    pill.style.opacity = '1';
-    pill.style.left = leftOffset + 'px';
-    pill.style.width = linkRect.width + 'px';
-  }
-
-  function setActive(index) {
-    if (index === activeIndex) return;
-    activeIndex = index;
-    links.forEach(function(l, i){ l.classList.toggle('snav-active', i === index); });
-    updatePill(index);
-    // On mobile, scroll the active link into view
-    if (index >= 0) {
-      var inner = links[index].closest('.snav-inner');
-      var link = links[index];
-      var innerRect = inner.getBoundingClientRect();
-      var linkRect = link.getBoundingClientRect();
-      if (linkRect.right > innerRect.right - 8 || linkRect.left < innerRect.left + 8) {
-        link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    }
-  }
-
-  function getActiveSection() {
-    var scrollY = window.scrollY || window.pageYOffset;
-    var winH = window.innerHeight;
-    var docH = document.documentElement.scrollHeight;
-    var offset = 130;
-    if (scrollY + winH >= docH - 80) {
-      return sectionIds.length - 1;
-    }
-    var best = -1;
-    for (var i = sectionIds.length - 1; i >= 0; i--) {
-      var el = document.getElementById(sectionIds[i]);
-      if (!el) continue;
-      if (scrollY + offset >= el.offsetTop) { best = i; break; }
-    }
-    return best;
-  }
-
-  function onScroll() {
-    var hero = document.querySelector('.hero');
-    var heroHeight = hero ? hero.offsetHeight : 400;
-    var mainNav = document.querySelector('nav');
-    if ((window.scrollY || window.pageYOffset) > heroHeight * 0.55) {
-      nav.classList.add('visible');
-      if (mainNav) mainNav.classList.add('nav-hidden');
-    } else {
-      nav.classList.remove('visible');
-      if (mainNav) mainNav.classList.remove('nav-hidden');
-    }
-    setActive(getActiveSection());
-  }
-
-  links.forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      var id = this.dataset.section;
-      var target = document.getElementById(id);
-      if (!target) return;
-      var navH = 68 + 50;
-      var top = target.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) - navH;
-      window.scrollTo({ top: top, behavior: 'smooth' });
-    });
-  });
-
-  window.addEventListener('resize', function(){ if (activeIndex >= 0) updatePill(activeIndex); }, { passive: true });
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-})();
-</script>
-
-
-<!-- EVENT POPUP MODAL -->
-<div id="ep-overlay" role="dialog" aria-modal="true" aria-labelledby="ep-title" aria-describedby="ep-desc" hidden>
-<div id="ep-modal">
-<button id="ep-close" aria-label="Close event popup">×</button>
-<div id="ep-img-wrap">
-<!-- image injected by JS -->
-</div>
-<div id="ep-body">
-<span id="ep-urgency"></span>
-<span id="ep-small-label">Upcoming Event</span>
-<div id="ep-title"></div>
-<div id="ep-meta"></div>
-<p id="ep-desc"></p>
-<div id="ep-fb-link"><a id="ep-fb-anchor" href="#" target="_blank" rel="noopener">View Facebook Event →</a></div>
-<a id="ep-cta" href="#" target="_blank" rel="noopener">View Facebook Event</a>
-</div>
-</div>
-</div>
-
-<script>
-// =============================================================
-// BSWB_EVENTS — Single source of truth for all event data.
-// To add/update/remove an event, edit this array only.
-// Both the Events section and the popup use this data.
-//
-// Fields:
-//   title      : string
-//   startDate  : "YYYY-MM-DD"
-//   endDate    : "YYYY-MM-DD"  (same as startDate for single-day)
-//   dailyStart : "HH:MM" 24h  (daily open time)
-//   dailyEnd   : "HH:MM" 24h  (daily close time)
-//   dateLabel  : string shown in the date bar range (e.g. "Jul 24 – Jul 26")
-//   hoursLabel : string shown for hours (e.g. "9 AM – 3 PM Daily")
-//   address    : string
-//   addressNote: string (e.g. "3-Day Event · Open to the Public")
-//   desc       : string
-//   fbUrl      : string | "" (Facebook event URL, or "" if none)
-//   image      : string | "" (absolute or relative image URL, or "" if none)
-// =============================================================
+/* =============================================================
+   UPCOMING SALES: edit this list to add or remove a sale.
+   Past sales hide themselves automatically.
+   ============================================================= */
 var BSWB_EVENTS = [
   {
     title: "Massive Hunting, Fishing, Harley & Outdoor Sports Sale",
-    startDate: "2026-07-24",
-    endDate:   "2026-07-26",
-    dailyStart: "09:00",
-    dailyEnd:   "15:00",
-    dateLabel:  "Jul 24 – Jul 26",
-    hoursLabel: "9 AM – 3 PM Daily",
-    address:    "10347 Bennett Rd, Erie, PA 16510",
-    addressNote:"3-Day Event · Open to the Public",
-    desc:       "A large-scale outdoor sports sale featuring hundreds of items across hunting, fishing, Harley-Davidson, and outdoor recreation. Featured brands include KUIU, Klim, Shimano, Patagonia, Polaris, Ski-Doo, and more.",
-    fbUrl:      "https://www.facebook.com/share/18pRW9gpqS/",
-      },
+    startDate: "2026-07-24", endDate: "2026-07-26",
+    dailyStart: "09:00", dailyEnd: "15:00",
+    dateLabel: "Jul 24 – Jul 26", hoursLabel: "9 AM – 3 PM daily",
+    address: "10347 Bennett Rd, Erie, PA 16510",
+    desc: "Hundreds of items across hunting, fishing, Harley-Davidson and outdoor recreation.",
+    fbUrl: "https://www.facebook.com/share/18pRW9gpqS/"
+  },
   {
-    title:      "August Estate Sale",
-    startDate:  "2026-08-14",
-    endDate:    "2026-08-16",
-    dailyStart: "09:00",
-    dailyEnd:   "15:00",
-    dateLabel:  "Aug 14 – Aug 16",
-    hoursLabel: "9 AM – 3 PM Daily",
-    address:    "12037 Archer Rd, North East, PA 16428",
-    addressNote:"3-Day Event · Open to the Public",
-    desc:       "A new estate sale featuring a huge selection of Harley-Davidson items, Christmas décor, collectibles, household goods, and plenty of unique finds throughout the home. No early sales.",
-    fbUrl:      "https://www.facebook.com/events/1031650602585787/",
-    image:      ""
+    title: "August Estate Sale",
+    startDate: "2026-08-14", endDate: "2026-08-16",
+    dailyStart: "09:00", dailyEnd: "15:00",
+    dateLabel: "Aug 14 – Aug 16", hoursLabel: "9 AM – 3 PM daily",
+    address: "12037 Archer Rd, North East, PA 16428",
+    desc: "Harley-Davidson items, Christmas décor, collectibles and household goods. No early sales.",
+    fbUrl: "https://www.facebook.com/events/1031650602585787/"
   }
 ];
 
-// =============================================================
-// EVENTS SECTION RENDERER
-// Builds event-card HTML from BSWB_EVENTS and injects into #events-grid
-// =============================================================
-(function renderEventCards() {
-  var grid = document.getElementById("events-grid");
-  if (!grid) return;
-  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+(function () {
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var now = new Date();
-  var cards = "";
-  var hasVisible = false;
-  BSWB_EVENTS.forEach(function(ev) {
-    var endDt = new Date(ev.endDate + "T" + ev.dailyEnd + ":00");
-    if (endDt < now) return;
-    hasVisible = true;
-    var startParts = ev.startDate.split("-");
-    var monthIdx = parseInt(startParts[1], 10) - 1;
-    var day = parseInt(startParts[2], 10);
-    var fbLink = ev.fbUrl ? '<a href="' + ev.fbUrl + '" target="_blank" rel="noopener" class="event-link">View on Facebook →</a>' : "";
-    cards += '<div class="event-card">';
-    cards += '<div class="event-date-bar">';
-    cards += '<div><span class="event-month">' + MONTHS[monthIdx] + '</span><span class="event-day">' + day + '</span></div>';
-    cards += '<span class="event-date-range">' + ev.dateLabel + " · " + ev.hoursLabel + '</span>';
-    cards += '</div>';
-    cards += '<div class="event-body">';
-    cards += '<div class="event-title">' + ev.title + '</div>';
-    cards += '<div class="event-meta"><span>' + ev.address + '</span><span>' + ev.addressNote + '</span></div>';
-    cards += '<p class="event-desc">' + ev.desc + '</p>';
-    cards += fbLink;
-    cards += '</div></div>';
-  });
-  if (!hasVisible) {
-    grid.innerHTML = '<p style="color:var(--text-light);font-size:0.95rem;grid-column:1/-1;text-align:center;padding:2rem 0;">No upcoming events scheduled. Follow us on Facebook for announcements.</p>';
-  } else {
-    grid.innerHTML = cards;
+  function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  var upcoming = BSWB_EVENTS.filter(function (ev) {
+    return new Date(ev.endDate + "T" + ev.dailyEnd + ":00") >= now;
+  }).sort(function (a, b) { return a.startDate < b.startDate ? -1 : 1; });
+  if (!upcoming.length) return;
+
+  var list = document.getElementById("events-list");
+  if (list) {
+    list.innerHTML = upcoming.map(function (ev) {
+      var p = ev.startDate.split("-");
+      return '<article class="event"><div class="event-date"><span class="m">' + MONTHS[parseInt(p[1], 10) - 1] +
+        '</span><span class="d">' + parseInt(p[2], 10) + '</span></div><div><h3>' + esc(ev.title) +
+        '</h3><div class="meta"><span>' + esc(ev.dateLabel) + ' &middot; ' + esc(ev.hoursLabel) + '</span><span>' + esc(ev.address) +
+        '</span></div><p>' + esc(ev.desc) + '</p>' +
+        (ev.fbUrl ? '<a href="' + esc(ev.fbUrl) + '" rel="noopener">See photos and details on Facebook &rarr;</a>' : '') +
+        '</div></article>';
+    }).join("");
+  }
+
+  var next = upcoming[0];
+  var bar = document.getElementById("announce");
+  if (bar) {
+    var start = new Date(next.startDate + "T" + next.dailyStart + ":00");
+    var label = now >= start ? "Happening now:" : "Next public sale:";
+    bar.innerHTML = '<div class="wrap"><strong>' + label + '</strong><span>' + esc(next.dateLabel) + ' &middot; ' +
+      esc(next.address) + '</span><a href="#events">Details &rarr;</a></div>';
+    bar.hidden = false;
   }
 })();
 
-// =============================================================
-// EVENT POPUP
-// Selects the active/next event from BSWB_EVENTS and shows modal
-// =============================================================
-(function initEventPopup() {
-  var overlay  = document.getElementById("ep-overlay");
-  var modal    = document.getElementById("ep-modal");
-  var closeBtn = document.getElementById("ep-close");
-  if (!overlay || !modal || !closeBtn) return;
+/* Reviews: refreshed from reviews.json, so updating that file updates the page. */
+(function () {
+  var grid = document.getElementById("review-grid");
+  if (!grid || !window.fetch) return;
+  function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  fetch("reviews.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+    if (!data || !data.reviews) return;
+    var withText = data.reviews.filter(function (r) { return r.text; });
+    if (withText.length) {
+      grid.innerHTML = withText.map(function (r) {
+        var n = Math.round(r.rating || 5);
+        return '<figure class="review"><div class="stars" aria-label="' + n + ' out of 5 stars">' + new Array(n + 1).join("&#9733;") +
+          '</div><blockquote><p>&ldquo;' + esc(r.text) + '&rdquo;</p></blockquote><figcaption>Google review</figcaption></figure>';
+      }).join("");
+    }
+    var t = document.getElementById("rating-text");
+    if (t && data.rating) t.textContent = Number(data.rating).toFixed(1) + " from " + data.userRatingsTotal + " Google reviews";
+  }).catch(function () {});
+})();
 
-  var now = new Date();
-  var sevenDays = 7 * 24 * 60 * 60 * 1000;
-  var selected = null;
-  var urgencyClass = "ep-next";
-  var urgencyText  = "Next Event";
-
-  for (var i = 0; i < BSWB_EVENTS.length; i++) {
-    var ev = BSWB_EVENTS[i];
-    var startDt = new Date(ev.startDate + "T" + ev.dailyStart + ":00");
-    var endDt   = new Date(ev.endDate   + "T" + ev.dailyEnd   + ":00");
-    if (endDt < now) continue;
-    selected = ev;
-    if (now >= startDt && now <= endDt) {
-      urgencyClass = "ep-now";
-      urgencyText  = "Happening Now";
-    } else if ((startDt - now) <= sevenDays) {
-      urgencyClass = "ep-soon";
-      urgencyText  = "Coming Soon";
+/* "What you'd keep" calculator: $995 flat fee + 20% of total sales. */
+(function () {
+  var FLAT = 995, RATE = 0.20;
+  var amount = document.getElementById("calc-amount");
+  var range = document.getElementById("calc-range");
+  if (!amount || !range) return;
+  var out = {
+    keep: document.getElementById("calc-keep"),
+    gross: document.getElementById("calc-gross"),
+    commission: document.getElementById("calc-commission"),
+    vs: document.getElementById("calc-vs")
+  };
+  function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+  function parse(v) { var n = parseFloat(String(v).replace(/[^0-9.]/g, "")); return isNaN(n) ? 0 : n; }
+  function compareRate() {
+    var c = document.querySelector('input[name="calc-rate"]:checked');
+    return c ? parseFloat(c.value) : 0.40;
+  }
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var shown = null, anim = null, wasAhead = null;
+  function rollTo(value) {
+    if (calm || shown === null) { shown = value; out.keep.textContent = money(value); return; }
+    var from = shown, start = null;
+    if (anim) cancelAnimationFrame(anim);
+    function frame(t) {
+      if (start === null) start = t;
+      var p = Math.min(1, (t - start) / 350), eased = 1 - Math.pow(1 - p, 3);
+      shown = from + (value - from) * eased;
+      out.keep.textContent = money(shown);
+      if (p < 1) anim = requestAnimationFrame(frame);
+    }
+    anim = requestAnimationFrame(frame);
+  }
+  function render(gross) {
+    var keep = Math.max(0, gross - gross * RATE - FLAT);
+    var rate = compareRate();
+    var theirs = gross * (1 - rate);
+    var diff = keep - theirs;
+    var pct = Math.round(rate * 100) + "%";
+    rollTo(keep);
+    var ahead = diff >= 100;
+    if (wasAhead !== null && ahead !== wasAhead && !calm) {
+      out.vs.classList.remove("flash"); void out.vs.offsetWidth; out.vs.classList.add("flash");
+    }
+    wasAhead = ahead;
+    out.gross.textContent = money(gross);
+    out.commission.textContent = "−" + money(gross * RATE);
+    if (diff >= 100) {
+      out.vs.classList.remove("is-even");
+      out.vs.innerHTML = "That's <strong>" + money(diff) + " more</strong> than a company charging " + pct + ", which would leave you " + money(theirs) + ".";
     } else {
-      urgencyClass = "ep-next";
-      urgencyText  = "Next Event";
+      out.vs.classList.add("is-even");
+      out.vs.innerHTML = "On a sale this size, a company charging " + pct + " would leave you about " + money(theirs) +
+        ". The flat fee is a bigger share of a small sale, so <strong>call me and we'll work out what makes sense.</strong>";
     }
-    break;
+  }
+  amount.addEventListener("input", function () {
+    var g = parse(amount.value);
+    if (g >= 2000 && g <= 60000) range.value = g;
+    render(g);
+  });
+  amount.addEventListener("blur", function () {
+    var g = parse(amount.value);
+    amount.value = g ? Math.round(g).toLocaleString("en-US") : "0";
+  });
+  range.addEventListener("input", function () {
+    var g = parseFloat(range.value);
+    amount.value = g.toLocaleString("en-US");
+    render(g);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="calc-rate"]'), function (r) {
+    r.addEventListener("change", function () { render(parse(amount.value)); });
+  });
+  render(parse(amount.value));
+})();
+
+/* Contact form: sends to Dorian's Gmail through FormSubmit, without leaving the page. */
+(function () {
+  var form = document.getElementById("contact-form");
+  if (!form) return;
+  var status = document.getElementById("form-status");
+  var button = document.getElementById("cf-submit");
+  var situation = document.getElementById("cf-situation");
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-situation]"), function (link) {
+    link.addEventListener("click", function () { if (situation) situation.value = link.getAttribute("data-situation"); });
+  });
+  if (/[?&]sent=1/.test(location.search)) show("ok", "Thanks! Your details were sent. I'll be in touch soon.");
+
+  function show(kind, msg) {
+    status.className = "form-status " + kind;
+    status.innerHTML = msg;
+    status.hidden = false;
   }
 
-  if (!selected) return;
-
-  var urgEl    = document.getElementById("ep-urgency");
-  var titleEl  = document.getElementById("ep-title");
-  var metaEl   = document.getElementById("ep-meta");
-  var descEl   = document.getElementById("ep-desc");
-  var fbLinkEl = document.getElementById("ep-fb-link");
-  var fbAnchor = document.getElementById("ep-fb-anchor");
-  var ctaEl    = document.getElementById("ep-cta");
-  var imgWrap  = document.getElementById("ep-img-wrap");
-
-  urgEl.textContent = urgencyText;
-  urgEl.className = "";
-  urgEl.classList.add(urgencyClass);
-  titleEl.textContent = selected.title;
-  descEl.textContent  = selected.desc;
-
-  var metaHTML = "";
-  metaHTML += '<div class="ep-meta-row"><span class="ep-meta-dot"></span><span>' + selected.dateLabel + " · " + selected.hoursLabel + '</span></div>';
-  metaHTML += '<div class="ep-meta-row"><span class="ep-meta-dot"></span><span>' + selected.address + '</span></div>';
-  if (selected.addressNote) {
-    metaHTML += '<div class="ep-meta-row"><span class="ep-meta-dot"></span><span>' + selected.addressNote + '</span></div>';
-  }
-  metaEl.innerHTML = metaHTML;
-
-  if (selected.image) {
-    var imgEl = document.createElement("img");
-    imgEl.src = selected.image;
-    imgEl.alt = selected.fbUrl ? selected.title + " — click to view Facebook Event" : selected.title;
-    var hoverLabel = document.createElement("span");
-    hoverLabel.id = "ep-img-hover-label";
-    hoverLabel.textContent = "View Facebook Event →";
-    imgWrap.innerHTML = "";
-    imgWrap.appendChild(imgEl);
-    imgWrap.appendChild(hoverLabel);
-    if (selected.fbUrl) {
-      imgWrap.classList.add("ep-clickable");
-      imgWrap.setAttribute("role", "link");
-      imgWrap.setAttribute("tabindex", "0");
-      imgWrap.setAttribute("aria-label", "View Facebook Event for " + selected.title);
-      var capturedFbUrl = selected.fbUrl;
-      imgWrap.addEventListener("click", function() { window.open(capturedFbUrl, "_blank", "noopener"); });
-      imgWrap.addEventListener("keydown", function(e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); window.open(capturedFbUrl, "_blank", "noopener"); } });
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = form.elements["name"], email = form.elements["email"], phone = form.elements["phone"];
+    [name, email, phone].forEach(function (f) { f.removeAttribute("aria-invalid"); });
+    if (form.elements["_honey"].value) return;
+    var problems = [];
+    if (!name.value.trim()) { problems.push("your name"); name.setAttribute("aria-invalid", "true"); }
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+    if (!phone.value.trim() && !emailOk) {
+      problems.push("a phone number or email address");
+      (email.value.trim() ? email : phone).setAttribute("aria-invalid", "true");
     }
-  } else {
-    imgWrap.innerHTML = '<div id="ep-no-img"></div>';
-  }
+    if (problems.length) {
+      show("err", "Please add " + problems.join(" and ") + " so I can reach you.");
+      (form.querySelector('[aria-invalid="true"]') || name).focus();
+      return;
+    }
 
-  if (selected.fbUrl) {
-    fbAnchor.href = selected.fbUrl;
-    fbLinkEl.style.display = "block";
-    ctaEl.href = selected.fbUrl;
-    ctaEl.style.display = "block";
-  }
-
-  var previouslyFocused = null;
-
-  function openPopup() {
-    overlay.removeAttribute("hidden");
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        overlay.classList.add("ep-visible");
-      });
+    var data = {};
+    Array.prototype.forEach.call(form.elements, function (f) {
+      if (f.name && f.name !== "_next" && f.name !== "_honey") data[f.name] = f.value;
     });
-    previouslyFocused = document.activeElement;
-    setTimeout(function() { closeBtn.focus(); }, 60);
-  }
+    data._subject = "New sale inquiry from " + name.value.trim();
 
-  function closePopup() {
-    overlay.classList.remove("ep-visible");
-    setTimeout(function() {
-      overlay.setAttribute("hidden", "");
-      if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus();
-    }, 340);
-  }
-
-  closeBtn.addEventListener("click", closePopup);
-
-  overlay.addEventListener("click", function(e) {
-    if (e.target === overlay) closePopup();
+    button.disabled = true;
+    button.textContent = "Sending…";
+    fetch("https://formsubmit.co/ajax/bettersellingwithbailey@gmail.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(data)
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (res && (res.success === true || res.success === "true")) {
+        form.reset();
+        show("ok", "Thanks, " + data.name.split(" ")[0] + "! Your details were sent. I'll be in touch soon.");
+      } else {
+        throw new Error("not sent");
+      }
+    }).catch(function () {
+      show("err", "Sorry, your message didn't go through. Please call <a href=\"tel:+18143238239\">(814) 323-8239</a> or email <a href=\"mailto:bettersellingwithbailey@gmail.com\">bettersellingwithbailey@gmail.com</a>.");
+    }).then(function () {
+      button.disabled = false;
+      button.textContent = "Send my details";
+    });
   });
-
-  document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape" && overlay.classList.contains("ep-visible")) closePopup();
-  });
-
-  modal.addEventListener("keydown", function(e) {
-    if (e.key !== "Tab") return;
-    var focusable = Array.from(modal.querySelectorAll('a[href],button,[tabindex]:not([tabindex="-1"])'));
-    if (!focusable.length) return;
-    var first = focusable[0], last = focusable[focusable.length - 1];
-    if (e.shiftKey) {
-      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-    } else {
-      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  });
-
-  setTimeout(openPopup, 800);
 })();
 </script>
-
-<script>
-(function(){
-var form = document.getElementById('contact-form');
-var successDiv = document.getElementById('form-success');
-if (!form || !successDiv) return;
-form.addEventListener('submit', function(e) {
-e.preventDefault();
-var name = (form.querySelector('#cf-name').value || '').trim();
-var phone = (form.querySelector('#cf-phone').value || '').trim();
-var email = (form.querySelector('#cf-email').value || '').trim();
-var interest = (form.querySelector('#cf-interest').value || '').trim();
-var message = (form.querySelector('#cf-message').value || '').trim();
-if (!name || !email) {
-var missing = [];
-if (!name) missing.push('name');
-if (!email) missing.push('email address');
-alert('Please fill in your ' + missing.join(' and ') + ' before sending.');
-return;
-}
-var subject = 'Sale Inquiry from ' + name;
-var body = 'Name: ' + name + '\n';
-if (phone) body += 'Phone: ' + phone + '\n';
-body += 'Email: ' + email + '\n';
-if (interest) body += 'Interest: ' + interest + '\n';
-if (message) body += '\nMessage:\n' + message;
-var mailto = 'mailto:bettersellingwithbailey@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-window.location.href = mailto;
-form.style.display = 'none';
-successDiv.style.display = 'block';
-});
-})();
-</script>
-<script>
-(function(){
-var hamburger = document.getElementById('nav-hamburger');
-var mobileMenu = document.getElementById('nav-mobile-menu');
-if (!hamburger || !mobileMenu) return;
-
-function openMenu() {
-hamburger.classList.add('is-open');
-mobileMenu.classList.add('is-open');
-hamburger.setAttribute('aria-expanded', 'true');
-hamburger.setAttribute('aria-label', 'Close navigation menu');
-document.body.style.overflow = 'hidden';
-}
-
-function closeMenu() {
-hamburger.classList.remove('is-open');
-mobileMenu.classList.remove('is-open');
-hamburger.setAttribute('aria-expanded', 'false');
-hamburger.setAttribute('aria-label', 'Open navigation menu');
-document.body.style.overflow = '';
-}
-
-hamburger.addEventListener('click', function() {
-if (hamburger.classList.contains('is-open')) closeMenu();
-else openMenu();
-});
-
-mobileMenu.querySelectorAll('.nav-mobile-link').forEach(function(link) {
-link.addEventListener('click', function() { closeMenu(); });
-});
-
-document.addEventListener('click', function(e) {
-if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) closeMenu();
-});
-
-document.addEventListener('keydown', function(e) {
-if (e.key === 'Escape' && hamburger.classList.contains('is-open')) { closeMenu(); hamburger.focus(); }
-});
-
-window.addEventListener('resize', function() { if (window.innerWidth > 800) closeMenu(); }, { passive: true });
-})();
-</script>
-<script>(function(){var nav=document.querySelector('nav');var navLinks=document.querySelector('.nav-links');var logo=document.querySelector('.nav-logo');var hamburger=document.querySelector('.nav-hamburger');if(!nav||!navLinks||!logo){return;}var MIN_SCALE=0.6;var LOGO_MIN_SCALE=0.55;var BUFFER=20;function fitNav(){nav.style.setProperty('--nav-scale','1');nav.style.setProperty('--logo-scale','1');var navBox=nav.getBoundingClientRect();var navStyles=getComputedStyle(nav);var horizontalPadding=parseFloat(navStyles.paddingLeft)+parseFloat(navStyles.paddingRight);var hamburgerVisible=hamburger&&getComputedStyle(hamburger).display!=='none';var hamburgerWidth=hamburgerVisible?hamburger.getBoundingClientRect().width:0;var linksVisible=getComputedStyle(navLinks).display!=='none';if(linksVisible){var logoWidth=logo.getBoundingClientRect().width;var availableForLinks=navBox.width-horizontalPadding-logoWidth-hamburgerWidth-BUFFER;var neededLinks=navLinks.scrollWidth;if(neededLinks>availableForLinks&&availableForLinks>0){var scale=Math.max(MIN_SCALE,availableForLinks/neededLinks);nav.style.setProperty('--nav-scale',scale.toFixed(3));}}var linksWidthNow=linksVisible?navLinks.getBoundingClientRect().width:0;var availableForLogo=navBox.width-horizontalPadding-linksWidthNow-hamburgerWidth-BUFFER;var neededLogo=logo.scrollWidth;if(neededLogo>availableForLogo&&availableForLogo>0){var logoScale=Math.max(LOGO_MIN_SCALE,availableForLogo/neededLogo);nav.style.setProperty('--logo-scale',logoScale.toFixed(3));}}window.addEventListener('resize',fitNav,{passive:true});window.addEventListener('load',fitNav);fitNav();})();</script><script>
-(function(){
-var slidesEl = document.getElementById('tm-slides');
-var dotsEl = document.getElementById('tm-dots');
-var badgeRow = document.getElementById('testimonials-badge-row');
-var prevBtn = document.getElementById('tm-prev');
-var nextBtn = document.getElementById('tm-next');
-if (!slidesEl || !dotsEl) return;
-
-var current = 0;
-var timer = null;
-var reviews = [];
-
-function escapeHtml(str) {
-return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function renderStars(rating) {
-var full = Math.round(rating);
-var s = '';
-for (var i=0;i<5;i++) s += (i < full ? '★' : '☆');
-return s;
-}
-
-function render() {
-slidesEl.innerHTML = reviews.map(function(r){
-return '<div class="testimonial-slide">' +
-'<div class="testimonial-card">' +
-'<div class="testimonial-stars">' + renderStars(r.rating) + '</div>' +
-(r.text ? '<p class="testimonial-text">“' + escapeHtml(r.text) + '”</p>' : '') +
-'<div class="testimonial-author">' + escapeHtml(r.author) + '</div>' +
-'<div class="testimonial-time">' + escapeHtml(r.relativeTime || '') + '</div>' +
-'</div></div>';
-}).join('');
-dotsEl.innerHTML = reviews.map(function(_, i){
-return '<button class="testimonial-dot' + (i===0 ? ' active' : '') + '" data-i="' + i + '" aria-label="Go to review ' + (i+1) + '"></button>';
-}).join('');
-Array.prototype.forEach.call(dotsEl.querySelectorAll('.testimonial-dot'), function(dot){
-dot.addEventListener('click', function(){ goTo(parseInt(this.dataset.i,10)); resetTimer(); });
-});
-update();
-}
-
-function update() {
-slidesEl.style.transform = 'translateX(-' + (current*100) + '%)';
-Array.prototype.forEach.call(dotsEl.children, function(d,i){ d.classList.toggle('active', i===current); });
-}
-
-function goTo(i) {
-if (!reviews.length) return;
-current = (i + reviews.length) % reviews.length;
-update();
-}
-
-function next(){ goTo(current+1); }
-function prev(){ goTo(current-1); }
-
-function resetTimer(){
-if (timer) clearInterval(timer);
-timer = setInterval(next, 7000);
-}
-
-if (prevBtn) prevBtn.addEventListener('click', function(){ prev(); resetTimer(); });
-if (nextBtn) nextBtn.addEventListener('click', function(){ next(); resetTimer(); });
-
-fetch('/reviews.json', { cache: 'no-store' })
-.then(function(res){ return res.ok ? res.json() : null; })
-.then(function(data){
-if (!data || !data.reviews || !data.reviews.length) return;
-// Sort so the highest-rated Google reviews are shown first.
-reviews = data.reviews.slice().sort(function(a,b){ return b.rating - a.rating; });
-if (badgeRow && data.rating) {
-badgeRow.innerHTML = '<span class="testimonials-stars">' + renderStars(data.rating) + '</span>' +
-'<span class="testimonials-score">' + Number(data.rating).toFixed(1) + ' out of 5' + (data.userRatingsTotal ? ' · ' + data.userRatingsTotal + ' Google reviews' : '') + '</span>';
-}
-render();
-resetTimer();
-})
-.catch(function(){ /* silently ignore — section just won't populate */ });
-})();
-</script>
-
 </body>
 </html>

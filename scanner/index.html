@@ -98,7 +98,20 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 .row{display:flex;gap:10px;margin-top:10px}
 .stack>*+*{margin-top:10px}
 
-.d-head{display:flex;gap:14px;align-items:center}
+.d-head{display:flex;gap:14px;align-items:flex-start}
+.d-id{flex:1;min-width:0}
+.d-name{display:block;width:100%;resize:none;overflow:hidden;font:700 22px/1.25 'Playfair Display',Georgia,serif;color:var(--ink);background:transparent;border:0;border-bottom:1.5px dashed #cdbf9f;border-radius:0;padding:2px 0 4px;margin:0;outline:none;-webkit-user-select:text;user-select:text}
+.d-name:focus{border-bottom:1.5px solid var(--gold)}
+.d-edit{display:block;font-size:11.5px;color:#8a8378;margin:4px 0 0}
+.facts{margin:16px 0 10px}
+.facts textarea{min-height:64px}
+.btn.goldfill{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.btn:disabled{opacity:.6}
+.d-msg{font-size:13.5px;color:#5d4b16;margin:8px 0 0}
+.d-msg.bad{color:#b3412e}
+.d-msg:empty{display:none}
+.box.flash{animation:flash 1.2s ease}
+@keyframes flash{0%{background:#fff0c2}100%{background:#fff}}
 .d-head img{width:84px;height:104px;object-fit:cover;border-radius:12px;background:#ddd;flex:none}
 .conf{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;font-weight:600;letter-spacing:.02em;padding:4px 10px;border-radius:20px;background:#efe8da;color:#5d4b16}
 .conf.low{background:#ece9e4;color:#5f5a52}
@@ -185,8 +198,16 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
   <div class="grab"></div>
   <div class="d-head">
     <img id="dImg" alt="">
-    <div><h2 id="dName"></h2><span id="dConf" class="conf"></span></div>
+    <div class="d-id">
+      <textarea id="dName" class="d-name" rows="1" aria-label="Item name" autocapitalize="words"></textarea>
+      <span class="d-edit">Tap the name to fix it</span>
+      <span id="dConf" class="conf"></span>
+    </div>
   </div>
+  <label class="field facts"><span>Add what the camera can't see</span>
+    <textarea id="dFacts" rows="2" placeholder="Year, model, specs, size, condition. e.g. 2021, M1 Pro, 16 GB RAM, 512 GB, works great"></textarea></label>
+  <button id="dReprice" class="btn goldfill" type="button">Re-price with these details</button>
+  <p id="dMsg" class="d-msg" role="status"></p>
   <div class="d-prices">
     <div class="box"><span>Tag price</span><div class="tagin">$<input id="dPrice" type="number" inputmode="numeric" min="0" step="1" aria-label="Tag price"></div><em>Tap to change</em></div>
     <div class="box"><span>Sells online for</span><b id="dRange"></b><em>Typical eBay sold</em></div>
@@ -461,7 +482,7 @@ function capture() {
 }
 
 /* ---------- AI call (streamed so the price shows the moment it's written) ---------- */
-function body(b64) {
+function body(b64, extra) {
   let sys = SYSTEM;
   const notes = (S.notes || '').trim();
   if (notes) sys += "\n\nThe owner's own pricing rules. Follow them:\n" + notes.slice(0, 1500);
@@ -469,22 +490,22 @@ function body(b64) {
     model: S.model, max_tokens: 200, stream: true, system: sys,
     messages: [{ role: 'user', content: [
       { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
-      { type: 'text', text: 'Price the item in the center. JSON only.' }
+      { type: 'text', text: extra || 'Price the item in the center. JSON only.' }
     ] }]
   };
 }
 function apiError(status, message, type) { const e = new Error(message || 'Error ' + status); e.status = status; e.type = type || ''; return e; }
 
-async function priceIt(shot, id, hash, replace) {
-  const t0 = performance.now();
-  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 20000);
-  let text = '', partialShown = false;
-  const dbg = lastScan = { img: 'data:image/jpeg;base64,' + shot.b64, text: '', at: new Date(), ms: 0, err: '' };
+// Sends one photo (plus optional extra instructions) and returns the AI's full reply text.
+// onText is called with the text so far as it streams in.
+async function streamAI(b64, extra, onText, timeoutMs) {
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), timeoutMs || 20000);
+  let text = '';
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
       headers: { 'content-type': 'application/json', 'x-scanner-pass': PASS },
-      body: JSON.stringify(body(shot.b64))
+      body: JSON.stringify(body(b64, extra))
     });
     if (!res.ok) { let m = '', ty = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; ty = (j.error && j.error.type) || ''; } catch (e) {} throw apiError(res.status, m, ty); }
     const reader = res.body.getReader(), dec = new TextDecoder();
@@ -495,10 +516,7 @@ async function priceIt(shot, id, hash, replace) {
       let ev; try { ev = JSON.parse(line.slice(5)); } catch (e) { return; }
       if (ev.type === 'content_block_delta' && ev.delta && typeof ev.delta.text === 'string') {
         text += ev.delta.text;
-        if (!partialShown && id === scanSeq) {
-          const p = parsePartial(text);
-          if (p) { partialShown = true; showEntry(p, true); markLatency(performance.now() - t0); haptic(); }
-        }
+        if (onText) onText(text);
       } else if (ev.type === 'error') {
         throw apiError(ev.error && ev.error.type === 'overloaded_error' ? 529 : 500, ev.error && ev.error.message);
       }
@@ -511,13 +529,33 @@ async function priceIt(shot, id, hash, replace) {
       while ((nl = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, nl)); buf = buf.slice(nl + 1); }
     }
     if (buf) handle(buf);
+    return text;
   } catch (err) {
-    clearTimeout(timer);
-    dbg.text = text; dbg.err = (err && (err.status ? err.status + ' ' : '') + err.message) || 'error';
+    if (err && typeof err === 'object') err.partialText = text;
+    throw err;
+  } finally { clearTimeout(timer); }
+}
+function errText(err) { return (err && (err.status ? err.status + ' ' : '') + err.message) || 'error'; }
+
+// Full-size photos from this session, kept in memory for re-pricing with added details.
+const shots = new Map();
+function rememberShot(id, b64) { shots.set(id, b64); if (shots.size > 40) shots.delete(shots.keys().next().value); }
+
+async function priceIt(shot, id, hash, replace) {
+  const t0 = performance.now();
+  let text = '', partialShown = false;
+  const dbg = lastScan = { img: 'data:image/jpeg;base64,' + shot.b64, text: '', at: new Date(), ms: 0, err: '' };
+  try {
+    text = await streamAI(shot.b64, '', (t) => {
+      if (partialShown || id !== scanSeq) return;
+      const p = parsePartial(t);
+      if (p) { partialShown = true; showEntry(p, true); markLatency(performance.now() - t0); haptic(); }
+    });
+  } catch (err) {
+    dbg.text = (err && err.partialText) || ''; dbg.err = errText(err);
     if (id === scanSeq) showError(err);
     return;
   }
-  clearTimeout(timer);
   if (!partialShown) markLatency(performance.now() - t0);
   dbg.text = text; dbg.ms = performance.now() - t0;
 
@@ -528,6 +566,7 @@ async function priceIt(shot, id, hash, replace) {
     return;
   }
   const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), hash, thumb: shot.thumb, model: S.model }, r);
+  rememberShot(entry.id, shot.b64);
   if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) history.splice(i, 1); }
   history.unshift(entry); saveHistory();
   if (id === scanSeq) { showEntry(entry); if (!partialShown) haptic(); setStatus('Tap the price for comps'); }
@@ -642,10 +681,20 @@ function closeSheets(silent) {
 scrim.addEventListener('click', () => closeSheets());
 document.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeSheets(); });
 
+let nameTouched = false;
+function fitName() { const t = $('#dName'); t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
 function openDetail(e) {
-  detailEntry = e;
+  detailEntry = e; nameTouched = false;
   $('#dImg').src = e.thumb || '';
-  $('#dName').textContent = e.name;
+  $('#dFacts').value = e.facts || '';
+  $('#dMsg').textContent = ''; $('#dMsg').className = 'd-msg';
+  fillDetail(e);
+  $('#dRescan').hidden = !(current && current.id === e.id && lockRef);
+  openSheet($('#detailSheet'));
+  fitName();
+}
+function fillDetail(e) {
+  $('#dName').value = e.name;
   const conf = $('#dConf');
   const similar = e.match === 'similar';
   conf.className = 'conf ' + (e.conf === 'low' ? 'low' : similar ? '' : e.conf);
@@ -655,9 +704,63 @@ function openDetail(e) {
   $('#dRange').textContent = range(e.low, e.high);
   $('#dNote').textContent = e.note || '';
   $('#dComps').href = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(e.q || e.name) + '&LH_Sold=1&LH_Complete=1';
-  $('#dRescan').hidden = !(current && current.id === e.id && lockRef);
-  openSheet($('#detailSheet'));
 }
+function refreshViews(e) {
+  if (current && current.id === e.id) showEntry(e);
+  if (!$('#histSheet').hidden) renderHistory();
+}
+$('#dName').addEventListener('input', () => {
+  fitName();
+  if (!detailEntry) return;
+  const v = $('#dName').value.replace(/\s+/g, ' ').trim();
+  if (!v) return;
+  nameTouched = true;
+  detailEntry.name = v.slice(0, 80); detailEntry.renamed = true;
+  saveHistory(); refreshViews(detailEntry);
+});
+$('#dName').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); ev.target.blur(); } });
+$('#dName').addEventListener('blur', () => { if (detailEntry && !$('#dName').value.trim()) { $('#dName').value = detailEntry.name; fitName(); } });
+$('#dFacts').addEventListener('input', () => {
+  if (!detailEntry) return;
+  detailEntry.facts = $('#dFacts').value.slice(0, 400);
+  saveHistory();
+});
+$('#dReprice').addEventListener('click', async () => {
+  const e = detailEntry; if (!e) return;
+  const btn = $('#dReprice'), msg = $('#dMsg');
+  const name = $('#dName').value.replace(/\s+/g, ' ').trim() || e.name;
+  const facts = $('#dFacts').value.trim();
+  const img = shots.get(e.id) || (e.thumb ? e.thumb.split(',')[1] : '');
+  if (!img) { msg.className = 'd-msg bad'; msg.textContent = 'The photo for this item is gone. Point at it and tap Rescan.'; return; }
+  btn.disabled = true; btn.textContent = 'Re-pricing…'; msg.textContent = ''; msg.className = 'd-msg';
+  const extra = 'The owner checked this item in person and corrected it.\nItem: ' + name + '\n' + (facts ? 'Details: ' + facts + '\n' : '') +
+    "Treat these as facts even if the photo doesn't show them, and price this specific item with these details. Use \"match\":\"exact\" if they pin down a specific model. JSON only.";
+  const t0 = performance.now();
+  const dbg = lastScan = { img: 'data:image/jpeg;base64,' + img, text: '', at: new Date(), ms: 0, err: '' };
+  try {
+    const text = await streamAI(img, extra, null, 25000);
+    dbg.text = text; dbg.ms = performance.now() - t0;
+    const r = parseFinal(text);
+    if (!r) throw apiError(0, 'no price', 'no_price');
+    Object.assign(e, r, { name: nameTouched ? name.slice(0, 80) : r.name, facts, edited: false, repriced: Date.now() });
+    saveHistory();
+    if (detailEntry === e) {
+      fillDetail(e); fitName(); nameTouched = false;
+      for (const b of document.querySelectorAll('#detailSheet .box')) { b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+      msg.textContent = 'Re-priced with your details.';
+    }
+    refreshViews(e);
+    haptic();
+  } catch (err) {
+    dbg.text = (err && err.partialText) || ''; dbg.err = errText(err);
+    msg.className = 'd-msg bad';
+    msg.textContent = err && err.type === 'bad_password' ? 'The scanner password changed. Close this and enter the new one.'
+      : err && err.type === 'no_price' ? 'The AI didn\'t return a price. Try adding a few more details.'
+      : err && err.name === 'AbortError' ? 'That took too long. Try again.'
+      : !(err && err.status) ? 'Couldn\'t reach the AI. Check your signal and try again.'
+      : 'Something went wrong. Try again.';
+  } finally { btn.disabled = false; btn.textContent = 'Re-price with these details'; }
+});
 $('#dPrice').addEventListener('input', (ev) => {
   if (!detailEntry) return;
   const v = num(ev.target.value);
@@ -697,7 +800,7 @@ function renderHistory() {
     const img = document.createElement('img'); img.alt = ''; if (e.thumb) img.src = e.thumb;
     const mid = document.createElement('div'); mid.className = 'h-mid';
     const b = document.createElement('b'); b.textContent = e.name;
-    const sm = document.createElement('small'); sm.textContent = ago(e.t) + (e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
+    const sm = document.createElement('small'); sm.textContent = ago(e.t) + (e.facts ? ' · ' + (e.facts.length > 40 ? e.facts.slice(0, 40) + '…' : e.facts) : e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
     mid.append(b, sm);
     const pr = document.createElement('span'); pr.className = 'h-price';
     pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
@@ -728,8 +831,8 @@ function csvCell(v) {
 }
 $('#hExport').addEventListener('click', async () => {
   if (!history.length) return;
-  const rows = [['Item', 'Tag price', 'Online low', 'Online high', 'Confidence', 'Check', 'Scanned']];
-  for (const e of history.slice().reverse()) rows.push([e.name, e.price, e.low, e.high, e.conf, e.note, new Date(e.t).toLocaleString('en-US')]);
+  const rows = [['Item', 'Details', 'Tag price', 'Online low', 'Online high', 'Confidence', 'Check', 'Scanned']];
+  for (const e of history.slice().reverse()) rows.push([e.name, e.facts || '', e.price, e.low, e.high, e.conf, e.note, new Date(e.t).toLocaleString('en-US')]);
   const csv = rows.map((r) => r.map(csvCell).join(',')).join('\n');
   const name = 'scanned-items-' + new Date().toISOString().slice(0, 10) + '.csv';
   const blob = new Blob([csv], { type: 'text/csv' });

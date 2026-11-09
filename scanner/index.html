@@ -94,6 +94,13 @@ body.paused .pause{background:var(--gold);color:var(--ink)}
 .off-hint{margin:0;max-width:300px;color:rgba(250,247,242,.75);font-size:15px;line-height:1.5}
 .off-count{margin:0;color:var(--gold);font-size:14px;font-weight:600}
 .off-count:empty{display:none}
+.clock-state{margin:0 0 4px;display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:20px;background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.45);color:var(--cream);font-size:14px;font-weight:600}
+.clock-state::before{content:"";width:8px;height:8px;border-radius:50%;background:#7bd389;box-shadow:0 0 0 3px rgba(123,211,137,.25)}
+.clock-out{margin-top:6px;min-height:44px;padding:0 22px;border-radius:22px;border:1px solid rgba(250,247,242,.35);background:transparent;color:var(--cream);font-weight:600;font-size:15px}
+.clock-out.armed{border-color:#e8a28f;color:#f3c1b3}
+.off-msg{margin:0;max-width:320px;color:rgba(250,247,242,.85);font-size:14px;line-height:1.5}
+.off-msg:empty{display:none}
+.start-btn:disabled{opacity:.6}
 body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shade.b{display:none}
 
 /* sheets */
@@ -201,9 +208,13 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 <div id="reticle" class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
 <section id="offPanel" class="off-panel" hidden>
+  <p class="clock-state" id="clockState" hidden></p>
+  <button id="clockInBtn" class="start-btn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Clock in</button>
   <button id="startBtn" class="start-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="4"/></svg>Start scanner</button>
-  <p class="off-hint">Point at an item and hold steady. Prices pop up on their own.</p>
+  <p class="off-hint" id="offHint">Point at an item and hold steady. Prices pop up on their own.</p>
   <p class="off-count" id="offCount"></p>
+  <button id="clockOutBtn" class="clock-out" type="button" hidden>Clock out</button>
+  <p class="off-msg" id="offMsg" role="status"></p>
 </section>
 
 <button id="bubble" class="bubble" type="button" aria-live="polite"><span class="price" id="bPrice"></span><span class="name" id="bName"></span></button>
@@ -533,7 +544,7 @@ async function streamAI(b64, extra, onText, timeoutMs, kind) {
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
-      headers: { 'content-type': 'application/json', 'x-scanner-pass': PASS, 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-kind': kind || 'scan' },
+      headers: { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-kind': kind || 'scan' },
       body: JSON.stringify(body(b64, extra))
     });
     if (!res.ok) { let m = '', ty = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; ty = (j.error && j.error.type) || ''; } catch (e) {} throw apiError(res.status, m, ty); }
@@ -668,6 +679,7 @@ function showError(err) {
   const s = err && err.status, ty = err && err.type, m = (err && err.message || '').toLowerCase();
   let goSettings = false;
   if (ty === 'bad_password') { unlock(); askPassword('That password no longer works. Enter the current one.'); return; }
+  if (ty === 'not_clocked_in') { shift = null; clockKnown = true; stopScanner(); offMsg('You\'re clocked out. Clock in to keep scanning.'); return; }
   if (err && err.name === 'AbortError') msg = 'Took too long. Tap to retry';
   else if (!s) { msg = 'No signal. Tap to retry'; status = 'Check your signal or Wi-Fi'; }
   else if (ty === 'not_connected') { msg = 'AI key not connected yet'; status = 'Connect the AI key in Supabase'; }
@@ -879,7 +891,8 @@ $('#hExport').addEventListener('click', async () => {
 });
 
 function openSettings() {
-  $('#sWho').value = S.who || ''; $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens;
+  $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens;
   applyRole(); $('#sOwner').value = ''; $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
   $('#sStats').textContent = avg ? 'Average time to price: ' + (avg / 1000).toFixed(1) + 's over the last ' + latencies.length + ' scans.' : '';
@@ -895,7 +908,7 @@ $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
   S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value;
-  const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who) S.who = who;
+  const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
   closeSheets(true);
   if (modeChanged && current) showEntry(current);
@@ -920,7 +933,11 @@ function rememberRole(role, p) {
   S.role = role; store.set('settings', S);
   setOwnerPass(role === 'owner' ? p : '');
   applyRole();
+  if (!$('#offPanel').hidden) renderOff();
 }
+function ownerPassStored() { try { return localStorage.getItem('bsb_owner_pass') || ''; } catch (e) { return ''; } }
+// Owner phones scan with the owner password, so they never need to clock in.
+function scanPass() { return (S.role === 'owner' && ownerPassStored()) || PASS; }
 // keep this phone's role current (e.g. unlocked before roles existed)
 async function refreshRole() {
   try {
@@ -962,10 +979,74 @@ function stopScanner() {
 function showOff() {
   document.body.classList.add('off');
   $('#offPanel').hidden = false;
+  renderOff();
+  if (needsClock()) refreshClock();
+}
+
+/* ---------- time clock (employees clock in before scanning; the owner doesn't) ---------- */
+let shift = null, clockKnown = false, clockOutArmed = 0;
+const needsClock = () => S.role !== 'owner';
+function dur(ms) {
+  const m = Math.max(0, Math.round(ms / 60000));
+  if (m < 60) return m + ' min';
+  return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+}
+function offMsg(t) { $('#offMsg').textContent = t || ''; }
+function renderOff() {
   const today = new Date().toDateString();
   const n = history.filter((e) => new Date(e.t).toDateString() === today).length;
   $('#offCount').textContent = n ? n + ' item' + (n === 1 ? '' : 's') + ' scanned on this phone today' : '';
+  const clock = needsClock();
+  const on = !clock || !!shift;
+  $('#startBtn').hidden = !on;
+  $('#clockInBtn').hidden = !clock || !!shift || !clockKnown;
+  $('#clockOutBtn').hidden = !clock || !shift;
+  $('#clockState').hidden = !clock || !shift;
+  if (clock && shift) $('#clockState').textContent = 'On the clock since ' + when(Date.parse(shift.clock_in)) + ' · ' + dur(Date.now() - Date.parse(shift.clock_in));
+  $('#offHint').textContent = !clock || shift ? 'Point at an item and hold steady. Prices pop up on their own.'
+    : !clockKnown ? 'Checking the time clock…'
+    : 'Clock in to start scanning' + (S.who ? ', ' + S.who.split(' ')[0] : '') + '.';
 }
+async function clockApi(action) {
+  const res = await fetch(API + '?clock=' + action, { method: 'POST', headers: { 'x-scanner-pass': PASS, 'x-scanner-user': encodeURIComponent(S.who || '') } });
+  if (res.status === 401) { askPassword('That password no longer works. Enter the current one.'); throw new Error('password'); }
+  if (!res.ok) throw new Error('clock ' + res.status);
+  const j = await res.json();
+  if (j.role === 'owner' && S.role !== 'owner') rememberRole('owner', PASS);
+  return j.shift || null;
+}
+async function refreshClock() {
+  if (!PASS || !S.who) return;
+  try { shift = await clockApi('status'); clockKnown = true; }
+  catch (e) { if (!clockKnown) offMsg('Couldn\'t reach the time clock. Check your signal.'); clockKnown = true; }
+  renderOff();
+}
+$('#clockInBtn').addEventListener('click', async () => {
+  const b = $('#clockInBtn'); b.disabled = true; offMsg('');
+  try { shift = await clockApi('in'); clockKnown = true; haptic(); offMsg(shift ? 'Clocked in at ' + when(Date.parse(shift.clock_in)) + '.' : ''); }
+  catch (e) { if (e.message !== 'password') offMsg('Couldn\'t clock in. Check your signal and try again.'); }
+  finally { b.disabled = false; renderOff(); }
+});
+$('#clockOutBtn').addEventListener('click', async () => {
+  const b = $('#clockOutBtn');
+  if (Date.now() - clockOutArmed > 3000) {
+    clockOutArmed = Date.now(); b.textContent = 'Tap again to clock out'; b.classList.add('armed');
+    setTimeout(() => { b.textContent = 'Clock out'; b.classList.remove('armed'); }, 3000);
+    return;
+  }
+  clockOutArmed = 0; b.textContent = 'Clock out'; b.classList.remove('armed'); b.disabled = true;
+  const started = shift ? Date.parse(shift.clock_in) : Date.now();
+  try {
+    const done = await clockApi('out');
+    const end = done && done.clock_out ? Date.parse(done.clock_out) : Date.now();
+    const items = history.filter((e) => e.t >= started && e.t <= end && (!e.who || e.who === S.who)).length;
+    shift = null; haptic();
+    offMsg('Clocked out at ' + when(end) + ' · ' + dur(end - started) + ' on the clock · ' + items + ' item' + (items === 1 ? '' : 's') + ' scanned.');
+  } catch (e) { if (e.message !== 'password') offMsg('Couldn\'t clock out. Check your signal and try again.'); }
+  finally { b.disabled = false; renderOff(); }
+});
+setInterval(() => { if (!$('#offPanel').hidden && shift) renderOff(); }, 30000);
+
 pauseBtn.addEventListener('click', stopScanner);
 $('#startBtn').addEventListener('click', () => start());
 torchBtn.addEventListener('click', async () => {
@@ -978,6 +1059,7 @@ async function keepAwake() { try { if ('wakeLock' in navigator && !document.hidd
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) return;
   if (stream) keepAwake();
+  if (!stream && !$('#offPanel').hidden && needsClock()) refreshClock();
   prev = null; stillMs = 0;
   if (stream && video.paused) video.play().catch(() => {});
 });
@@ -1007,6 +1089,8 @@ function camHelp(msg) {
   setup.hidden = false; $('#setupKey').hidden = true; $('#setupCam').hidden = false; $('#camMsg').textContent = msg;
 }
 async function start() {
+  if (needsClock() && !shift) { showOff(); offMsg('Clock in before you start scanning.'); return; }
+  offMsg('');
   setup.hidden = true;
   paused = false; document.body.classList.remove('paused');
   document.body.classList.remove('off'); $('#offPanel').hidden = true;

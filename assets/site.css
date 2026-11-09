@@ -538,3 +538,8 @@ p { margin: 0; }
 @media (max-width: 640px) {
   .cat-grid { grid-template-columns: 1fr; }
 }
+
+/* Press mention under the hero checks */
+.press { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.95rem; color: var(--muted); max-width: 54ch; }
+.press a { font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) { .hero .press { animation: bsb-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.38s both; } }

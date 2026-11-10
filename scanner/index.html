@@ -264,6 +264,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 .ta-list{list-style:none;margin:0;padding:0;width:100%;max-width:280px;text-align:left}
 .ta-list li{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:6px;border-radius:12px;background:rgba(250,247,242,.07);font-size:14.5px;font-weight:600}
 .ta-list svg{width:20px;height:20px;color:var(--gold);flex:none}
+video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 [hidden]{display:none !important}
 @media (prefers-reduced-motion:reduce){.bubble,.reticle{transition:none}.bubble.pop,.sheet{animation:none}}
 </style>
@@ -362,6 +363,8 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
     <textarea id="sNotes" rows="4" placeholder="e.g. Tag most things around half of eBay sold. Glassware $1–5 unless it's a known pattern. Price furniture to move."></textarea></label>
   <label class="field check-row"><input id="sDouble" type="checkbox"><span>Double-check every price<small>Two AI looks per scan for steadier prices and to catch valuable items. Uses about twice the AI credit.</small></span></label>
   <label class="field check-row"><input id="sSpeak" type="checkbox"><span>Say the price out loud<small>Reads each price aloud so you can keep your eyes and hands on the item.</small></span></label>
+  <label class="field"><span>Start a scan when</span>
+    <select id="sTrigger"><option value="auto">I hold the phone steady on an item</option><option value="touch">I touch and hold the screen</option></select></label>
   <label class="field"><span>How long to hold still before it prices</span>
     <select id="sSens"><option value="quick">Short (fastest)</option><option value="normal">Normal</option><option value="steady">Longer (fewer accidental scans)</option></select></label>
   <label class="field"><span>Keep the price up after you move away</span>
@@ -430,7 +433,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
 const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
-const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true };
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto' };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -440,7 +443,7 @@ const MAX_HISTORY = 300;
 
 const SYSTEM = `You price items for Better Selling With Bailey, an estate sale company in Erie County, Pennsylvania. Staff point a phone camera at hundreds of items while setting up a sale, and every item needs a fast, realistic tag price.
 
-1. LOOK. The item is whatever is centered or takes up the most space. Several similar things together (a shelf of glasses, a box of ornaments, a pile of tools) are one lot: price the lot.
+1. LOOK. The item is whatever is centered or takes up the most space. Several similar things together (a shelf of glasses, a box of ornaments, a pile of tools) are one lot: price the lot. Between items the camera also catches things by accident while staff reach for the next item. Skip only views that are clearly accidental, by replying with an empty name and zeros: bare floor, carpet, ground, wall, ceiling or countertop; a person's face or body filling the view; a wide view of a room, store aisle or a whole table or rack of unrelated things with nothing in particular in the middle; a heavy motion blur. If anything is reasonably centered, price it: when unsure, price it.
 2. READ. Before naming anything, read every bit of visible text, including small print: brand names and logos (on a strap, lid, handle, base, screen bezel or tag), model and set numbers, card names and numbers, titles and authors, pattern names, maker's marks, size tags. Copy numbers exactly as printed. If a digit is unclear, leave that number out instead of guessing. Put the most useful few words in "seen" (at most 8 words, empty if none). Do not copy long text.
 3. IDENTIFY. Name the item as specifically as the evidence allows, including the details that change the price:
 - Electronics, game systems, tools and appliances: brand plus model, generation or version (Xbox 360 vs Xbox One controller, Game Boy Color vs Advance vs Advance SP, DualShock 2 vs 4, slim vs original). Check the shape, buttons and logo placement, not just the brand.
@@ -468,7 +471,7 @@ If you can name the specific brand and model or pattern, use "match":"exact". If
 - "qty": how many pieces are being priced (1 for a single item). "price", "low" and "high" are for all of them together.
 - "special": only for clothing and cups. true only if the piece is clearly special AND would sell used for more than $15 each: designer or premium brands (The North Face, Patagonia, Ralph Lauren, Lacoste, Burberry, Pendleton, Carhartt, Harley-Davidson and similar), real leather or fur, vintage band or concert tees, team jerseys, new with tags, collectible makers or patterns (Fire-King, Pyrex, Hall, Lenox, Royal Albert, McCoy, Starbucks You Are Here or city mugs), fine china, crystal, sterling, antiques. Everyday clothes (store brands, basic athletic wear, event or souvenir tees and hoodies, plain sweaters and jeans) and ordinary mugs and glasses are false. false for everything else.
 - "q": eBay search words that find sold comps for this item, or for similar items.
-If the photo shows no object at all (black, blurred beyond recognition, or bare wall, floor or ceiling), use an empty name and zeros.
+If the photo shows no object at all or is clearly accidental (see LOOK), use an empty name and zeros.
 
 Reply with only one line of JSON, keys in exactly this order:
 {"seen":"...","name":"...","cat":"clothing|cup|other","qty":1,"special":false,"match":"exact|similar","conf":"high|med|low","price":0,"upside":0,"low":0,"high":0,"note":"...","look":"...","q":"..."}`;
@@ -703,12 +706,15 @@ function tick(now) {
   if (f.mean < 20) { stillMs = 0; setReticle(0); setStatus('Too dark. Turn on a light', true); return; }
   if (f.grad < 1.6) { stillMs = 0; setReticle(0); setStatus('Point at an item'); return; }
 
+  if (S.trigger === 'touch' && !touching && !closeupFor) {
+    stillMs = 0; bestSharp = -1; setReticle(0); setStatus('Touch and hold the screen while you aim'); return;
+  }
   const cfg = SENS[S.sens] || SENS.normal;
   stillMs = motion < cfg.still ? stillMs + dt : Math.max(0, stillMs - dt * 2);
   if (stillMs === 0) bestSharp = -1; else if (motion < cfg.still) keepSharpest();
   const p = Math.min(1, stillMs / cfg.hold);
   setReticle(p);
-  if (p >= 1 && now - lastTrigger > 600) { stillMs = 0; trigger(f, false); }
+  if (p >= 1 && now - lastTrigger > 600 && (now > quietUntil || S.trigger === 'touch')) { stillMs = 0; trigger(f, false, null, S.trigger === 'touch'); }
   else setStatus(closeupFor ? 'Close-up: hold steady on the label or mark' : stillMs > 0 ? 'Hold steady…' : 'Hold steady on an item');
 }
 
@@ -743,7 +749,7 @@ function afterShow() {
   if (!lockRef) { bubble.classList.add('linger'); scheduleHide(); }
 }
 
-function trigger(f, fresh, replace) {
+function trigger(f, fresh, replace, tap) {
   lastTrigger = performance.now();
   clearTimeout(lingerTimer);
   lockRef = f;
@@ -762,20 +768,22 @@ function trigger(f, fresh, replace) {
         ++scanSeq; showRepeat(e); return;
       }
       if (lastItem.pending) {                       // still pricing this very item: wait for that answer
-        if (lastItem.seq !== scanSeq || !bubble.classList.contains('on')) showThinking();
+        if (tap && (lastItem.seq !== scanSeq || !bubble.classList.contains('on'))) showThinking();
         scanSeq = lastItem.seq; bubble.classList.remove('linger'); scanning(true); setStatus('Pricing…');
         return;
       }
     }
     const saved = findSaved(hash);
     if (saved) { ++scanSeq; lastItem = { sig, t: Date.now(), seq: scanSeq, pending: false, entryId: saved.id }; showRepeat(saved); return; }
-    if (nullHashes.some((h) => ham(h, hash) <= MATCH_BITS)) { ++scanSeq; showNone(); return; }
+    if (!tap && nullHashes.some((h) => ham(h, hash) <= MATCH_BITS)) { ++scanSeq; quietNone(); return; }   // already judged: nothing to price here
   }
   const id = ++scanSeq;
   const shot = capture();
   lastItem = { sig, t: Date.now(), seq: id, pending: true, entryId: null };
-  showThinking(); scanning(true); setStatus('Pricing…');
-  priceIt(shot, id, hash, replace);
+  if (tap) showThinking();
+  else { clearTimeout(lingerTimer); bubble.className = 'bubble'; current = null; }   // automatic: no bubble until there's a price
+  scanning(true); setStatus('Pricing…');
+  priceIt(shot, id, hash, replace, tap);
 }
 
 // Draw the current view (cropped like the scanner sees it) into a canvas, max 800px.
@@ -830,10 +838,11 @@ function keepSharpest() {
 }
 
 /* ---------- AI call (streamed so the price shows the moment it's written) ---------- */
-function body(b64, extra) {
-  let sys = SYSTEM;
+const TAP_SYS = '\n\nThis time the user tapped the screen to price exactly this view, so do not skip it as accidental: price whatever is in the middle. Only use an empty name if there is truly no object at all.';
+function body(b64, extra, tap) {
+  let sys = SYSTEM + (tap ? TAP_SYS : '');
   const notes = (S.notes || '').trim();
-  if (notes) sys += "\n\nThe owner's own pricing rules. Follow them:\n" + notes.slice(0, 1100);
+  if (notes) sys += "\n\nThe owner's own pricing rules. Follow them:\n" + notes.slice(0, 1500);
   return {
     model: MODEL, max_tokens: 300, stream: true, system: sys,
     messages: [{ role: 'user', content: [].concat(b64).map((d) => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: d } }))
@@ -844,14 +853,14 @@ function apiError(status, message, type) { const e = new Error(message || 'Error
 
 // Sends one photo (plus optional extra instructions) and returns the AI's full reply text.
 // onText is called with the text so far as it streams in.
-async function streamAI(b64, extra, onText, timeoutMs, kind) {
+async function streamAI(b64, extra, onText, timeoutMs, kind, tap) {
   const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), timeoutMs || 20000);
   let text = '';
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
       headers: { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-kind': kind || 'scan' },
-      body: JSON.stringify(body(b64, extra))
+      body: JSON.stringify(body(b64, extra, tap))
     });
     if (!res.ok) { let m = '', ty = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; ty = (j.error && j.error.type) || ''; } catch (e) {} throw apiError(res.status, m, ty); }
     const reader = res.body.getReader(), dec = new TextDecoder();
@@ -914,7 +923,7 @@ function mergeLooks(list) {
   return m;
 }
 
-async function priceIt(shot, id, hash, replace) {
+async function priceIt(shot, id, hash, replace, tap) {
   const t0 = performance.now();
   const n = S.double === false ? 1 : 2;
   const dbg = lastScan = { img: 'data:image/jpeg;base64,' + shot.b64, text: '', at: new Date(), ms: 0, err: '' };
@@ -938,7 +947,7 @@ async function priceIt(shot, id, hash, replace) {
   };
   const runs = parts.map((_, i) => streamAI(i ? (shot.b64s || shot.b64) : shot.b64, '', (t) => {
       if (!parts[i]) { const p = parsePartial(t); if (p) { parts[i] = p; tryShow(); } }
-    }, 20000, i ? 'scan2' : 'scan')
+    }, 20000, i ? 'scan2' : 'scan', tap)
     .then((text) => { if (!i) dbg.text = text; finals[i] = parseFinal(text); if (!parts[i] && finals[i]) parts[i] = finals[i]; })
     .catch((err) => { errCount++; if (!firstErr) firstErr = err; if (!i) { dbg.text = (err && err.partialText) || ''; dbg.err = errText(err); } })
     .finally(() => { done[i] = true; tryShow(); }));
@@ -952,7 +961,7 @@ async function priceIt(shot, id, hash, replace) {
     if (lastItem && lastItem.seq === id) lastItem = null;
     if (errCount === n) { if (id === scanSeq) showError(firstErr); return; }   // every look failed: show why
     nullHashes.push(hash); if (nullHashes.length > 40) nullHashes.shift();
-    if (id === scanSeq) showNone();
+    if (id === scanSeq) { if (tap) showNone(); else quietNone(); }
     return;
   }
   const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', hash, thumb: shot.thumb, model: MODEL }, r);
@@ -996,7 +1005,7 @@ async function closeup(id, shot, seq) {
 function unesc(s) { try { return JSON.parse('"' + s + '"'); } catch (e) { return s; } }
 function parsePartial(t) {
   const n = t.match(/"name"\s*:\s*(null|"((?:[^"\\]|\\.)*)")/);
-  if (!n || n[1] === 'null') return null;
+  if (!n || n[1] === 'null' || !n[2].trim()) return null;
   const c = t.match(/"conf"\s*:\s*"(\w+)"/);
   if (!c) return null;
   const mt = t.match(/"match"\s*:\s*"(\w+)"/), match = mt && mt[1] === 'similar' ? 'similar' : 'exact';
@@ -1102,6 +1111,13 @@ function showRepeat(e) {
   haptic(); say('Already scanned. ' + spoken(e));
   setStatus('Scanned already · tap “Scan again” if it’s a different item');
 }
+// An automatic scan that wasn't aimed at anything (floor, wall, a wide view, someone walking by): stay quiet.
+let quietUntil = 0;   // after skipping a view, wait a moment before the next automatic scan
+function quietNone() {
+  current = null; scanning(false); quietUntil = performance.now() + 1500;
+  if (!bubble.classList.contains('linger')) bubble.className = 'bubble';
+  setStatus(S.trigger === 'touch' ? 'Nothing to price there. Aim at one item' : 'Nothing to price there. Aim at one item, or tap to price this view');
+}
 function showNone() {
   current = null; scanning(false);
   bPrice.textContent = '';
@@ -1134,18 +1150,24 @@ function showError(err) {
 bubble.addEventListener('click', (ev) => {
   const c = bubble.className;
   if (c.includes('thinking')) return;
-  if (ev.target.closest('#bAgain')) { if (video.videoWidth) trigger(grab(), true); return; }   // yes, it's a different one: price it
+  if (ev.target.closest('#bAgain')) { if (video.videoWidth) trigger(grab(), true, null, true); return; }   // yes, it's a different one: price it
   if (c.includes('err') && bubble.dataset.err === 'settings') { openSettings(); return; }
-  if (c.includes('err') || c.includes('none')) { if (video.videoWidth) trigger(grab(), true); return; }
+  if (c.includes('err') || c.includes('none')) { if (video.videoWidth) trigger(grab(), true, null, true); return; }
   if (current) openDetail(current);
 });
 
-// tap anywhere on the camera view to price right away
+// tap anywhere on the camera view to price right away (a long press isn't a tap)
+let touching = false, pressAt = 0, pressScans = 0;
 video.addEventListener('click', () => {
   if (paused || sheetOpen || !video.videoWidth) return;
-  if (lockRef && !bubble.className.includes('none') && !bubble.className.includes('err')) return;
-  unlock(); trigger(grab(), false);
+  if (performance.now() - pressAt > 450 || pressScans !== scanSeq) return;
+  if (lockRef && bubble.classList.contains('on') && !bubble.className.includes('none') && !bubble.className.includes('err')) return;
+  unlock(); trigger(grab(), false, null, true);
 });
+// "Only while touching the screen" mode: scans happen only while a finger is on the camera view
+video.addEventListener('pointerdown', () => { touching = true; pressAt = performance.now(); pressScans = scanSeq; });
+for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) video.addEventListener(ev, () => { touching = false; });
+document.addEventListener('visibilitychange', () => { if (document.hidden) touching = false; });
 
 /* ---------- sheets ---------- */
 function openSheet(el) {
@@ -1271,7 +1293,7 @@ $('#dPrice').addEventListener('input', (ev) => {
 $('#dRescan').addEventListener('click', () => {
   const e = detailEntry; closeSheets(true);
   if (!video.videoWidth) return;
-  unlock(); trigger(grab(), true, e && e.id);
+  unlock(); trigger(grab(), true, e && e.id, true);
 });
 $('#dRemove').addEventListener('click', () => {
   if (!detailEntry) return;
@@ -1350,7 +1372,7 @@ $('#hExport').addEventListener('click', async () => {
 
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false;
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto';
   $('#sSpeak').closest('label').hidden = !canSpeak; $('#sInstall').hidden = !installable();
   applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
@@ -1366,7 +1388,7 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
-  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked;
+  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
   closeSheets(true);
@@ -1758,7 +1780,7 @@ const ICON = {
 function tourSteps() {
   return [
     { title: 'Point and hold steady', art: '<div class="ta-ret"><i></i><i></i><i></i><i></i>' + ICON.item + '</div><span class="ta-pill">Hold steady…</span>',
-      text: (needsClock() ? 'Clock in, tap Start scanner, ' : 'Tap Start scanner, ') + 'then point at one item and hold still for a second. The price pops up on its own' + (canSpeak ? ' and the phone says it out loud' : '') + '. No buttons, no photos.' },
+      text: (needsClock() ? 'Clock in, tap Start scanner, ' : 'Tap Start scanner, ') + (S.trigger === 'touch' ? 'then touch and hold the screen while you aim at one item. ' : 'then point at one item and hold still for a second. ') + 'The price pops up on its own' + (canSpeak ? ' and the phone says it out loud' : '') + '. It skips floors, walls and other things you didn\u2019t aim at, and you can tap the screen to price anything right away.' },
     { title: 'Read the bubble', art: '<div class="ta-bub"><b>$25</b><span>Lionel 700E locomotive</span><em>Check value · could be $175</em></div>',
       text: 'That’s the tag price. A ~ means a rough guess. “Check value” means it might be worth a lot more, so don’t tag it yet: set it aside for Dorian. Scan the same thing twice and it asks before pricing it again.' },
     { title: 'Tap the price for more', art: '<ul class="ta-list"><li>' + ICON.edit + 'Fix the name, add details</li><li>' + ICON.zoom + 'Close-up of a label or mark</li><li>' + ICON.flag + 'Set aside for Dorian</li><li>' + ICON.tag + 'Real eBay sold prices</li></ul>',

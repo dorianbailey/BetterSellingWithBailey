@@ -135,6 +135,15 @@ td.gap.long{color:#8a5a12;font-weight:600}
 .look details{margin-top:14px}
 .look summary{cursor:pointer;font-weight:700;font-size:14.5px;color:var(--muted);padding:6px 0}
 .look .look-list{margin-top:10px}
+/* sales */
+.sale-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.sale-head h2{margin:0}
+.sale-sel{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-weight:600;font-size:15px;max-width:100%}
+.sale-head .spacer{flex:1}
+.it-img{width:44px;height:54px;object-fit:cover;border-radius:8px;background:#eee5d3;display:block;cursor:zoom-in}
+.it-img.big{position:fixed;inset:0;margin:auto;width:auto;height:auto;max-width:94vw;max-height:90vh;z-index:50;border-radius:14px;box-shadow:0 0 0 100vmax rgba(0,0,0,.75);cursor:zoom-out}
+.sub-line{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.who-sale{color:var(--muted);font-size:12.5px}
 [hidden]{display:none!important}
 @media (max-width:760px){
   .look-list{grid-template-columns:1fr}
@@ -170,6 +179,16 @@ td.gap.long{color:#8a5a12;font-weight:600}
       <p class="updated" style="margin:-4px 0 14px">Your crew wasn’t sure about these. Give each a tag price; it shows up on their phone.</p>
       <div class="look-list" id="lookList"></div>
       <details id="lookDoneBox" hidden><summary id="lookDoneSum"></summary><div class="look-list" id="lookDone"></div></details>
+    </section>
+    <section id="salesSec" class="section" hidden>
+      <div class="sale-head"><h2>Sale list</h2><select id="saleSel" class="sale-sel" aria-label="Which sale"></select><span class="spacer"></span><button class="ghost" id="saleCsv" type="button">Export this sale</button></div>
+      <div class="stats">
+        <div class="stat"><span>Items priced</span><b id="slItems">0</b><em id="slItemsSub"></em></div>
+        <div class="stat"><span>Sale total</span><b id="slTotal">–</b><em>sum of tag prices</em></div>
+        <div class="stat"><span>People</span><b id="slPeople">0</b><em id="slPeopleSub"></em></div>
+        <div class="stat"><span>Last item</span><b id="slLast">–</b><em id="slLastSub"></em></div>
+      </div>
+      <div id="saleWrap"></div>
     </section>
     <div class="bar">
       <div class="tabs" role="group" aria-label="Date range">
@@ -268,7 +287,7 @@ function flagCard(f) {
   if (f.ai_note) meta.push(['Check: ', f.ai_note]);
   if (f.facts) meta.push(['Their notes: ', f.facts]);
   if (meta.length) { const m = el('p', 'fl-meta'); meta.forEach(([k, v], i) => { if (i) m.append(' · '); m.append(k); m.appendChild(el('q', '', v)); }); mid.appendChild(m); }
-  const who = el('p', 'fl-who', 'Set aside by ' + (f.scanner || 'someone') + ' · ' + ago(Date.parse(f.created_at)));
+  const who = el('p', 'fl-who', 'Set aside by ' + (f.scanner || 'someone') + ' · ' + ago(Date.parse(f.created_at)) + (f.sale ? ' · ' + f.sale : ''));
   if (f.reason) who.appendChild(el('span', 'fl-why', f.reason));
   mid.appendChild(who);
   const err = el('p', 'fl-err'); err.hidden = true;
@@ -347,7 +366,7 @@ async function load() {
     });
     $('#updated').textContent = 'Updated ' + tfmt(new Date());
     render();
-    loadFlags();
+    loadFlags(); loadSales();
     return true;
   } catch (e) {
     $('#updated').textContent = 'Couldn\'t reach the server';
@@ -509,7 +528,7 @@ function render() {
       const td = (cls, txt) => { const c = document.createElement('td'); if (cls) c.className = cls; if (txt != null) c.textContent = txt; tr.appendChild(c); return c; };
       const end = s.tout || (s.open ? new Date() : null);
       const items = rows.filter((r) => keyOf(r.scanner) === keyOf(s.scanner) && (r.kind === 'scan' || r.kind === 'table') && r.ok && r.at >= s.tin && (!end || r.at <= end)).length;
-      td('', s.scanner);
+      const pc = td('', s.scanner); if (s.sale) pc.appendChild(el('span', 'sub-line', s.sale));
       td('time hide-sm', dfmt(s.tin));
       td('time', tfmt(s.tin));
       const outCell = td('time', s.tout ? tfmt(s.tout) : '');
@@ -542,6 +561,7 @@ function render() {
     const it = td('');
     if (r.ok) { it.textContent = r.item || ''; if (r.kind === 'reprice' || r.kind === 'table') { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = r.kind === 'table' ? 'TABLE' : 'RE-PRICED'; it.appendChild(tg); } }
     else { it.className = 'miss'; it.textContent = 'No item found'; }
+    if (r.sale) it.appendChild(el('span', 'sub-line', r.sale));
     td('num', r.ok ? money(r.price) : '');
     const g = gapOf.get(r);
     const gc = td('gap hide-sm' + (g > BREAK_MIN * 60 ? ' long' : ''), g == null ? '' : dur(g));
@@ -556,6 +576,92 @@ function render() {
     m.appendChild(b); wrap.appendChild(m);
   }
 }
+
+/* ---------- sale lists: everything the crew priced for one sale ---------- */
+const teamHeaders = () => ({ 'content-type': 'application/json', 'x-scanner-pass': OWNER, 'x-scanner-user': 'Owner' });
+let saleNames = [], curSale = '', saleItems = [], saleSummary = null, saleBusy = false;
+async function loadSales() {
+  try {
+    const res = await fetch(API + '?sale=list', { method: 'POST', headers: teamHeaders() });
+    if (!res.ok) return;
+    saleNames = ((await res.json()).sales || []).filter((x) => x && x.sale);
+  } catch (e) { return; }
+  $('#salesSec').hidden = !saleNames.length;
+  if (!saleNames.length) return;
+  if (!curSale || !saleNames.some((x) => x.sale.toLowerCase() === curSale.toLowerCase())) curSale = saleNames[0].sale;
+  const sel = $('#saleSel'); sel.textContent = '';
+  for (const x of saleNames) { const o = document.createElement('option'); o.value = x.sale; o.textContent = x.sale + ' (' + x.items + ')'; o.selected = x.sale.toLowerCase() === curSale.toLowerCase(); sel.appendChild(o); }
+  loadSaleItems(true);
+}
+async function loadSaleItems(reset) {
+  if (saleBusy || !curSale) return;
+  saleBusy = true;
+  try {
+    const res = await fetch(API + '?items=sale', { method: 'POST', headers: teamHeaders(), body: JSON.stringify({ sale: curSale, limit: 200, offset: reset ? 0 : saleItems.length }) });
+    if (!res.ok) return;
+    const j = await res.json();
+    saleItems = reset ? j.items : saleItems.concat(j.items); saleSummary = j.summary;
+    renderSale();
+  } catch (e) {} finally { saleBusy = false; }
+}
+function renderSale() {
+  const sm = saleSummary || { items: 0, total: 0, people: 0 };
+  $('#slItems').textContent = sm.items.toLocaleString('en-US');
+  $('#slItemsSub').textContent = sm.first_at ? 'since ' + dfmt(new Date(sm.first_at)) : '';
+  $('#slTotal').textContent = money(sm.total);
+  $('#slPeople').textContent = sm.people;
+  const counts = {}; for (const x of saleItems) counts[x.scanner || 'Unknown'] = (counts[x.scanner || 'Unknown'] || 0) + 1;
+  $('#slPeopleSub').textContent = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k, v]) => k + ' ' + v).join(' · ') + (saleItems.length < sm.items ? ' (newest ' + saleItems.length + ')' : '');
+  $('#slLast').textContent = sm.last_at ? tfmt(new Date(sm.last_at)) : '–';
+  $('#slLastSub').textContent = sm.last_at ? dfmt(new Date(sm.last_at)) : '';
+  const wrap = $('#saleWrap'); wrap.textContent = '';
+  if (!saleItems.length) { wrap.appendChild(el('div', 'empty', 'Nothing priced for this sale yet.')); return; }
+  const t = document.createElement('table');
+  t.innerHTML = '<thead><tr><th></th><th>Item</th><th class="hide-sm">Scanned by</th><th class="hide-sm">When</th><th class="num">Tag price</th></tr></thead>';
+  const tb = document.createElement('tbody');
+  for (const x of saleItems) {
+    const tr = document.createElement('tr');
+    const ph = document.createElement('td');
+    if (x.thumb) { const img = el('img', 'it-img'); img.alt = x.name || ''; img.src = 'data:image/jpeg;base64,' + x.thumb; img.addEventListener('click', () => img.classList.toggle('big')); ph.appendChild(img); }
+    tr.appendChild(ph);
+    const it = el('td', '', x.name || 'Item');
+    const bits = [];
+    if (x.low != null && x.high != null) bits.push('online ' + money(x.low) + '–' + Math.round(x.high).toLocaleString('en-US'));
+    if (x.house) bits.push('house price'); if (x.from_table) bits.push('table mode'); if (x.conf === 'low') bits.push('rough guess');
+    if (bits.length) it.appendChild(el('span', 'sub-line', bits.join(' · ')));
+    tr.appendChild(it);
+    tr.appendChild(el('td', 'hide-sm', x.scanner || ''));
+    tr.appendChild(el('td', 'time hide-sm', dfmt(new Date(x.scanned_at)) + ' ' + tfmt(new Date(x.scanned_at))));
+    tr.appendChild(el('td', 'num', (x.conf === 'low' ? '~' : '') + money(x.price)));
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb); wrap.appendChild(t);
+  if (saleItems.length < sm.items) {
+    const m = el('div', 'more'); const b = el('button', 'ghost', 'Show more (' + (sm.items - saleItems.length) + ' more)'); b.type = 'button';
+    b.addEventListener('click', () => loadSaleItems(false)); m.appendChild(b); wrap.appendChild(m);
+  }
+}
+$('#saleSel').addEventListener('change', () => { curSale = $('#saleSel').value; saleItems = []; loadSaleItems(true); });
+$('#saleCsv').addEventListener('click', async () => {
+  const b = $('#saleCsv'); if (!curSale) return;
+  b.disabled = true; b.textContent = 'Preparing…';
+  try {
+    let all = [];
+    for (let off = 0; off < 50000; off += 500) {
+      const res = await fetch(API + '?items=sale', { method: 'POST', headers: teamHeaders(), body: JSON.stringify({ sale: curSale, limit: 500, offset: off, thumbs: false }) });
+      if (!res.ok) throw new Error('load');
+      const j = await res.json(); all = all.concat(j.items); if (j.items.length < 500) break;
+    }
+    const cell = (v) => { let x = v == null ? '' : String(v); if (/^[=+\-@]/.test(x)) x = "'" + x; return /[",\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+    const rows = [['Item', 'Tag price', 'Online low', 'Online high', 'Confidence', 'Category', 'Qty', 'House price', 'Table mode', 'Scanned by', 'Scanned']];
+    for (const x of all.slice().reverse()) rows.push([x.name, x.price, x.low, x.high, x.conf, x.cat, x.qty, x.house ? 'yes' : '', x.from_table ? 'yes' : '', x.scanner, new Date(x.scanned_at).toLocaleString('en-US')]);
+    rows.push([]); rows.push(['Total', all.reduce((s2, x) => s2 + (+x.price || 0), 0)]);
+    const blob = new Blob([rows.map((r) => r.map(cell).join(',')).join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = curSale.replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() + '-items.csv';
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  } catch (e) { alert('Couldn\'t export right now. Try again in a minute.'); }
+  finally { b.disabled = false; b.textContent = 'Export this sale'; }
+});
 
 function gate(msg) {
   $('#app').hidden = true; $('#gate').hidden = false;

@@ -264,6 +264,28 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 .ta-list{list-style:none;margin:0;padding:0;width:100%;max-width:280px;text-align:left}
 .ta-list li{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:6px;border-radius:12px;background:rgba(250,247,242,.07);font-size:14.5px;font-weight:600}
 .ta-list svg{width:20px;height:20px;color:var(--gold);flex:none}
+/* weak signal */
+.sig-pill{position:fixed;left:50%;top:calc(var(--st) + 66px);transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:16px;border:1px solid rgba(240,176,72,.6);background:rgba(25,23,20,.85);color:#f6c56b;font-size:13px;font-weight:700;white-space:nowrap;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sig-pill svg{width:16px;height:16px;flex:none}
+.sig-pill.ok{border-color:rgba(123,211,137,.6);color:#a8e3b4}
+.bubble.saved{border-color:var(--grey)}
+.bubble.saved::after{border-color:var(--grey)}
+.bubble.saved .price{font-size:34px;color:var(--cream)}
+/* sales: which sale you're working, and the whole sale's list */
+.sale-line{margin:0;display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;justify-content:center;max-width:340px;color:rgba(250,247,242,.8);font-size:14px;line-height:1.45}
+.sale-line b{color:var(--cream);font-weight:700}
+.sale-line .linkbtn{color:var(--gold);padding:0}
+.sale-list{display:grid;gap:8px;margin:14px 0 0}
+.sale-list:empty{display:none}
+.sale-pick{display:block;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:14px;background:#fff;padding:12px 14px;color:var(--ink)}
+.sale-pick b{display:block;font-size:16px}
+.sale-pick small{display:block;color:#6b655c;font-size:12.5px;margin-top:2px}
+.sale-pick.on{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.3)}
+.sale-or{margin:16px 0 0;font-size:13px;font-weight:600;color:#6b655c}
+.h-tabs{display:flex;background:#efe8da;border-radius:12px;padding:3px;margin:12px 0 2px}
+.h-tabs button{flex:1;border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:700;font-size:14px;color:#6b655c}
+.h-tabs button[aria-pressed="true"]{background:var(--ink);color:var(--gold)}
+.h-list li.ro{opacity:.96}
 /* table mode: one photo of a whole table, a price tag on every item */
 .tbl-toggle{height:46px;padding:0 14px;border-radius:23px;border:1px solid rgba(250,247,242,.3);background:rgba(25,23,20,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cream);font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;flex:none}
 .tbl-toggle svg{width:18px;height:18px}
@@ -309,6 +331,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   </div>
 </header>
 
+<button id="sigPill" class="sig-pill" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 8.8a15 15 0 0 1 20 0M5.5 12.4a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg><span id="sigText"></span></button>
 <div id="reticle" class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <div id="tblGuide" class="tbl-guide" hidden></div>
 <div id="tblLayer" class="tbl-layer" hidden><img id="tblShot" alt="The table you priced"><div id="tblTags"></div></div>
@@ -316,6 +339,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 
 <section id="offPanel" class="off-panel" hidden>
   <p class="clock-state" id="clockState" hidden></p>
+  <p class="sale-line" id="saleLine" hidden><span id="saleText"></span><button id="saleChange" class="linkbtn" type="button">Change sale</button></p>
   <button id="clockInBtn" class="start-btn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Clock in</button>
   <button id="startBtn" class="start-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="4"/></svg>Start scanner</button>
   <p class="off-hint" id="offHint">Point at an item and hold steady. Prices pop up on their own.</p>
@@ -364,6 +388,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   <div id="dAsideState" class="aside-state" hidden><b id="dAsideTitle"></b><span id="dAsideSub"></span><button id="dAsideUndo" class="linkbtn" type="button">Take it back</button></div>
   <p id="dNote" class="note"></p>
   <p id="dSeen" class="seen-line" hidden></p>
+  <p id="dCode" class="seen-line" hidden></p>
   <div class="stack">
     <a id="dComps" class="btn gold" target="_blank" rel="noopener">See real eBay sold prices</a>
     <div class="row"><button id="dRescan" class="btn" type="button">Rescan</button><button id="dRemove" class="btn danger" type="button">Remove</button></div>
@@ -375,10 +400,24 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 <section id="histSheet" class="sheet" hidden aria-label="Scanned items">
   <div class="grab"></div>
   <h2>Scanned items</h2>
-  <p class="h-sum"><span id="hCount"></span> · Estimated total <b id="hTotal"></b></p>
+  <div class="h-tabs" id="hTabs" role="group" aria-label="Which list" hidden><button type="button" data-v="mine" aria-pressed="true">This phone</button><button type="button" data-v="sale" aria-pressed="false">Whole sale</button></div>
+  <p class="h-sum"><span id="hCount"></span> · <span id="hTotalLabel">Estimated total</span> <b id="hTotal"></b></p>
   <ul id="hList" class="h-list"></ul>
-  <div class="row"><button id="hExport" class="btn gold" type="button">Export list</button><button id="hClear" class="btn danger" type="button">Clear list</button></div>
+  <div class="row" id="hActions"><button id="hExport" class="btn gold" type="button">Export list</button><button id="hClear" class="btn danger" type="button">Clear list</button></div>
   <div class="row"><button class="btn" type="button" data-close>Done</button></div>
+</section>
+
+<!-- which sale -->
+<section id="saleSheet" class="sheet" hidden aria-label="Which sale">
+  <div class="grab"></div>
+  <h2>Which sale are you working?</h2>
+  <p class="sub">Dorian will tell you the sale name. Pick it below, or type it in.</p>
+  <div id="saleList" class="sale-list"></div>
+  <p class="sale-or" id="saleOr" hidden>Not listed? Type it in:</p>
+  <label class="field" style="margin:8px 0 6px"><span class="sr" hidden>Sale name</span>
+    <input id="saleIn" type="text" maxlength="60" autocapitalize="words" autocomplete="off" placeholder="Sale name, e.g. Smith Estate, Millcreek"></label>
+  <p class="d-msg bad" id="saleMsg"></p>
+  <div class="stack" style="margin-top:12px"><button id="saleGo" class="btn gold" type="button">Use this sale</button><button id="saleSkip" class="btn" type="button" hidden>Skip for now</button></div>
 </section>
 
 <!-- table mode: this table's items -->
@@ -401,7 +440,11 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   <label class="field"><span>Your pricing rules (the AI follows these)</span>
     <textarea id="sNotes" rows="4" placeholder="e.g. Tag most things around half of eBay sold. Glassware $1–5 unless it's a known pattern. Price furniture to move."></textarea></label>
   <label class="field check-row"><input id="sDouble" type="checkbox"><span>Double-check every price<small>Two AI looks per scan for steadier prices and to catch valuable items. Uses about twice the AI credit.</small></span></label>
+  <label class="field check-row"><input id="sCodes" type="checkbox"><span>Read barcodes and ISBNs<small>When a barcode is in view (the back of a book, a DVD, a boxed item), it's looked up so the price is for that exact item.</small></span></label>
   <label class="field check-row"><input id="sSpeak" type="checkbox"><span>Say the price out loud<small>Reads each price aloud so you can keep your eyes and hands on the item.</small></span></label>
+  <label class="field"><span>Weak signal mode</span>
+    <select id="sSignal"><option value="auto">Turns on by itself when the signal drops</option><option value="on">Always on (basements, houses with no service)</option></select></label>
+  <p class="small" style="margin-top:-8px">With a weak signal the scanner sends smaller photos and one AI look. With no signal it saves each photo and prices it on its own when the signal is back.</p>
   <label class="field"><span>Start a scan when</span>
     <select id="sTrigger"><option value="auto">I hold the phone steady on an item</option><option value="touch">I touch and hold the screen</option></select></label>
   <label class="field"><span>How long to hold still before it prices</span>
@@ -472,7 +515,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
 const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
-const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto' };
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto', signal: 'auto', codes: true };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -493,14 +536,12 @@ const SYSTEM = `You price items for Better Selling With Bailey, an estate sale c
 - Clothing, shoes, bags and watches: brand plus model or line.
 Recognize iconic designs that collectors know even with no logo showing (a Weber kettle grill, a KitchenAid tilt-head mixer, an Eames lounge chair, Fiesta dinnerware). Never claim a detail you cannot actually see: a first edition, a signature, a serial number, a grade or an exact model number. Leave it out, and use "look" to say where to check.
 If you can name the specific brand and model or pattern, use "match":"exact". If you can only tell what kind of item it is, price it like similar items of the same type, size, material and quality, and use "match":"similar". Ordinary unbranded items are normal: they still get a price.
-4. PRICE the way Dorian does: from real sold prices, never asking prices, for what it will actually sell for during a 2-3 day estate sale in northwest Pennsylvania.
-- "low" and "high": the typical range this item (or similar items) actually sold for used. Sold prices, not asking prices.
-- "price" is the tag, never below 1:
-  - Everyday household goods (kitchenware, decor, linens, basic tools, small appliances, books, ordinary toys): priced to move, about a third to a half of "low".
-  - Brand-name and collectible items with steady resale demand (vintage cameras, game consoles, name-brand tools and appliances, collectible glass, pottery and figurines): about 60-75% of the middle of the sold range. Buyers pay cash and carry it home, with no shipping or fees.
-  - Furniture: price for local pickup, below shipped online prices.
-  - Valuable items (likely over $300: watches, jewelry, fine art, rare collectibles, high-end electronics): tag near "low", conf no higher than "med", and use the note to say what to verify first (authenticity, exact model, condition).
-  - Use friendly round numbers: 1, 2, 3, 5, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 60, 75, 85, 100, then steps of 25 up to 300, then steps of 50.
+4. PRICE the way Dorian does: start from what this item actually sold for used on eBay (sold listings, never asking prices), then take about 40% off. That keeps prices cheap for buyers while still getting the client a good price.
+- "low" and "high": the typical range this item (or similar items) actually sold for used on eBay. Sold prices, not asking prices.
+- "price" is the tag: about 60% of the typical sold price (the middle of "low" and "high"), never below 1. Example: sold $20-30, so the middle is $25 and the tag is $15.
+  - Furniture and other big pieces: use what they sell for with local pickup, not shipped prices.
+  - Valuable items (likely over $300: watches, jewelry, fine art, rare collectibles, high-end electronics): the same 60%, conf no higher than "med", and use the note to say what to verify first (authenticity, exact model, condition).
+  - Round to friendly numbers: 1, 2, 3, 5, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 60, 75, 85, 100, then steps of 25 up to 300, then steps of 50.
 - "upside": underpricing a valuable piece is the costliest mistake. If this could be a much more valuable version (an original rather than a reproduction, a rare model, color or pattern, sterling rather than plated, a first edition, a signed piece), give the tag price you would use if it checks out. Otherwise 0. Whenever your note asks to check a maker's mark, label, signature, edition, model number or authenticity because the answer could change the value a lot, you must give an upside, and the note says what to check.
 - "name": one clean name a shopper would use, 2-10 words, most specific part first (e.g. "Lionel 700E Hudson locomotive", "Pyrex Butterprint mixing bowl", "Xbox 360 wireless controller, white"). Never a question, never two options, no "or".
 - "conf": high = the specific item is identified and its sold value is well established; med = brand or type identified but value depends on model, condition or completeness; low = rough guess.
@@ -838,7 +879,7 @@ function trigger(f, fresh, replace, tap) {
   if (tap) showThinking();
   else { clearTimeout(lingerTimer); bubble.className = 'bubble'; current = null; }   // automatic: no bubble until there's a price
   scanning(true); setStatus('Pricing…');
-  priceIt(shot, id, hash, replace, tap);
+  priceWithCode(shot, codeSource(shot.can), id, hash, replace, tap);
 }
 
 // Draw the current view (cropped like the scanner sees it) into a canvas, max 800px.
@@ -866,9 +907,9 @@ function encode(canvas) {
   return { b64, b64s, thumb: tcan.toDataURL('image/jpeg', .6) };
 }
 function capture() {
-  if (bestSharp >= 0) { const shot = encode(best); bestSharp = -1; return shot; }   // sharpest frame from the hold
+  if (bestSharp >= 0) { const shot = encode(best); shot.can = best; bestSharp = -1; return shot; }   // sharpest frame from the hold
   drawView(cap, cctx);
-  return encode(cap);
+  const shot = encode(cap); shot.can = cap; return shot;
 }
 // Focus check: how crisp the middle of the view is (variance of edges). Higher = sharper.
 const sh = document.createElement('canvas'); sh.width = 160; sh.height = 160;
@@ -908,13 +949,13 @@ function apiError(status, message, type) { const e = new Error(message || 'Error
 
 // Sends one photo (plus optional extra instructions) and returns the AI's full reply text.
 // onText is called with the text so far as it streams in.
-async function streamAI(b64, extra, onText, timeoutMs, kind, tap, payload) {
+async function streamAI(b64, extra, onText, timeoutMs, kind, tap, payload, hdr) {
   const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), timeoutMs || 20000);
   let text = '';
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
-      headers: { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-kind': kind || 'scan' },
+      headers: Object.assign({ 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-kind': kind || 'scan', 'x-scanner-sale': encodeURIComponent(S.sale || '') }, hdr || {}),
       body: JSON.stringify(payload || body(b64, extra, tap))
     });
     if (!res.ok) { let m = '', ty = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; ty = (j.error && j.error.type) || ''; } catch (e) {} throw apiError(res.status, m, ty); }
@@ -978,9 +1019,11 @@ function mergeLooks(list) {
   return m;
 }
 
-async function priceIt(shot, id, hash, replace, tap) {
+async function priceIt(shot, id, hash, replace, tap, extra) {
+  if (offline()) { saveForLater(shot, id, hash, tap, extra, replace); return; }   // no signal at all: save it, price it later
   const t0 = performance.now();
-  const n = S.double === false ? 1 : 2;
+  const w = weak();   // weak signal: one smaller photo, one look
+  const n = w || S.double === false ? 1 : 2;
   const dbg = lastScan = { img: 'data:image/jpeg;base64,' + shot.b64, text: '', at: new Date(), ms: 0, err: '' };
   const parts = new Array(n).fill(null), done = new Array(n).fill(false), finals = new Array(n).fill(null);
   let shownKey = '', firstErr = null, errCount = 0, waitTimer = null;
@@ -1000,9 +1043,9 @@ async function priceIt(shot, id, hash, replace, tap) {
     showEntry(m, true, !first);
     if (first) { markLatency(performance.now() - t0); haptic(); say(spoken(m)); }
   };
-  const runs = parts.map((_, i) => streamAI(i ? (shot.b64s || shot.b64) : shot.b64, '', (t) => {
+  const runs = parts.map((_, i) => streamAI(i || w ? (shot.b64s || shot.b64) : shot.b64, extra || '', (t) => {
       if (!parts[i]) { const p = parsePartial(t); if (p) { parts[i] = p; tryShow(); } }
-    }, 20000, i ? 'scan2' : 'scan', tap)
+    }, w ? 10000 : 20000, i ? 'scan2' : 'scan', tap)
     .then((text) => { if (!i) dbg.text = text; finals[i] = parseFinal(text); if (!parts[i] && finals[i]) parts[i] = finals[i]; })
     .catch((err) => { errCount++; if (!firstErr) firstErr = err; if (!i) { dbg.text = (err && err.partialText) || ''; dbg.err = errText(err); } })
     .finally(() => { done[i] = true; tryShow(); }));
@@ -1012,6 +1055,11 @@ async function priceIt(shot, id, hash, replace, tap) {
   dbg.ms = performance.now() - t0;
 
   const r = mergeLooks(finals);
+  if (!r && errCount === n && firstErr && (!firstErr.status || firstErr.name === 'AbortError')) {
+    noteNet(false);                                  // the signal dropped: keep the photo and price it later
+    saveForLater(shot, id, hash, tap, extra, replace); return;
+  }
+  if (errCount < n) noteNet(true, dbg.ms);
   if (!r) {
     if (lastItem && lastItem.seq === id) lastItem = null;
     if (errCount === n) { if (id === scanSeq) showError(firstErr); return; }   // every look failed: show why
@@ -1019,13 +1067,361 @@ async function priceIt(shot, id, hash, replace, tap) {
     if (id === scanSeq) { if (tap) showNone(); else quietNone(); }
     return;
   }
-  const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', hash, thumb: shot.thumb, model: MODEL }, r);
+  const entry = Object.assign({ id: newId(), t: Date.now(), who: S.who || '', sale: S.sale || '', hash, thumb: shot.thumb, model: MODEL }, r);
+  if (shot.code) { entry.code = shot.code.code; entry.codeInfo = shot.code.desc || ''; entry.q = shot.code.code; }
   rememberShot(entry.id, shot.b64);
-  if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) history.splice(i, 1); }
-  history.unshift(entry); saveHistory();
+  if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) { queueRemove(history[i]); history.splice(i, 1); } }
+  history.unshift(entry); saveHistory(); queueSync(entry);
   if (lastItem && lastItem.seq === id) { lastItem.pending = false; lastItem.entryId = entry.id; lastItem.t = Date.now(); }
   if (id === scanSeq) { showEntry(entry, false, !!shownKey); if (!shownKey) haptic(); setStatus('Tap the price for comps'); }
 }
+
+/* ---------- barcodes: an ISBN or UPC in the photo pins down the exact item ---------- */
+const CODE_FORMATS = ['ean_13', 'upc_a', 'upc_e', 'ean_8'];
+let codeReader = null;
+// Phones with a built-in barcode reader use it; iPhones load a small one (once) from the site.
+function barcodeReader() {
+  if (!codeReader) codeReader = (async () => {
+    if ('BarcodeDetector' in window) {
+      try {
+        const have = await BarcodeDetector.getSupportedFormats(), use = CODE_FORMATS.filter((f) => have.includes(f));
+        if (use.length) { const d = new BarcodeDetector({ formats: use }); return async (img) => { const r = await d.detect(img); return r.length ? r[0].rawValue : ''; }; }
+      } catch (e) {}
+    }
+    if (!window.ZXingWASM) await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'vendor/zxing-reader.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+    const Z = window.ZXingWASM;
+    await Z.prepareZXingModule({ overrides: { locateFile: (path, prefix) => path.endsWith('.wasm') ? new URL('vendor/zxing_reader.wasm', location.href).href : prefix + path }, fireImmediately: true });
+    return async (img) => {
+      const r = await Z.readBarcodes(img, { formats: ['EAN-13', 'UPC-A', 'UPC-E', 'EAN-8'], tryHarder: true, maxNumberOfSymbols: 1 });
+      const ok = r.find((x) => x.isValid && x.text); return ok ? ok.text : '';
+    };
+  })().catch((e) => { codeReader = null; throw e; });
+  return codeReader;
+}
+const codeCan = document.createElement('canvas'), codeCtx = codeCan.getContext('2d', { willReadFrequently: true });
+// The middle of the photo, copied right away (the photo canvas gets reused).
+function codeSource(can) {
+  if (S.codes === false || tbl.on || !can || !can.width) return null;
+  try {
+    const w = can.width * .86, h = can.height * .76, k = Math.min(1, 1000 / w);
+    codeCan.width = Math.round(w * k); codeCan.height = Math.round(h * k);
+    codeCtx.drawImage(can, (can.width - w) / 2, (can.height - h) / 2, w, h, 0, 0, codeCan.width, codeCan.height);
+    return codeCtx.getImageData(0, 0, codeCan.width, codeCan.height);
+  } catch (e) { return null; }
+}
+const within = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+async function readCode(img) {
+  try {
+    const read = await within(barcodeReader(), 2500);
+    let t = String(await within(read(img), 700) || '').replace(/\D/g, '');
+    if (t.length === 13 && t[0] === '0') t = t.slice(1);   // a UPC read as EAN-13
+    return t.length === 8 || t.length === 12 || t.length === 13 ? t : '';
+  } catch (e) { return ''; }
+}
+// Books by ISBN from Open Library; other barcodes through the scanner's server (remembered once looked up).
+async function lookupCode(code) {
+  const isbn = /^97[89]\d{10}$/.test(code), out = { code, isbn, desc: '', looked: true };
+  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 1800);
+  try {
+    if (isbn) {
+      const r = await fetch('https://openlibrary.org/api/books?bibkeys=ISBN:' + code + '&format=json&jscmd=data', { signal: ctrl.signal });
+      const b = (await r.json())['ISBN:' + code];
+      if (b && b.title) {
+        const by = (b.authors || []).map((a) => a.name).filter(Boolean).slice(0, 2).join(' and ');
+        const pub = [(b.publishers || []).map((x) => x.name)[0], b.publish_date].filter(Boolean).join(', ');
+        out.desc = ('"' + b.title + (b.subtitle ? ': ' + b.subtitle : '') + '"' + (by ? ' by ' + by : '') + (pub ? ' (' + pub + ')' : '')).slice(0, 200);
+      }
+    } else {
+      const r = await fetch(API + '?barcode=' + code, { method: 'POST', headers: apiHeaders(), signal: ctrl.signal });
+      const j = await r.json(), pr = j && j.product;
+      if (pr && pr.name) out.desc = (pr.name + (pr.brand && !pr.name.toLowerCase().includes(String(pr.brand).toLowerCase()) ? ' (' + pr.brand + ')' : '')).slice(0, 200);
+    }
+  } catch (e) { out.looked = false; } finally { clearTimeout(timer); }
+  return out;
+}
+function codeText(c) {
+  const what = (c.isbn ? 'ISBN ' : c.code.length === 12 ? 'UPC ' : 'barcode ') + c.code;
+  return 'Price the item in the center. The barcode on it reads ' + what + '. ' +
+    (c.desc ? 'A product database lists it as ' + c.desc + '. Use that to name the exact item' + (c.isbn ? ' (title, author and edition)' : '') + ' and price it, as long as it fits what you see.'
+      : c.looked ? 'No listing was found for it, so go by what you see.' : 'Use it if you know what it is; otherwise go by what you see.') + ' JSON only.';
+}
+async function priceWithCode(shot, img, id, hash, replace, tap) {
+  const code = img ? await readCode(img) : '';
+  if (!code) { priceIt(shot, id, hash, replace, tap); return; }
+  if (id === scanSeq) { setStatus((/^97[89]/.test(code) ? 'ISBN ' : 'Barcode ') + code + ' · looking it up…'); if (tap) bName.textContent = 'Reading the barcode…'; }
+  const info = offline() ? { code, isbn: /^97[89]\d{10}$/.test(code), desc: '', looked: false } : await lookupCode(code);
+  shot.code = info;
+  priceIt(shot, id, hash, replace, tap, codeText(info));
+}
+
+/* ---------- weak signal: smaller photos and one look; with no signal, photos are saved and priced later ---------- */
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const net = { bad: false, slow: 0, fast: 0 };
+const offline = () => navigator.onLine === false;
+function weak() { return S.signal === 'on' || net.bad || offline(); }
+// After each AI call: two slow or failed calls switch weak-signal mode on; two quick ones switch it back off.
+function noteNet(ok, ms) {
+  if (!ok) { net.bad = true; net.fast = 0; }
+  else if (ms > 7000) { net.fast = 0; if (++net.slow >= 2) net.bad = true; }
+  else if (ms < 4000) { net.slow = 0; if (net.bad && ++net.fast >= 2) { net.bad = false; net.fast = 0; } }
+  updateSig();
+}
+const pendingCount = () => history.filter((e) => e.pending).length;
+function updateSig() {
+  const n = pendingCount(), w = weak(), pill = $('#sigPill');
+  pill.hidden = !w && !n;
+  pill.classList.toggle('ok', !w && n > 0);
+  $('#sigText').textContent = w ? (offline() ? 'No signal' : 'Weak signal') + (n ? ' · ' + n + ' saved' : '') : 'Pricing ' + n + ' saved photo' + (n === 1 ? '' : 's') + '…';
+}
+$('#sigPill').addEventListener('click', () => setStatus(pendingCount() ? 'Saved photos get priced on their own when the signal is back' : 'Weak signal: sending smaller photos so prices still come through'));
+addEventListener('online', () => { updateSig(); clearTimeout(qTimer); qTimer = setTimeout(runQueue, 800); });
+addEventListener('offline', () => { net.bad = true; updateSig(); });
+
+// Saved photos live in the phone's own database until they're priced.
+const qdb = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('bsb_scan', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('queue', { keyPath: 'id' });
+    r.onsuccess = () => res(r.result); r.onerror = () => { dbp = null; rej(r.error); };
+  }));
+  const run = async (mode, fn) => {
+    const db = await open();
+    return new Promise((res, rej) => { const t = db.transaction('queue', mode); const req = fn(t.objectStore('queue')); t.oncomplete = () => res(req && req.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); });
+  };
+  return { put: (v) => run('readwrite', (st) => st.put(v)), get: (id) => run('readonly', (st) => st.get(id)), del: (id) => run('readwrite', (st) => st.delete(id)) };
+})();
+async function saveForLater(shot, seq, hash, tap, extra, replace) {
+  const entry = { id: newId(), t: Date.now(), who: S.who || '', sale: S.sale || '', hash, thumb: shot.thumb, model: MODEL, pending: true, name: 'Waiting for signal', price: null, conf: 'med', match: 'exact' };
+  try { await qdb.put({ id: entry.id, b64: shot.b64s || shot.b64, t: entry.t, sale: entry.sale, tap: !!tap, extra: extra || '' }); }
+  catch (e) { if (lastItem && lastItem.seq === seq) lastItem = null; if (seq === scanSeq) showError(apiError(0, 'offline')); return null; }
+  if (replace) { const i = history.findIndex((x) => x.id === replace); if (i >= 0) { queueRemove(history[i]); history.splice(i, 1); } }
+  history.unshift(entry); saveHistory();
+  if (lastItem && lastItem.seq === seq) { lastItem.pending = false; lastItem.entryId = entry.id; lastItem.t = Date.now(); }
+  if (seq === scanSeq) showSaved(entry, true);
+  updateSig();
+  return entry;
+}
+function showSaved(e, fresh) {
+  current = e; scanning(false);
+  bPrice.textContent = 'Saved';
+  bName.textContent = 'No signal right now. It gets priced when the signal is back';
+  $('#bFlag').textContent = '';
+  popIn('saved'); afterShow();
+  if (fresh) { haptic(); say('Saved for later'); setStatus('Saved. Keep scanning; prices fill in when the signal is back'); }
+}
+// Price saved photos one at a time, oldest first, whenever there's signal.
+let qBusy = false, qDone = 0, qTimer = setTimeout(() => runQueue(), 5000);
+function dropPending(e) {
+  const i = history.indexOf(e); if (i >= 0) history.splice(i, 1);
+  saveHistory(); if (!$('#histSheet').hidden) renderHistory();
+  if (current === e) hideBubble();
+}
+async function runQueue() {
+  clearTimeout(qTimer);
+  if (qBusy) return;
+  const e = offline() || !PASS ? null : history.slice().reverse().find((x) => x.pending);
+  if (!e) {
+    if (qDone && !offline()) { setStatus(qDone + ' saved photo' + (qDone === 1 ? '' : 's') + ' priced · they\'re in your list'); qDone = 0; }
+    updateSig(); qTimer = setTimeout(runQueue, 15000); return;
+  }
+  qBusy = true; let next = 15000;
+  try {
+    const rec = await qdb.get(e.id);
+    if (!rec) { dropPending(e); next = 300; return; }
+    const t0 = performance.now();
+    const text = await streamAI(rec.b64, rec.extra || '', null, 25000, 'queued', rec.tap, null,
+      { 'x-scanner-taken': new Date(rec.t).toISOString(), 'x-scanner-sale': encodeURIComponent(rec.sale || '') });
+    noteNet(true, performance.now() - t0);
+    const r = parseFinal(text);
+    await qdb.del(e.id).catch(() => {});
+    if (!r) { dropPending(e); next = 300; return; }   // nothing to price in that photo
+    Object.assign(e, r); delete e.pending; e.late = true; rememberShot(e.id, rec.b64);
+    saveHistory(); queueSync(e); refreshViews(e); qDone++; next = 300;
+  } catch (err) {
+    const ty = err && err.type, st = err && err.status;
+    if (ty === 'not_clocked_in') { next = 60000; setStatus('Clock in to finish pricing your saved photos', true); }
+    else if (ty === 'bad_password') next = 60000;
+    else if (st && st < 500 && st !== 429 && st !== 408) { await qdb.del(e.id).catch(() => {}); dropPending(e); next = 300; }   // that photo was refused for good
+    else { noteNet(false); next = 15000; }
+  } finally { qBusy = false; updateSig(); clearTimeout(qTimer); qTimer = setTimeout(runQueue, next); }
+}
+
+/* ---------- sales: the sale you're working, and one shared list per sale ---------- */
+const normSale = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+let sales = [], saleSum = null, histView = 'mine', saleThen = null;
+// Is the sale on this phone current? Employees pick it for each shift; the owner once a day.
+function saleOk() {
+  if (!S.sale) return false;
+  if (needsClock()) return !!shift && (S.saleAt || 0) >= Date.parse(shift.clock_in) - 60000;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  return (S.saleAt || 0) >= today.getTime();
+}
+// The server remembers each shift's sale, so a reloaded phone picks it back up.
+function takeShiftSale() {
+  if (!shift) return;
+  if (shift.sale && normSale(shift.sale) !== S.sale) { S.sale = normSale(shift.sale); S.saleAt = Math.max(Date.parse(shift.clock_in) || 0, S.saleAt || 0); store.set('settings', S); }
+  else if (shift.sale) { if ((S.saleAt || 0) < Date.parse(shift.clock_in)) { S.saleAt = Date.parse(shift.clock_in); store.set('settings', S); } }
+  else if (saleOk()) saleToShift();   // picked on the phone but the server missed it: send it again
+}
+async function saleToShift() {
+  if (!needsClock() || !shift || !S.sale) return;
+  try {
+    const res = await fetch(API + '?sale=set', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ sale: S.sale }) });
+    const j = await res.json().catch(() => ({}));
+    if (res.ok && j.shift) shift = j.shift;
+  } catch (e) {}
+}
+async function loadSales() {
+  try {
+    const res = await fetch(API + '?sale=list', { method: 'POST', headers: apiHeaders() });
+    if (!res.ok) return;
+    const j = await res.json(); sales = (j.sales || []).filter((x) => x && x.sale);
+    if (!$('#saleSheet').hidden) fillSaleList();
+  } catch (e) {}
+}
+function saleWhen(t) { const d = new Date(t); return d.toDateString() === new Date().toDateString() ? 'today' : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); }
+function fillSaleList() {
+  const box = $('#saleList'); box.textContent = '';
+  for (const x of sales.slice(0, 8)) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'sale-pick' + (normSale(x.sale).toLowerCase() === (S.sale || '').toLowerCase() ? ' on' : '');
+    const n = document.createElement('b'); n.textContent = x.sale;
+    const sm = document.createElement('small');
+    sm.textContent = (x.items ? x.items + ' item' + (x.items === 1 ? '' : 's') + ' · ' + money(x.total) + ' · ' : '') + x.people + ' ' + (x.people === 1 ? 'person' : 'people') + ' · ' + saleWhen(x.last_at);
+    b.append(n, sm); b.addEventListener('click', () => chooseSale(x.sale));
+    box.appendChild(b);
+  }
+  $('#saleOr').hidden = !sales.length;
+}
+// Ask which sale. "then" runs once a sale is picked (or skipped, for the owner).
+function openSaleSheet(then) {
+  saleThen = typeof then === 'function' ? then : null;
+  $('#saleIn').value = ''; $('#saleMsg').textContent = '';
+  $('#saleSkip').hidden = needsClock();
+  fillSaleList(); loadSales();
+  openSheet($('#saleSheet'));
+}
+async function chooseSale(name) {
+  name = normSale(name);
+  if (!name) { $('#saleMsg').textContent = 'Type the sale name Dorian gave you.'; $('#saleIn').focus(); return; }
+  const known = sales.find((x) => normSale(x.sale).toLowerCase() === name.toLowerCase());
+  S.sale = known ? normSale(known.sale) : name; S.saleAt = Date.now(); delete S.saleSkip; store.set('settings', S);
+  haptic(); closeSheets(true);
+  renderOff(); saleToShift(); saleSum = null; refreshSaleTotal();
+  const then = saleThen; saleThen = null; if (then) then();
+}
+$('#saleGo').addEventListener('click', () => chooseSale($('#saleIn').value));
+$('#saleIn').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); chooseSale($('#saleIn').value); } });
+$('#saleSkip').addEventListener('click', () => {
+  S.saleSkip = new Date().toDateString(); store.set('settings', S); closeSheets(true);
+  const then = saleThen; saleThen = null; if (then) then();
+});
+$('#saleChange').addEventListener('click', () => openSaleSheet());
+function renderSaleLine() {
+  const on = saleOk(), line = $('#saleLine');
+  line.hidden = !on && !(needsClock() && shift);
+  const t = $('#saleText'); t.textContent = '';
+  if (on) {
+    t.append('Sale: '); const b = document.createElement('b'); b.textContent = S.sale; t.appendChild(b);
+    if (saleSum && saleSum.items) t.append(' · ' + saleSum.items + ' item' + (saleSum.items === 1 ? '' : 's') + ' · ' + money(saleSum.total) + ' so far');
+    $('#saleChange').textContent = 'Change sale';
+  } else { t.textContent = 'No sale picked yet'; $('#saleChange').textContent = 'Pick the sale'; }
+}
+// Running total for the whole sale (everyone's phones).
+let saleSumAt = 0;
+async function refreshSaleTotal(force) {
+  if (!S.sale || (!force && Date.now() - saleSumAt < 4000)) return;
+  saleSumAt = Date.now();
+  try {
+    const res = await fetch(API + '?items=sale', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ sale: S.sale, limit: 1, thumbs: false }) });
+    if (!res.ok) return;
+    const j = await res.json(); saleSum = j.summary || null;
+    renderSaleLine();
+  } catch (e) {}
+}
+async function renderSaleList() {
+  $('#hActions').hidden = true; $('#hTotalLabel').textContent = 'Total';
+  const list = $('#hList');
+  if (!list.children.length || list.dataset.view !== 'sale') { list.textContent = ''; const li = document.createElement('li'); li.className = 'h-empty'; li.textContent = 'Loading the whole sale…'; list.appendChild(li); }
+  list.dataset.view = 'sale';
+  $('#hCount').textContent = S.sale;
+  await flushSync();
+  let j = null;
+  try { const res = await fetch(API + '?items=sale', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ sale: S.sale, limit: 150 }) }); if (res.ok) j = await res.json(); } catch (e) {}
+  if (histView !== 'sale' || $('#histSheet').hidden) return;
+  list.textContent = '';
+  if (!j) { const li = document.createElement('li'); li.className = 'h-empty'; li.textContent = 'Couldn\'t load the whole sale. Check your signal.'; list.appendChild(li); return; }
+  saleSum = j.summary || null; renderSaleLine();
+  const sum = saleSum || { items: 0, total: 0, people: 0 };
+  $('#hCount').textContent = S.sale + ' · ' + sum.items + ' item' + (sum.items === 1 ? '' : 's') + ' · ' + sum.people + ' ' + (sum.people === 1 ? 'person' : 'people');
+  $('#hTotal').textContent = money(sum.total);
+  if (!j.items.length) { const li = document.createElement('li'); li.className = 'h-empty'; li.textContent = 'Nothing on this sale\'s list yet.'; list.appendChild(li); return; }
+  for (const x of j.items) {
+    const mine = history.find((e) => e.id === x.id);
+    const li = document.createElement('li'); if (mine) li.dataset.id = x.id; else li.className = 'ro';
+    const img = document.createElement('img'); img.alt = ''; if (x.thumb) img.src = 'data:image/jpeg;base64,' + x.thumb; else if (mine && mine.thumb) img.src = mine.thumb;
+    const mid = document.createElement('div'); mid.className = 'h-mid';
+    const b = document.createElement('b'); b.textContent = x.name || 'Item';
+    const sm = document.createElement('small'); sm.textContent = (x.scanner || 'Someone') + ' · ' + when(Date.parse(x.scanned_at)) + (x.from_table ? ' · table' : '') + (x.house ? ' · house price' : '');
+    mid.append(b, sm);
+    const pr = document.createElement('span'); pr.className = 'h-price'; pr.textContent = (x.conf === 'low' ? '~' : '') + money(x.price);
+    li.append(img, mid, pr); list.appendChild(li);
+  }
+  if (sum.items > j.items.length) { const li = document.createElement('li'); li.className = 'h-empty'; li.textContent = 'Showing the newest ' + j.items.length + '. Dorian\'s activity page has the full list.'; list.appendChild(li); }
+}
+
+/* ---------- shared list upload: every item priced on this phone goes to its sale's list ---------- */
+let syncQ = store.get('syncq', {}); if (!syncQ || typeof syncQ !== 'object') syncQ = {};
+let syncTimer = 0, syncBusy = null;
+function queueSync(e) {
+  if (!e || !e.sale || e.pending) return;
+  syncQ[e.id] = 1; store.set('syncq', syncQ);
+  kickSync(1200);
+}
+// Upload soon, without letting a steady stream of new scans keep pushing it back.
+function kickSync(ms) { if (syncTimer) return; syncTimer = setTimeout(() => { syncTimer = 0; flushSync(); }, ms); }
+function queueRemove(e) {
+  if (!e || !e.sale) return;
+  syncQ[e.id] = { removed: true, sale: e.sale, t: e.t }; store.set('syncq', syncQ);
+  kickSync(1200);
+}
+function itemPayload(e) {
+  const p = { id: e.id, sale: e.sale, t: e.t, name: e.name, price: e.price, low: e.low, high: e.high, conf: e.conf, cat: e.cat || '', qty: e.qty || 1, house: !!(e.house && !e.edited), table: !!e.table };
+  if (!e.thumbUp && e.thumb) p.thumb = e.thumb.split(',')[1];
+  return p;
+}
+function flushSync() {
+  if (syncBusy) return syncBusy;
+  clearTimeout(syncTimer); syncTimer = 0;
+  syncBusy = (async () => {
+    for (let round = 0; round < 20; round++) {
+      const ids = Object.keys(syncQ); if (!ids.length) break;
+      const items = [];
+      for (const id of ids.slice(0, 25)) {
+        const q = syncQ[id];
+        if (q && q.removed) { items.push({ id, sale: q.sale, t: q.t, removed: true }); continue; }
+        const e = history.find((x) => x.id === id);
+        if (!e || !e.sale || e.pending) { delete syncQ[id]; continue; }
+        items.push(itemPayload(e));
+      }
+      if (!items.length) { store.set('syncq', syncQ); continue; }
+      const res = await fetch(API + '?items=put', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ items }) });
+      if (!res.ok) throw new Error('sync ' + res.status);
+      for (const it of items) {
+        if (syncQ[it.id] === 1 || (syncQ[it.id] && syncQ[it.id].removed && it.removed)) delete syncQ[it.id];
+        if (it.thumb) { const e = history.find((x) => x.id === it.id); if (e) e.thumbUp = true; }
+      }
+      store.set('syncq', syncQ); saveHistory();
+    }
+    refreshSaleTotal(true);
+  })().then(() => true, () => false).then((ok) => {
+    syncBusy = null;
+    // anything queued while this upload was running goes next; after a failure, try again in a bit
+    if (Object.keys(syncQ).length) kickSync(ok ? 600 : 20000);
+  });
+  return syncBusy;
+}
+addEventListener('online', () => flushSync());
 
 /* ---------- table mode: one photo of a whole table, a price tag on every item ---------- */
 const TABLE_SYS = "\n\nTABLE MODE (this replaces the one-item answer format above): the photo shows a table, shelf or box with several things for sale. Price every separate item you can see, up to 15, the most valuable first. Matching pieces together (a stack of plates, 6 glasses, a pile of DVDs) are one line with qty. Skip the table itself, walls, people, price tags, signs and anything clearly not for sale. Leave out items too cut off or blurry to recognise.\nThe person chose table mode on purpose, so the accidental-view rule does not apply: wide views of a room, rack or aisle are fine, price what you can make out.\nWrite one JSON object per line and nothing else:\n{\"n\":\"name\",\"c\":\"other\",\"q\":1,\"s\":false,\"p\":0,\"l\":0,\"h\":0,\"f\":\"med\",\"b\":[0,0,0,0]}\nn = name, c = cat, q = qty, s = special, p = price, l = low, h = high, f = conf (high, med or low), all with the same rules as above.\nb = where the item is in this photo: its box in pixels, [left, top, right, bottom].\nNo sentences before or after. If there is truly nothing you can price, write nothing.";
@@ -1147,9 +1543,9 @@ function addTableItem(line, ctx) {
     qty: num(o.q) || 1, special: o.s === true, q: o.n.slice(0, 120) });
   const crop = bx ? cropItem(ctx.can, bx) : { thumb: ctx.thumb, b64: ctx.b64 };
   const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', hash: null,
-    thumb: crop.thumb, model: MODEL, table: ctx.tid, box: bx ? [bx[0] / W, bx[1] / H, bx[2] / W, bx[3] / H] : null }, m);
+    thumb: crop.thumb, model: MODEL, table: ctx.tid, sale: S.sale || '', box: bx ? [bx[0] / W, bx[1] / H, bx[2] / W, bx[3] / H] : null }, m);
   rememberShot(entry.id, crop.b64);
-  history.unshift(entry); saveHistory();
+  history.unshift(entry); saveHistory(); queueSync(entry);
   ctx.count++;
   if (tbl.cur === ctx.tid) {
     tbl.ids.push(entry.id); layoutTags(); renderTableSum();
@@ -1248,7 +1644,7 @@ async function closeup(id, shot, seq) {
   const r = mergeLooks(texts.map(parseFinal));
   if (!r) { if (errs.length === n) showError(errs[0]); else { showNone(); bName.textContent = 'Couldn\'t read the close-up. Try again'; } return; }
   Object.assign(e, r, { name: e.renamed ? e.name : r.name, edited: false, repriced: Date.now(), closeup: shot.thumb });
-  saveHistory();
+  saveHistory(); queueSync(e);
   showEntry(e); haptic(); say(spoken(e));
   setStatus('Updated from the close-up · tap for details');
 }
@@ -1348,6 +1744,7 @@ function checkText(e) {
   return up ? 'Check value · could be ' + money(up) : e.check ? 'Check value · horror and Cars VHS can sell for more' : '';
 }
 function showEntry(e, partial, quiet) {
+  if (e.pending) { showSaved(e); return; }
   current = partial ? null : e;
   scanning(false);
   const rough = e.conf === 'low' && !e.edited;
@@ -1450,7 +1847,7 @@ function openDetail(e) {
   $('#dMsg').textContent = ''; $('#dMsg').className = 'd-msg';
   fillDetail(e);
   $('#dRescan').hidden = !(current && current.id === e.id && lockRef);
-  $('#dCloseup').hidden = tbl.on;
+  $('#dCloseup').hidden = tbl.on || !!e.pending;
   openSheet($('#detailSheet'));
   if (e.flag && e.flag.status === 'open') syncFlags(true);
   fitName();
@@ -1469,10 +1866,14 @@ function fillDetail(e) {
   fillCheck(e);
   fillAside(e);
   fillHouse(e);
+  $('#dReprice').hidden = !!e.pending;
+  if (e.pending) { $('#dAsideBtn').hidden = true; $('#dMsg').className = 'd-msg'; $('#dMsg').textContent = 'Saved without signal. It gets priced on its own when the signal is back.'; }
   $('#dLook').hidden = !e.look || !!e.closeup;
   $('#dLook').textContent = e.look ? 'For an exact match, show the camera: ' + e.look : '';
   $('#dSeen').hidden = !e.seen;
   $('#dSeen').textContent = e.seen ? 'Read on the item: "' + e.seen + '"' : '';
+  $('#dCode').hidden = !e.code;
+  $('#dCode').textContent = e.code ? (/^97[89]/.test(e.code) ? 'ISBN ' : 'Barcode ') + e.code + (e.codeInfo ? ' · ' + e.codeInfo : '') : '';
   $('#dComps').href = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(e.q || e.name) + '&LH_Sold=1&LH_Complete=1';
 }
 // "Check value" box: a possible higher value, or a horror / Cars VHS that needs a look-up.
@@ -1502,7 +1903,7 @@ $('#dName').addEventListener('input', () => {
   if (!v) return;
   nameTouched = true;
   detailEntry.name = v.slice(0, 80); detailEntry.renamed = true;
-  saveHistory(); refreshViews(detailEntry);
+  saveHistory(); refreshViews(detailEntry); queueSync(detailEntry);
 });
 $('#dName').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); ev.target.blur(); } });
 $('#dName').addEventListener('blur', () => { if (detailEntry && !$('#dName').value.trim()) { $('#dName').value = detailEntry.name; fitName(); } });
@@ -1531,7 +1932,7 @@ $('#dReprice').addEventListener('click', async () => {
     const r = mergeLooks(texts.map(parseFinal));
     if (!r) throw apiError(0, 'no price', 'no_price');
     Object.assign(e, r, { name: nameTouched ? name.slice(0, 80) : r.name, facts, edited: false, repriced: Date.now() });
-    saveHistory();
+    saveHistory(); queueSync(e);
     if (detailEntry === e) {
       fillDetail(e); fitName(); nameTouched = false;
       for (const b of document.querySelectorAll('#detailSheet .box')) { b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
@@ -1553,7 +1954,7 @@ $('#dPrice').addEventListener('input', (ev) => {
   if (!detailEntry) return;
   const v = num(ev.target.value);
   detailEntry.price = v; detailEntry.edited = true;
-  saveHistory(); fillHouse(detailEntry); fillCheck(detailEntry); fillAside(detailEntry);
+  saveHistory(); queueSync(detailEntry); fillHouse(detailEntry); fillCheck(detailEntry); fillAside(detailEntry);
   if (current && current.id === detailEntry.id) showEntry(detailEntry);
   if (!$('#histSheet').hidden) renderHistory();
   tableSync();
@@ -1566,7 +1967,7 @@ $('#dRescan').addEventListener('click', () => {
 $('#dRemove').addEventListener('click', () => {
   if (!detailEntry) return;
   const i = history.findIndex((x) => x.id === detailEntry.id);
-  if (i >= 0) history.splice(i, 1);
+  if (i >= 0) { queueRemove(history[i]); history.splice(i, 1); }
   saveHistory();
   if (current && current.id === detailEntry.id) { lockRef = null; unlock(); }
   closeSheets(true);
@@ -1584,7 +1985,10 @@ function ago(t) {
   return new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 function renderHistory() {
-  const list = $('#hList'); list.textContent = '';
+  $('#hTabs').hidden = !S.sale;
+  if (histView === 'sale' && S.sale) { renderSaleList(); return; }
+  $('#hActions').hidden = false; $('#hTotalLabel').textContent = 'Estimated total';
+  const list = $('#hList'); list.textContent = ''; list.dataset.view = 'mine';
   if (!history.length) {
     const li = document.createElement('li'); li.className = 'h-empty';
     li.textContent = 'Nothing scanned yet. Point at an item and hold steady.'; list.appendChild(li);
@@ -1602,7 +2006,8 @@ function histRow(e) {
   if (e.flag) { const tg = document.createElement('span'); tg.className = 'h-tag ' + (e.flag.status === 'done' ? 'done' : 'open'); tg.textContent = e.flag.status === 'done' ? 'Dorian priced' : 'Set aside'; sm.prepend(tg); }
   mid.append(b, sm);
   const pr = document.createElement('span'); pr.className = 'h-price';
-  pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
+  pr.textContent = e.pending ? '…' : (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
+  if (e.pending) sm.textContent = 'Saved without signal · ' + when(e.t);
   li.append(img, mid, pr);
   return li;
 }
@@ -1610,7 +2015,13 @@ $('#hList').addEventListener('click', (ev) => {
   const li = ev.target.closest('li[data-id]'); if (!li) return;
   const e = history.find((x) => x.id === li.dataset.id); if (e) openDetail(e);
 });
-$('#histBtn').addEventListener('click', () => { renderHistory(); openSheet($('#histSheet')); syncFlags(true); });
+$('#histBtn').addEventListener('click', () => { renderHistory(); openSheet($('#histSheet')); syncFlags(true); flushSync(); });
+$('#hTabs').addEventListener('click', (ev) => {
+  const b = ev.target.closest('button[data-v]'); if (!b) return;
+  histView = b.dataset.v;
+  for (const x of $('#hTabs').children) x.setAttribute('aria-pressed', String(x === b));
+  renderHistory();
+});
 
 let clearArmed = 0;
 $('#hClear').addEventListener('click', (ev) => {
@@ -1627,8 +2038,8 @@ function csvCell(v) {
 }
 $('#hExport').addEventListener('click', async () => {
   if (!history.length) return;
-  const rows = [['Item', 'Details', 'Tag price', 'Could be worth', 'Online low', 'Online high', 'Confidence', 'Check', 'Read on item', 'Show for exact match', 'Set aside', 'Scanned', 'Scanned by']];
-  for (const e of history.slice().reverse()) rows.push([e.name, e.facts || '', e.price, upsideOf(e) || '', e.low, e.high, e.conf, e.note, e.seen || '', e.look || '', !e.flag ? '' : e.flag.status === 'done' ? 'Dorian: ' + money(e.flag.price) + (e.flag.note ? ' · ' + e.flag.note : '') : 'Waiting for Dorian', new Date(e.t).toLocaleString('en-US'), e.who || '']);
+  const rows = [['Item', 'Sale', 'Details', 'Tag price', 'Could be worth', 'Online low', 'Online high', 'Confidence', 'Check', 'Read on item', 'Show for exact match', 'Set aside', 'Scanned', 'Scanned by']];
+  for (const e of history.slice().reverse()) rows.push([e.name, e.sale || '', e.facts || '', e.price, upsideOf(e) || '', e.low, e.high, e.conf, e.note, e.seen || '', e.look || '', !e.flag ? '' : e.flag.status === 'done' ? 'Dorian: ' + money(e.flag.price) + (e.flag.note ? ' · ' + e.flag.note : '') : 'Waiting for Dorian', new Date(e.t).toLocaleString('en-US'), e.who || '']);
   const csv = rows.map((r) => r.map(csvCell).join(',')).join('\n');
   const name = 'scanned-items-' + new Date().toISOString().slice(0, 10) + '.csv';
   const blob = new Blob([csv], { type: 'text/csv' });
@@ -1642,7 +2053,7 @@ $('#hExport').addEventListener('click', async () => {
 
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto';
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto'; $('#sSignal').value = S.signal === 'on' ? 'on' : 'auto'; $('#sCodes').checked = S.codes !== false;
   $('#sSpeak').closest('label').hidden = !canSpeak; $('#sInstall').hidden = !installable();
   applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
@@ -1658,10 +2069,10 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
-  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value;
+  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value; S.signal = $('#sSignal').value; S.codes = $('#sCodes').checked;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
-  closeSheets(true);
+  closeSheets(true); updateSig();
   if (modeChanged && current) showEntry(current);
 });
 /* ---------- owner view ---------- */
@@ -1736,6 +2147,7 @@ function showOff() {
   if (S.role === 'owner') ownerCount();
   syncFlags(false);
   if (needsClock()) refreshClock();
+  flushSync(); refreshSaleTotal(); updateSig();
 }
 
 /* ---------- time clock (employees clock in before scanning; the owner doesn't) ---------- */
@@ -1758,6 +2170,7 @@ function renderOff() {
   $('#clockOutBtn').hidden = !clock || !shift;
   $('#clockState').hidden = !clock || !shift;
   if (clock && shift) $('#clockState').textContent = 'On the clock since ' + when(Date.parse(shift.clock_in)) + ' · ' + dur(Date.now() - Date.parse(shift.clock_in));
+  renderSaleLine();
   $('#offHint').textContent = !clock || shift ? 'Point at an item and hold steady. Prices pop up on their own.'
     : !clockKnown ? 'Checking the time clock…'
     : 'Clock in to start scanning' + (S.who ? ', ' + S.who.split(' ')[0] : '') + '.';
@@ -1772,13 +2185,21 @@ async function clockApi(action) {
 }
 async function refreshClock() {
   if (!PASS || !S.who) return;
-  try { shift = await clockApi('status'); clockKnown = true; }
-  catch (e) { if (!clockKnown) offMsg('Couldn\'t reach the time clock. Check your signal.'); clockKnown = true; }
+  try { shift = await clockApi('status'); clockKnown = true; store.set('shift', shift || null); takeShiftSale(); }
+  catch (e) {
+    const c = store.get('shift', null);   // no signal: trust the last shift this phone saw, if it's from today
+    if (!shift && c && !c.clock_out && Date.now() - Date.parse(c.clock_in) < 16 * 3600000) { shift = c; takeShiftSale(); }
+    else if (!clockKnown) offMsg('Couldn\'t reach the time clock. Check your signal.');
+    clockKnown = true;
+  }
   renderOff();
 }
 $('#clockInBtn').addEventListener('click', async () => {
   const b = $('#clockInBtn'); b.disabled = true; offMsg('');
-  try { shift = await clockApi('in'); clockKnown = true; haptic(); offMsg(shift ? 'Clocked in at ' + when(Date.parse(shift.clock_in)) + '.' : ''); }
+  try {
+    shift = await clockApi('in'); clockKnown = true; store.set('shift', shift || null); haptic(); offMsg(shift ? 'Clocked in at ' + when(Date.parse(shift.clock_in)) + '.' : '');
+    if (shift) { if (shift.sale) takeShiftSale(); else { S.sale = ''; S.saleAt = 0; store.set('settings', S); openSaleSheet(); } }   // right after clocking in: which sale?
+  }
   catch (e) { if (e.message !== 'password') offMsg('Couldn\'t clock in. Check your signal and try again.'); }
   finally { b.disabled = false; renderOff(); }
 });
@@ -1795,7 +2216,7 @@ $('#clockOutBtn').addEventListener('click', async () => {
     const done = await clockApi('out');
     const end = done && done.clock_out ? Date.parse(done.clock_out) : Date.now();
     const items = history.filter((e) => e.t >= started && e.t <= end && (!e.who || e.who === S.who)).length;
-    shift = null; haptic();
+    shift = null; store.set('shift', null); haptic();
     offMsg('Clocked out at ' + when(end) + ' · ' + dur(end - started) + ' on the clock · ' + items + ' item' + (items === 1 ? '' : 's') + ' scanned.');
   } catch (e) { if (e.message !== 'password') offMsg('Couldn\'t clock out. Check your signal and try again.'); }
   finally { b.disabled = false; renderOff(); }
@@ -1837,6 +2258,7 @@ async function startCamera() {
   setTimeout(() => { try { const c = track.getCapabilities && track.getCapabilities(); if (c && c.torch) torchBtn.hidden = false; } catch (e) {} }, 600);
   keepAwake();
   setStatus('Hold steady on an item');
+  if (S.codes !== false) setTimeout(() => barcodeReader().catch(() => {}), 1500);   // load the barcode reader in the background
   if (!loopStarted) { loopStarted = true; requestAnimationFrame(tick); }
   return true;
 }
@@ -1845,6 +2267,7 @@ function camHelp(msg) {
 }
 async function start() {
   if (needsClock() && !shift) { showOff(); offMsg('Clock in before you start scanning.'); return; }
+  if (!saleOk() && (needsClock() || S.saleSkip !== new Date().toDateString())) { showOff(); openSaleSheet(start); return; }
   offMsg('');
   setup.hidden = true;
   paused = false; document.body.classList.remove('paused');
@@ -1903,7 +2326,7 @@ function resetEyes() { for (const b of document.querySelectorAll('.eye')) { cons
 /* ---------- set aside for Dorian ---------- */
 // Employees send anything they're unsure about (photo + the AI's guess) to the owner's list.
 // The owner answers with a tag price on the Team activity page; the answer comes back here.
-function apiHeaders() { return { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || '') }; }
+function apiHeaders() { return { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-sale': encodeURIComponent(S.sale || '') }; }
 function asideReason(e) {
   return e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.check ? 'Horror or Cars VHS' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
 }
@@ -1930,7 +2353,7 @@ $('#dAsideBtn').addEventListener('click', async () => {
     const photo = shots.get(e.id) || (e.thumb ? e.thumb.split(',')[1] : '');
     const res = await fetch(API + '?flag=add', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({
       eid: e.id, item: e.name, price: e.price, upside: upsideOf(e) || 0, low: e.low, high: e.high, conf: e.conf, match: e.match,
-      seen: e.seen || '', note: e.note || '', facts: e.facts || '', reason: asideReason(e), photo }) });
+      seen: e.seen || '', note: e.note || '', facts: e.facts || '', reason: asideReason(e), photo, sale: e.sale || S.sale || '' }) });
     if (res.status === 401) throw Object.assign(new Error('pass'), { type: 'bad_password' });
     const j = await res.json().catch(() => ({}));
     if (!res.ok || !j.flag) throw new Error('server');
@@ -1957,6 +2380,7 @@ $('#dAsideUndo').addEventListener('click', async () => {
 function applyAnswer(e, f) {
   e.flag.status = 'done'; e.flag.price = f.owner_price; e.flag.note = f.owner_note || ''; e.flag.answered = Date.parse(f.resolved_at) || Date.now();
   if (f.owner_price != null) { e.price = f.owner_price; e.edited = true; }
+  queueSync(e);
 }
 let flagSyncAt = 0;
 async function syncFlags(force) {

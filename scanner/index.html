@@ -264,6 +264,32 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 .ta-list{list-style:none;margin:0;padding:0;width:100%;max-width:280px;text-align:left}
 .ta-list li{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:6px;border-radius:12px;background:rgba(250,247,242,.07);font-size:14.5px;font-weight:600}
 .ta-list svg{width:20px;height:20px;color:var(--gold);flex:none}
+/* table mode: one photo of a whole table, a price tag on every item */
+.tbl-toggle{height:46px;padding:0 14px;border-radius:23px;border:1px solid rgba(250,247,242,.3);background:rgba(25,23,20,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cream);font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;flex:none}
+.tbl-toggle svg{width:18px;height:18px}
+body.table .tbl-toggle{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+body.table .reticle,body.table .bubble{display:none}
+.tbl-guide{position:fixed;left:0;right:0;z-index:2;pointer-events:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.45);outline:2px dashed rgba(201,168,76,.85);outline-offset:-2px}
+.tbl-guide.frozen{outline:0}
+.tbl-layer{position:fixed;left:0;right:0;z-index:3;background:#000}
+.tbl-layer img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill}
+.tbl-layer.busy img{animation:tbusy 1.4s ease-in-out infinite}
+@keyframes tbusy{50%{filter:brightness(.8)}}
+.ttag{position:absolute;left:0;top:0;transform:translate(-50%,-50%);min-width:46px;height:32px;padding:0 10px;border-radius:16px;border:2px solid var(--gold);background:rgba(29,26,22,.93);color:var(--gold);font:900 19px/28px 'Playfair Display',Georgia,serif;text-align:center;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.5);animation:tpop .32s cubic-bezier(.2,1.6,.4,1)}
+.ttag.low{border-color:var(--grey);color:var(--cream)}
+.ttag.check{border-color:#f0b048;color:#f6c56b}
+.ttag.check::after{content:"!";position:absolute;top:-9px;right:-9px;width:19px;height:19px;border-radius:50%;background:#f0b048;color:var(--ink);font:800 12px/19px 'Public Sans',sans-serif}
+.ttag.aside{border-style:dashed}
+@keyframes tpop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.tbl-bar{position:fixed;left:0;right:0;bottom:calc(var(--sb) + 80px);z-index:5;display:flex;justify-content:center;align-items:center;gap:10px;padding:0 14px;pointer-events:none}
+.tbl-bar>*{pointer-events:auto}
+.shutter{width:76px;height:76px;border-radius:50%;border:4px solid var(--cream);background:var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.45);display:grid;place-items:center;color:var(--ink);padding:0}
+.shutter svg{width:32px;height:32px}
+.shutter:active{transform:scale(.94)}
+.tbl-sum{min-height:50px;padding:0 18px;border-radius:25px;border:1.5px solid var(--gold);background:rgba(25,23,20,.88);color:var(--cream);font-weight:600;font-size:15px;white-space:nowrap}
+.tbl-sum b{color:var(--gold);font:900 21px 'Playfair Display',Georgia,serif;margin-left:3px}
+.tbl-new{min-height:50px;padding:0 20px;border-radius:25px;border:0;background:var(--gold);color:var(--ink);font-weight:700;font-size:15px;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+body.off .tbl-bar,body.off .tbl-layer,body.off .tbl-guide,body.off .tbl-toggle{display:none}
 video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 [hidden]{display:none !important}
 @media (prefers-reduced-motion:reduce){.bubble,.reticle{transition:none}.bubble.pop,.sheet{animation:none}}
@@ -284,6 +310,9 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 </header>
 
 <div id="reticle" class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div id="tblGuide" class="tbl-guide" hidden></div>
+<div id="tblLayer" class="tbl-layer" hidden><img id="tblShot" alt="The table you priced"><div id="tblTags"></div></div>
+<div id="tblBar" class="tbl-bar" hidden><button id="tblShoot" class="shutter" type="button" aria-label="Price everything on this table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="4"/></svg></button><button id="tblSum" class="tbl-sum" type="button" hidden></button><button id="tblNew" class="tbl-new" type="button" hidden>New table</button></div>
 
 <section id="offPanel" class="off-panel" hidden>
   <p class="clock-state" id="clockState" hidden></p>
@@ -301,6 +330,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 
 <footer class="bottom">
   <div id="status" class="status" role="status"><span class="msg" id="statusMsg">Starting camera…</span><span class="lat" id="lat"></span></div>
+  <button id="tblBtn" class="tbl-toggle" type="button" aria-pressed="false" aria-label="Table mode: price a whole table from one photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Table</button>
   <button id="pauseBtn" class="pause" type="button" aria-label="Stop scanner">Stop</button>
 </footer>
 
@@ -348,6 +378,15 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   <p class="h-sum"><span id="hCount"></span> · Estimated total <b id="hTotal"></b></p>
   <ul id="hList" class="h-list"></ul>
   <div class="row"><button id="hExport" class="btn gold" type="button">Export list</button><button id="hClear" class="btn danger" type="button">Clear list</button></div>
+  <div class="row"><button class="btn" type="button" data-close>Done</button></div>
+</section>
+
+<!-- table mode: this table's items -->
+<section id="tblSheet" class="sheet" hidden aria-label="This table">
+  <div class="grab"></div>
+  <h2>This table</h2>
+  <p class="h-sum"><span id="tCount"></span> · Total <b id="tTotal"></b></p>
+  <ul id="tList" class="h-list"></ul>
   <div class="row"><button class="btn" type="button" data-close>Done</button></div>
 </section>
 
@@ -467,14 +506,29 @@ If you can name the specific brand and model or pattern, use "match":"exact". If
 - "conf": high = the specific item is identified and its sold value is well established; med = brand or type identified but value depends on model, condition or completeness; low = rough guess.
 - "note": the one thing to check, at most 8 words (maker's mark, does it work, complete set, chips or cracks, authenticity, size). Empty if nothing.
 - "look": if one more view would pin down the exact item or change the price a lot, where to point the camera, at most 5 words (e.g. "label on the bottom", "copyright page", "back of the card", "maker's mark underneath", "model sticker on back"). Empty if not needed.
-- "cat": "clothing" for clothing (t-shirts, shirts, blouses, sweatshirts, hoodies, sweaters, pants, jeans, shorts, dresses, skirts, jackets, coats, suits, hats, caps, scarves, ties, gloves; not shoes, boots, bags, belts or jewelry); "cup" for mugs, cups, teacups, tumblers, wine glasses and other drinking glasses; otherwise "other". The app tags everyday clothing and cups at a flat house price by itself, so still price them normally here.
+- "cat": the app prices these everyday categories at flat house prices by itself, so still price them normally here:
+  "clothing": t-shirts, shirts, blouses, sweatshirts, hoodies, sweaters, pants, jeans, shorts, dresses, skirts, jackets, coats, suits, hats, caps, scarves, ties, gloves (not shoes, boots, bags, belts or jewelry).
+  "cup": mugs, cups, teacups, tumblers, wine glasses and other drinking glasses.
+  "book": hardcover and paperback books (not comics or magazines).
+  "dvd": DVDs and Blu-rays. "vhs": VHS tapes. "cd": music CDs.
+  "frame": an empty picture frame or one holding a photo, up to about 8x10. "bigframe": the same but larger than 8x10. Framed art (paintings, prints, posters, needlework) is "other".
+  "soft": pillows, cushions, stuffed animals and plush toys, throw blankets.
+  Everything else is "other".
 - "qty": how many pieces are being priced (1 for a single item). "price", "low" and "high" are for all of them together.
-- "special": only for clothing and cups. true only if the piece is clearly special AND would sell used for more than $15 each: designer or premium brands (The North Face, Patagonia, Ralph Lauren, Lacoste, Burberry, Pendleton, Carhartt, Harley-Davidson and similar), real leather or fur, vintage band or concert tees, team jerseys, new with tags, collectible makers or patterns (Fire-King, Pyrex, Hall, Lenox, Royal Albert, McCoy, Starbucks You Are Here or city mugs), fine china, crystal, sterling, antiques. Everyday clothes (store brands, basic athletic wear, event or souvenir tees and hoodies, plain sweaters and jeans) and ordinary mugs and glasses are false. false for everything else.
+- "special": only for those categories, otherwise false. true only if the piece is clearly special AND would sell used for more than $15 each:
+  clothing: designer or premium brands (The North Face, Patagonia, Ralph Lauren, Lacoste, Burberry, Pendleton, Carhartt, Harley-Davidson and similar), real leather or fur, vintage band or concert tees, team jerseys, new with tags.
+  cups: collectible makers or patterns (Fire-King, Pyrex, Hall, Lenox, Royal Albert, McCoy, Starbucks You Are Here or city mugs), fine china, crystal, sterling, antiques.
+  books: first editions, signed copies, antique or rare books, collectible sets, current textbooks.
+  DVDs and CDs: box sets, rare or out-of-print titles, Criterion, sealed collectibles.
+  VHS: always true for horror movies and for the movie Cars (Disney Pixar); also sealed or rare tapes.
+  frames: sterling, antique or ornate gilt, designer makers.
+  soft: Steiff, mohair or other collectible plush, antique or handmade quilts, signed designer pieces. Ordinary decorative pillows are never special, however fancy the fabric.
+  Everyday pieces of these kinds are false.
 - "q": eBay search words that find sold comps for this item, or for similar items.
 If the photo shows no object at all or is clearly accidental (see LOOK), use an empty name and zeros.
 
 Reply with only one line of JSON, keys in exactly this order:
-{"seen":"...","name":"...","cat":"clothing|cup|other","qty":1,"special":false,"match":"exact|similar","conf":"high|med|low","price":0,"upside":0,"low":0,"high":0,"note":"...","look":"...","q":"..."}`;
+{"seen":"...","name":"...","cat":"other","qty":1,"special":false,"match":"exact|similar","conf":"high|med|low","price":0,"upside":0,"low":0,"high":0,"note":"...","look":"...","q":"..."}`;
 
 /* ---------- storage ---------- */
 const store = {
@@ -544,7 +598,7 @@ function primeSpeech() {   // phones only allow speech after a tap, so the first
   try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); speechReady = true; } catch (e) {}
 }
 function say(text) {
-  if (!canSpeak || S.speak === false || !text) return;
+  if (!canSpeak || S.speak === false || !text || tbl.on) return;   // table mode is silent
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 1.08;
@@ -561,7 +615,7 @@ function spoken(e) {
   else return '';
   if (e.flag && e.flag.status === 'done') t = 'Dorian says ' + t;
   else if (e.conf === 'low' && !e.edited) t = 'About ' + t;
-  if (upsideOf(e)) t += '. Check value';
+  if (checkOf(e)) t += '. Check value';
   return t;
 }
 function saveHistory() {
@@ -693,6 +747,7 @@ function tick(now) {
   requestAnimationFrame(tick);
   if (!video.videoWidth || paused || sheetOpen || document.hidden) return;
   if (now - lastTick < 95) return;
+  if (tbl.on && !closeupFor) { lastTick = now; return; }   // table mode prices only when the gold button is tapped
   const dt = Math.min(250, now - lastTick); lastTick = now;
   const f = grab();
 
@@ -853,14 +908,14 @@ function apiError(status, message, type) { const e = new Error(message || 'Error
 
 // Sends one photo (plus optional extra instructions) and returns the AI's full reply text.
 // onText is called with the text so far as it streams in.
-async function streamAI(b64, extra, onText, timeoutMs, kind, tap) {
+async function streamAI(b64, extra, onText, timeoutMs, kind, tap, payload) {
   const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), timeoutMs || 20000);
   let text = '';
   try {
     const res = await fetch(API, {
       method: 'POST', signal: ctrl.signal,
       headers: { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-kind': kind || 'scan' },
-      body: JSON.stringify(body(b64, extra, tap))
+      body: JSON.stringify(payload || body(b64, extra, tap))
     });
     if (!res.ok) { let m = '', ty = ''; try { const j = await res.json(); m = (j.error && j.error.message) || ''; ty = (j.error && j.error.type) || ''; } catch (e) {} throw apiError(res.status, m, ty); }
     const reader = res.body.getReader(), dec = new TextDecoder();
@@ -972,6 +1027,202 @@ async function priceIt(shot, id, hash, replace, tap) {
   if (id === scanSeq) { showEntry(entry, false, !!shownKey); if (!shownKey) haptic(); setStatus('Tap the price for comps'); }
 }
 
+/* ---------- table mode: one photo of a whole table, a price tag on every item ---------- */
+const TABLE_SYS = "\n\nTABLE MODE (this replaces the one-item answer format above): the photo shows a table, shelf or box with several things for sale. Price every separate item you can see, up to 15, the most valuable first. Matching pieces together (a stack of plates, 6 glasses, a pile of DVDs) are one line with qty. Skip the table itself, walls, people, price tags, signs and anything clearly not for sale. Leave out items too cut off or blurry to recognise.\nThe person chose table mode on purpose, so the accidental-view rule does not apply: wide views of a room, rack or aisle are fine, price what you can make out.\nWrite one JSON object per line and nothing else:\n{\"n\":\"name\",\"c\":\"other\",\"q\":1,\"s\":false,\"p\":0,\"l\":0,\"h\":0,\"f\":\"med\",\"b\":[0,0,0,0]}\nn = name, c = cat, q = qty, s = special, p = price, l = low, h = high, f = conf (high, med or low), all with the same rules as above.\nb = where the item is in this photo: its box in pixels, [left, top, right, bottom].\nNo sentences before or after. If there is truly nothing you can price, write nothing.";
+const TABLE_MAX = 15;
+const tbl = { on: false, frozen: false, seq: 0, cur: 0, ids: [], busy: false };
+function tableBody(b64, w, h) {
+  let sys = SYSTEM + TABLE_SYS;
+  const notes = (S.notes || '').trim();
+  if (notes) sys += "\n\nThe owner's own pricing rules. Follow them:\n" + notes.slice(0, 1500);
+  return {
+    model: MODEL, max_tokens: 1500, stream: true, system: sys,
+    messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
+      { type: 'text', text: 'Table mode. This photo is ' + w + ' x ' + h + ' pixels. One JSON line per item.' }] }]
+  };
+}
+// The part of the screen the photo covers: full width, 3:4, centered (the same crop as a normal scan).
+function bandRect() { const h = Math.min(innerHeight, innerWidth * 4 / 3); return { x: 0, y: (innerHeight - h) / 2, w: innerWidth, h }; }
+function placeBand() {
+  const b = bandRect();
+  for (const el of [$('#tblGuide'), $('#tblLayer')]) { el.style.top = b.y + 'px'; el.style.height = b.h + 'px'; }
+}
+function setTable(on) {
+  on = !!on;
+  if (on === tbl.on) return;
+  tbl.on = on;
+  document.body.classList.toggle('table', on);
+  $('#tblBtn').setAttribute('aria-pressed', String(on));
+  if (on) { unlock(); try { if (canSpeak) speechSynthesis.cancel(); } catch (e) {} }
+  tableLive();
+  if (!on) { setStatus(S.trigger === 'touch' ? 'Touch and hold the screen while you aim' : 'Hold steady on an item'); prev = null; stillMs = 0; }
+}
+// Back to the live camera, ready for the next table.
+function tableLive() {
+  tbl.frozen = false; tbl.cur = 0; tbl.ids = [];
+  $('#tblLayer').hidden = true; $('#tblLayer').classList.remove('busy'); $('#tblTags').textContent = ''; $('#tblShot').removeAttribute('src');
+  $('#tblGuide').hidden = !tbl.on; $('#tblGuide').classList.remove('frozen'); $('#tblBar').hidden = !tbl.on;
+  $('#tblShoot').hidden = false; $('#tblSum').hidden = true; $('#tblNew').hidden = true;
+  if (tbl.on) { placeBand(); setStatus('Fit the table inside the frame, then tap the gold button'); }
+}
+const tblItems = () => tbl.ids.map((id) => history.find((e) => e.id === id)).filter(Boolean);
+function renderTableSum() {
+  const items = tblItems(), total = items.reduce((s, e) => s + (+e.price || 0), 0);
+  const sum = $('#tblSum');
+  if (!items.length) { sum.textContent = tbl.busy ? 'Pricing…' : 'No items'; return; }
+  sum.innerHTML = '';
+  sum.append(items.length + ' item' + (items.length === 1 ? '' : 's') + ' · ');
+  const b = document.createElement('b'); b.textContent = money(total); sum.appendChild(b);
+}
+// Put a price tag on each item, nudging tags apart where items sit close together.
+function layoutTags() {
+  const box = $('#tblTags'), b = bandRect(), placed = [];
+  box.textContent = '';
+  for (const e of tblItems()) {
+    if (!e.box) continue;
+    const t = document.createElement('button'); t.type = 'button'; t.className = 'ttag'; t.dataset.id = e.id;
+    const rough = e.conf === 'low' && !e.edited;
+    t.textContent = (rough ? '~' : '') + money(e.price);
+    if (rough) t.classList.add('low');
+    if (checkOf(e)) t.classList.add('check');
+    if (e.flag) t.classList.add('aside');
+    t.setAttribute('aria-label', e.name + ', ' + money(e.price));
+    const w = 30 + t.textContent.length * 11, h = 34;
+    let x = (e.box[0] + e.box[2]) / 2 * b.w, y = (e.box[1] + e.box[3]) / 2 * b.h;
+    x = Math.max(w / 2 + 4, Math.min(b.w - w / 2 - 4, x)); y = Math.max(h / 2 + 4, Math.min(b.h - h / 2 - 4, y));
+    for (let k = 0; k < 12; k++) {
+      const hit = placed.find((p) => Math.abs(p.x - x) < (p.w + w) / 2 + 2 && Math.abs(p.y - y) < h + 2);
+      if (!hit) break;
+      y = hit.y + (y >= hit.y ? h + 3 : -(h + 3));
+      if (y > b.h - h / 2 - 4 || y < h / 2 + 4) { y = Math.max(h / 2 + 4, Math.min(b.h - h / 2 - 4, y)); x += (x < b.w / 2 ? 1 : -1) * ((hit.w + w) / 2 + 3); }
+    }
+    placed.push({ x, y, w });
+    t.style.left = x + 'px'; t.style.top = y + 'px';
+    box.appendChild(t);
+  }
+}
+function tableSync() {
+  if (!tbl.cur) return;
+  layoutTags(); renderTableSum();
+  if (!$('#tblSheet').hidden) renderTableList();
+}
+function renderTableList() {
+  const items = tblItems(), list = $('#tList'); list.textContent = '';
+  for (const e of items) list.appendChild(histRow(e));
+  $('#tCount').textContent = items.length + ' item' + (items.length === 1 ? '' : 's');
+  $('#tTotal').textContent = money(items.reduce((s, e) => s + (+e.price || 0), 0));
+}
+// Cut one item out of the table photo: a thumbnail for the list, and a sharper copy for re-pricing.
+function cropItem(can, bx) {
+  const W = can.width, H = can.height;
+  let [x0, y0, x1, y1] = bx; const px = (x1 - x0) * .08, py = (y1 - y0) * .08;
+  x0 = Math.max(0, x0 - px); y0 = Math.max(0, y0 - py); x1 = Math.min(W, x1 + px); y1 = Math.min(H, y1 + py);
+  const cw = x1 - x0, ch = y1 - y0, out = {};
+  for (const [k, max, q] of [['thumb', 160, .6], ['b64', 640, .75]]) {
+    const s = Math.min(1, max / Math.max(cw, ch)), c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(cw * s)); c.height = Math.max(1, Math.round(ch * s));
+    c.getContext('2d').drawImage(can, x0, y0, cw, ch, 0, 0, c.width, c.height);
+    out[k] = c.toDataURL('image/jpeg', q);
+  }
+  out.b64 = out.b64.split(',')[1];
+  return out;
+}
+// One line of the AI's answer = one item. Saved to the list right away, tag shown if this table is still up.
+function addTableItem(line, ctx) {
+  const a = line.indexOf('{'), z = line.lastIndexOf('}');
+  if (a < 0 || z <= a || ctx.count >= TABLE_MAX) return;
+  let o = null; try { o = JSON.parse(line.slice(a, z + 1)); } catch (e) { return; }
+  if (!o || typeof o.n !== 'string' || !o.n.trim()) return;
+  const price = num(o.p); if (price == null) return;
+  let low = num(o.l), high = num(o.h); if (low != null && high != null && low > high) { const x = low; low = high; high = x; }
+  const W = ctx.can.width, H = ctx.can.height;
+  let bx = null;
+  if (Array.isArray(o.b) && o.b.length === 4 && o.b.every((v) => typeof v === 'number' && isFinite(v))) {
+    const x0 = Math.max(0, Math.min(W, Math.min(o.b[0], o.b[2]))), x1 = Math.max(0, Math.min(W, Math.max(o.b[0], o.b[2])));
+    const y0 = Math.max(0, Math.min(H, Math.min(o.b[1], o.b[3]))), y1 = Math.max(0, Math.min(H, Math.max(o.b[1], o.b[3])));
+    if (x1 - x0 >= 6 && y1 - y0 >= 6) bx = [x0, y0, x1, y1];
+  }
+  const m = houseRule({ name: tidyName(o.n).slice(0, 90), match: 'exact', conf: ['high', 'med', 'low'].includes(o.f) ? o.f : 'med',
+    price: Math.max(1, price), low, high, upside: 0, seen: '', note: '', look: '', cat: typeof o.c === 'string' ? o.c.toLowerCase().slice(0, 12) : '',
+    qty: num(o.q) || 1, special: o.s === true, q: o.n.slice(0, 120) });
+  const crop = bx ? cropItem(ctx.can, bx) : { thumb: ctx.thumb, b64: ctx.b64 };
+  const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', hash: null,
+    thumb: crop.thumb, model: MODEL, table: ctx.tid, box: bx ? [bx[0] / W, bx[1] / H, bx[2] / W, bx[3] / H] : null }, m);
+  rememberShot(entry.id, crop.b64);
+  history.unshift(entry); saveHistory();
+  ctx.count++;
+  if (tbl.cur === ctx.tid) {
+    tbl.ids.push(entry.id); layoutTags(); renderTableSum();
+    if (!$('#tblSheet').hidden) renderTableList();
+    setStatus('Pricing the table… ' + ctx.count + ' item' + (ctx.count === 1 ? '' : 's'));
+  }
+}
+async function shootTable() {
+  if (!tbl.on || tbl.frozen || !video.videoWidth) return;
+  tbl.frozen = true;
+  const can = document.createElement('canvas'), cx = can.getContext('2d');
+  // let the tap's shake settle, keeping the crispest of a few frames
+  let bestV = -1;
+  for (let i = 0; i < 4; i++) {
+    await new Promise((r) => setTimeout(r, 70));
+    if (!tbl.on || !video.videoWidth) { tbl.frozen = false; return; }
+    let v = 0; try { v = sharpness(); } catch (e) {}
+    if (v > bestV || bestV < 0) { bestV = v; drawView(can, cx); }
+  }
+  const tid = ++tbl.seq;
+  tbl.cur = tid; tbl.ids = []; tbl.busy = true;
+  const url = can.toDataURL('image/jpeg', .8), b64 = url.split(',')[1];
+  const t = document.createElement('canvas'); t.width = 160; t.height = Math.round(160 * can.height / can.width);
+  t.getContext('2d').drawImage(can, 0, 0, t.width, t.height);
+  const ctx = { tid, can, b64, thumb: t.toDataURL('image/jpeg', .6), count: 0 };
+  $('#tblShot').src = url; placeBand();
+  $('#tblLayer').hidden = false; $('#tblLayer').classList.add('busy'); $('#tblGuide').classList.add('frozen');   // keep the rest of the screen dimmed around the photo
+  $('#tblShoot').hidden = true; $('#tblSum').hidden = false; $('#tblNew').hidden = false; renderTableSum();
+  haptic(); scanning(true); setStatus('Pricing the table…');
+  const t0 = performance.now();
+  const dbg = lastScan = { img: url, text: '', at: new Date(), ms: 0, err: '' };
+  let used = 0, err = null;
+  const take = (text, all) => { const lines = text.split('\n'); const upto = all ? lines.length : lines.length - 1; for (; used < upto; used++) addTableItem(lines[used], ctx); };
+  try {
+    const text = await streamAI(b64, '', (x) => take(x, false), 45000, 'table', false, tableBody(b64, can.width, can.height));
+    dbg.text = text; take(text, true);
+  } catch (e) {
+    err = e; dbg.err = errText(e); dbg.text = (e && e.partialText) || '';
+    take(dbg.text, true);   // keep whatever items arrived before it broke
+  }
+  dbg.ms = performance.now() - t0;
+  if (tbl.cur !== tid) return;   // they already moved on to another table
+  tbl.busy = false; scanning(false); $('#tblLayer').classList.remove('busy'); renderTableSum();
+  if (ctx.count) markLatency(dbg.ms);
+  if (err && (err.type === 'bad_password' || err.type === 'not_clocked_in')) { showError(err); return; }
+  if (!ctx.count) {
+    tableLive();
+    const s = err && err.status, m = (err && err.message || '').toLowerCase();
+    setStatus(!err ? 'Couldn\'t pick out any items. Get closer, then tap the gold button'
+      : err.name === 'AbortError' ? 'That took too long. Tap the gold button to try again'
+      : !s ? 'No signal. Check your signal, then try again'
+      : m.includes('credit') ? 'Out of AI credit. Add credit at console.anthropic.com'
+      : s === 429 ? 'Too many scans at once. Try again in a moment'
+      : 'Something went wrong. Tap the gold button to try again', true);
+    return;
+  }
+  haptic();
+  setStatus(err ? 'Signal dropped partway: ' + ctx.count + ' priced. Tap New table to try again' : ctx.count + ' item' + (ctx.count === 1 ? '' : 's') + ' priced · tap a price for details', !!err);
+}
+$('#tblBtn').addEventListener('click', () => setTable(!tbl.on));
+$('#tblShoot').addEventListener('click', shootTable);
+$('#tblNew').addEventListener('click', tableLive);
+$('#tblSum').addEventListener('click', () => { if (!tblItems().length) return; renderTableList(); openSheet($('#tblSheet')); });
+$('#tList').addEventListener('click', (ev) => {
+  const li = ev.target.closest('li[data-id]'); if (!li) return;
+  const e = history.find((x) => x.id === li.dataset.id); if (e) openDetail(e);
+});
+$('#tblTags').addEventListener('click', (ev) => {
+  const t = ev.target.closest('.ttag'); if (!t) return;
+  const e = history.find((x) => x.id === t.dataset.id); if (e) openDetail(e);
+});
+addEventListener('resize', () => { if (tbl.on) { placeBand(); if (tbl.cur) layoutTags(); } });
+
 /* ---------- close-up: re-price using the whole item plus a photo of its label/mark ---------- */
 let closeupFor = null;
 $('#dCloseup').addEventListener('click', async () => {
@@ -1033,16 +1284,18 @@ function parsePartial(t) {
   return houseRule(Object.assign({ name: tidyName(unesc(n[2])), match, conf: c[1], price: Math.max(1, Math.round(+p[1])) }, extra));
 }
 function num(v) { const x = typeof v === 'string' ? parseFloat(v.replace(/[$,]/g, '')) : v; return (typeof x === 'number' && isFinite(x) && x >= 0) ? Math.round(x) : null; }
-// House prices: everyday clothing is $2 a piece and mugs, cups and glasses $1 a piece.
-// A special piece (the AI calls it special AND its sold range says over $15 each) is priced normally.
+// House prices (Dorian's flat prices), per piece. A special piece (the AI calls it special AND its sold
+// range says over $15 each) is priced normally. Horror VHS and the movie Cars on VHS also get "Check value".
 // Items someone priced by hand are never changed.
-const HOUSE = { clothing: 2, cup: 1 }, SPECIAL_OVER = 15;
-const HOUSE_WHAT = { clothing: 'Clothing is', cup: 'Mugs, cups and glasses are' };
+const HOUSE = { clothing: 2, cup: 1, book: 1, dvd: 1, cd: 1, vhs: 1, frame: 2, bigframe: 4, soft: 2 }, SPECIAL_OVER = 15;
+const HOUSE_WHAT = { clothing: 'Clothing is', cup: 'Mugs, cups and glasses are', book: 'Books are', dvd: 'DVDs are', cd: 'CDs are', vhs: 'VHS tapes are',
+  frame: 'Small picture frames (up to 8x10) are', bigframe: 'Large picture frames are', soft: 'Pillows, stuffed animals and other soft goods are' };
 function houseRule(m) {
   if (!m) return m;
-  delete m.house;
+  delete m.house; delete m.check;
   const flat = HOUSE[m.cat];
   if (!flat || m.edited || m.price == null) return m;
+  if (m.cat === 'vhs' && m.special) m.check = true;   // horror or Cars on VHS: flag it to look into
   const q = Math.max(1, Math.min(50, Math.round(+m.qty || 1)));
   const each = m.low != null && m.high != null ? (m.low + m.high) / 2 / q : null;
   if (m.special === true && each != null && each > SPECIAL_OVER) return m;   // special: keep the normal price
@@ -1088,6 +1341,12 @@ function showThinking() {
 }
 // Worth flagging when it could be worth clearly more than the tag.
 function upsideOf(e) { return !e.edited && e.upside && e.price != null && e.upside >= Math.max(e.price * 1.5, e.price + 20) ? e.upside : 0; }
+// should the bubble say "Check value"? (a big possible upside, or a VHS tape that's horror or Cars)
+function checkOf(e) { return !!(upsideOf(e) || (e.check && !e.edited)); }
+function checkText(e) {
+  const up = upsideOf(e) || (e.check && Math.max(e.upside || 0, e.high || 0) > (e.price || 0) ? Math.max(e.upside || 0, e.high || 0) : 0);
+  return up ? 'Check value · could be ' + money(up) : e.check ? 'Check value · horror and Cars VHS can sell for more' : '';
+}
 function showEntry(e, partial, quiet) {
   current = partial ? null : e;
   scanning(false);
@@ -1098,8 +1357,8 @@ function showEntry(e, partial, quiet) {
   bName.textContent = e.flag && e.flag.status === 'done' ? 'Dorian’s price · ' + e.name : e.flag ? 'Set aside for Dorian · ' + e.name
     : e.house && !e.edited ? 'House price · ' + e.name
     : rough ? 'Rough guess · ' + e.name : e.match === 'similar' && !e.edited ? 'Similar items · ' + e.name : e.name;
-  $('#bFlag').textContent = up ? 'Check value · could be ' + money(up) : '';
-  const cls = (rough ? 'low' : '') + (resale ? ' range' : '') + (up ? ' flagged' : '');
+  $('#bFlag').textContent = checkText(e);
+  const cls = (rough ? 'low' : '') + (resale ? ' range' : '') + (checkOf(e) ? ' flagged' : '');
   if (quiet && bubble.classList.contains('on')) bubble.className = 'bubble on ' + cls;   // update in place, no pop
   else popIn(cls);
   afterShow();
@@ -1159,6 +1418,7 @@ bubble.addEventListener('click', (ev) => {
 // tap anywhere on the camera view to price right away (a long press isn't a tap)
 let touching = false, pressAt = 0, pressScans = 0;
 video.addEventListener('click', () => {
+  if (tbl.on) { if (!paused && !sheetOpen && video.videoWidth && !tbl.frozen) shootTable(); return; }
   if (paused || sheetOpen || !video.videoWidth) return;
   if (performance.now() - pressAt > 450 || pressScans !== scanSeq) return;
   if (lockRef && bubble.classList.contains('on') && !bubble.className.includes('none') && !bubble.className.includes('err')) return;
@@ -1190,6 +1450,7 @@ function openDetail(e) {
   $('#dMsg').textContent = ''; $('#dMsg').className = 'd-msg';
   fillDetail(e);
   $('#dRescan').hidden = !(current && current.id === e.id && lockRef);
+  $('#dCloseup').hidden = tbl.on;
   openSheet($('#detailSheet'));
   if (e.flag && e.flag.status === 'open') syncFlags(true);
   fitName();
@@ -1205,9 +1466,7 @@ function fillDetail(e) {
   $('#dPrice').value = e.price == null ? '' : e.price;
   $('#dRange').textContent = range(e.low, e.high);
   $('#dNote').textContent = e.note || '';
-  const up = upsideOf(e);
-  $('#dUpside').hidden = !up;
-  $('#dUpside').textContent = up ? 'Could be worth up to ' + money(up) + ' if it checks out. Look into it before tagging.' : '';
+  fillCheck(e);
   fillAside(e);
   fillHouse(e);
   $('#dLook').hidden = !e.look || !!e.closeup;
@@ -1216,7 +1475,14 @@ function fillDetail(e) {
   $('#dSeen').textContent = e.seen ? 'Read on the item: "' + e.seen + '"' : '';
   $('#dComps').href = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(e.q || e.name) + '&LH_Sold=1&LH_Complete=1';
 }
-// One line in the item sheet explaining the clothing / cup house price.
+// "Check value" box: a possible higher value, or a horror / Cars VHS that needs a look-up.
+function fillCheck(e) {
+  const up = upsideOf(e), vhs = e.check && !e.edited;
+  $('#dUpside').hidden = !up && !vhs;
+  $('#dUpside').textContent = up ? 'Could be worth up to ' + money(up) + ' if it checks out. Look into it before tagging.'
+    : vhs ? 'Horror movies and the movie Cars on VHS can sell for a lot more than $1. Look it up before tagging, or set it aside for Dorian.' : '';
+}
+// One line in the item sheet explaining the house price (clothing, cups, books, DVDs, CDs, VHS, frames, soft goods).
 function fillHouse(e) {
   const el = $('#dHouse');
   el.hidden = !HOUSE[e.cat] || !!e.edited;
@@ -1224,9 +1490,10 @@ function fillHouse(e) {
     : 'Priced normally: this one should sell for over $' + SPECIAL_OVER + ', so the $' + HOUSE[e.cat] + ' house price doesn\'t apply.';
 }
 function refreshViews(e) {
-  if (detailEntry && detailEntry.id === e.id) fillHouse(e);
+  if (detailEntry && detailEntry.id === e.id) { fillHouse(e); fillCheck(e); fillAside(e); }
   if (current && current.id === e.id) showEntry(e);
   if (!$('#histSheet').hidden) renderHistory();
+  tableSync();
 }
 $('#dName').addEventListener('input', () => {
   fitName();
@@ -1286,9 +1553,10 @@ $('#dPrice').addEventListener('input', (ev) => {
   if (!detailEntry) return;
   const v = num(ev.target.value);
   detailEntry.price = v; detailEntry.edited = true;
-  saveHistory(); fillHouse(detailEntry);
+  saveHistory(); fillHouse(detailEntry); fillCheck(detailEntry); fillAside(detailEntry);
   if (current && current.id === detailEntry.id) showEntry(detailEntry);
   if (!$('#histSheet').hidden) renderHistory();
+  tableSync();
 });
 $('#dRescan').addEventListener('click', () => {
   const e = detailEntry; closeSheets(true);
@@ -1302,6 +1570,7 @@ $('#dRemove').addEventListener('click', () => {
   saveHistory();
   if (current && current.id === detailEntry.id) { lockRef = null; unlock(); }
   closeSheets(true);
+  tableSync();
 });
 
 function when(t) {
@@ -1320,21 +1589,22 @@ function renderHistory() {
     const li = document.createElement('li'); li.className = 'h-empty';
     li.textContent = 'Nothing scanned yet. Point at an item and hold steady.'; list.appendChild(li);
   }
-  for (const e of history) {
-    const li = document.createElement('li'); li.dataset.id = e.id;
-    const img = document.createElement('img'); img.alt = ''; if (e.thumb) img.src = e.thumb;
-    const mid = document.createElement('div'); mid.className = 'h-mid';
-    const b = document.createElement('b'); b.textContent = e.name;
-    const sm = document.createElement('small'); sm.textContent = when(e.t) + (e.facts ? ' · ' + (e.facts.length > 40 ? e.facts.slice(0, 40) + '…' : e.facts) : e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
-    if (e.flag) { const tg = document.createElement('span'); tg.className = 'h-tag ' + (e.flag.status === 'done' ? 'done' : 'open'); tg.textContent = e.flag.status === 'done' ? 'Dorian priced' : 'Set aside'; sm.prepend(tg); }
-    mid.append(b, sm);
-    const pr = document.createElement('span'); pr.className = 'h-price';
-    pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
-    li.append(img, mid, pr);
-    list.appendChild(li);
-  }
+  for (const e of history) list.appendChild(histRow(e));
   $('#hCount').textContent = history.length + ' item' + (history.length === 1 ? '' : 's');
   $('#hTotal').textContent = money(history.reduce((s, e) => s + (+e.price || 0), 0));
+}
+function histRow(e) {
+  const li = document.createElement('li'); li.dataset.id = e.id;
+  const img = document.createElement('img'); img.alt = ''; if (e.thumb) img.src = e.thumb;
+  const mid = document.createElement('div'); mid.className = 'h-mid';
+  const b = document.createElement('b'); b.textContent = e.name;
+  const sm = document.createElement('small'); sm.textContent = (e.table ? 'Table · ' : '') + when(e.t) + (e.facts ? ' · ' + (e.facts.length > 40 ? e.facts.slice(0, 40) + '…' : e.facts) : e.match === 'similar' ? ' · similar items' : '') + (e.low != null && e.high != null ? ' · online ' + range(e.low, e.high) : '');
+  if (e.flag) { const tg = document.createElement('span'); tg.className = 'h-tag ' + (e.flag.status === 'done' ? 'done' : 'open'); tg.textContent = e.flag.status === 'done' ? 'Dorian priced' : 'Set aside'; sm.prepend(tg); }
+  mid.append(b, sm);
+  const pr = document.createElement('span'); pr.className = 'h-price';
+  pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
+  li.append(img, mid, pr);
+  return li;
 }
 $('#hList').addEventListener('click', (ev) => {
   const li = ev.target.closest('li[data-id]'); if (!li) return;
@@ -1451,6 +1721,7 @@ $('#sLock').addEventListener('click', () => {
 /* ---------- pause / torch / wake ---------- */
 // Stop turns the camera fully off (saves battery) and shows the start screen.
 function stopScanner() {
+  setTable(false);
   unlock(); closeupFor = null;
   if (stream) { for (const t of stream.getTracks()) { try { t.stop(); } catch (e) {} } }
   stream = null; track = null; video.srcObject = null;
@@ -1634,12 +1905,12 @@ function resetEyes() { for (const b of document.querySelectorAll('.eye')) { cons
 // The owner answers with a tag price on the Team activity page; the answer comes back here.
 function apiHeaders() { return { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || '') }; }
 function asideReason(e) {
-  return e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
+  return e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.check ? 'Horror or Cars VHS' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
 }
 function fillAside(e) {
   const f = e.flag, btn = $('#dAsideBtn'), box = $('#dAsideState');
   btn.hidden = !!f; box.hidden = !f;
-  btn.className = 'btn' + (!f && (upsideOf(e) || e.split || e.conf === 'low') ? ' goldfill' : '');
+  btn.className = 'btn' + (!f && (checkOf(e) || e.split || e.conf === 'low') ? ' goldfill' : '');
   if (!f) return;
   box.className = 'aside-state ' + (f.status === 'done' ? 'done' : 'open');
   if (f.status === 'done') {

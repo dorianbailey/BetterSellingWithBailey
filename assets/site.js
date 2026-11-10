@@ -107,3 +107,101 @@
   }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
   Array.prototype.forEach.call(items, function (el) { io.observe(el); });
 })();
+
+/* Lead source: remember how a visitor first found the site (Google, Facebook,
+   a partner's link, a QR sign...) and attach it to every form they send, so
+   each inquiry shows where it came from. Stored only in this browser. */
+(function () {
+  var KEY = "bsb_first_touch", info = null;
+  try { info = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+  if (!info) {
+    var q = {}, host = "";
+    location.search.replace(/^\?/, "").split("&").forEach(function (pair) {
+      var kv = pair.split("=");
+      if (kv[0]) q[decodeURIComponent(kv[0])] = decodeURIComponent((kv[1] || "").replace(/\+/g, " "));
+    });
+    try { host = document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, "") : ""; } catch (e) {}
+    if (host === location.hostname.replace(/^www\./, "")) host = "";
+    var source = q.utm_source ? [q.utm_source, q.utm_medium, q.utm_campaign].filter(Boolean).join(" / ")
+      : q.ref ? "ref: " + q.ref
+      : host || "direct";
+    info = { source: source, page: location.pathname + location.search, date: new Date().toISOString().slice(0, 10) };
+    try { localStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("form"), function (form) {
+    [["lead_source", info.source], ["first_page", info.page], ["first_visit", info.date]].forEach(function (pair) {
+      if (form.querySelector('[name="' + pair[0] + '"]')) return;
+      var input = document.createElement("input");
+      input.type = "hidden"; input.name = pair[0]; input.value = pair[1];
+      form.appendChild(input);
+    });
+  });
+})();
+
+/* Small forms (sale alerts, partner referrals, the checklist): each sends to
+   Dorian's Gmail through FormSubmit without leaving the page. */
+(function () {
+  var ENDPOINT = "https://formsubmit.co/ajax/bettersellingwithbailey@gmail.com";
+  var PHONE = '<a href="tel:+18143238239">(814) 323-8239</a>';
+  var emailOk = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v || ""); };
+  var KINDS = {
+    alerts: {
+      check: function (d) { return emailOk(d.email) || d.phone ? "" : "Please add an email address or a mobile number."; },
+      done: function () { return "You're on the list. You'll hear about the next sale first."; }
+    },
+    referral: {
+      check: function (d) {
+        if (!d.partner_name) return "Please add your name.";
+        if (!d.client_name) return "Please add your client's name.";
+        if (!d.client_phone && !emailOk(d.client_email)) return "Please add a phone number or email for your client.";
+        return "";
+      },
+      done: function (d) { return "Thanks for the referral, " + d.partner_name.split(" ")[0] + "! I'll reach out to " + d.client_name.split(" ")[0] + " personally, usually the same day, and keep you posted."; }
+    },
+    checklist: {
+      check: function (d) { return emailOk(d.email) ? "" : "Please add your email address so I can send it."; },
+      done: function () { return "Sent! Check your inbox for the checklist. Nothing there? Look in your spam folder, or call " + PHONE + "."; }
+    }
+  };
+
+  Array.prototype.forEach.call(document.querySelectorAll("form[data-form]"), function (form) {
+    var kind = KINDS[form.getAttribute("data-form")];
+    if (!kind) return;
+    var status = form.querySelector(".form-status");
+    var button = form.querySelector('button[type="submit"]');
+    var label = button ? button.textContent : "";
+    function show(cls, msg) { if (!status) return; status.className = "form-status " + cls; status.innerHTML = msg; status.hidden = false; }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var honey = form.querySelector('[name="_honey"]');
+      if (honey && honey.value) return;
+      var data = {};
+      Array.prototype.forEach.call(form.elements, function (f) {
+        if (!f.name || f.name === "_honey") return;
+        if (f.type === "checkbox") { if (f.checked) data[f.name] = data[f.name] ? data[f.name] + ", " + f.value : f.value; return; }
+        if (f.type === "radio" && !f.checked) return;
+        data[f.name] = (f.value || "").trim();
+      });
+      var problem = kind.check(data);
+      if (problem) { show("err", problem); return; }
+      var who = data.partner_name || data.name || data.email || data.phone || "";
+      data._subject = (form.getAttribute("data-subject") || "New message from the website") + (who ? ": " + who : "");
+      data._template = "table";
+      if (form.getAttribute("data-autoresponse") && emailOk(data.email)) data._autoresponse = form.getAttribute("data-autoresponse");
+      if (button) { button.disabled = true; button.textContent = "Sending…"; }
+      fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res || !(res.success === true || res.success === "true")) throw new Error("not sent");
+          var keep = {};
+          ["lead_source", "first_page", "first_visit"].forEach(function (n) { var el = form.querySelector('[name="' + n + '"]'); if (el) keep[n] = el.value; });
+          form.reset();
+          Object.keys(keep).forEach(function (n) { form.querySelector('[name="' + n + '"]').value = keep[n]; });
+          show("ok", kind.done(data));
+        })
+        .catch(function () { show("err", "Sorry, that didn't go through. Please call " + PHONE + " or email <a href=\"mailto:bettersellingwithbailey@gmail.com\">bettersellingwithbailey@gmail.com</a>."); })
+        .then(function () { if (button) { button.disabled = false; button.textContent = label; } });
+    });
+  });
+})();

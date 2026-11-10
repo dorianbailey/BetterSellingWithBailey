@@ -370,7 +370,7 @@ function shiftsInRange() {
 }
 
 function statsFor(list) {
-  const scans = list.filter((r) => r.kind === 'scan' && r.ok);
+  const scans = list.filter((r) => (r.kind === 'scan' || r.kind === 'table') && r.ok);
   const reprices = list.filter((r) => r.kind === 'reprice' && r.ok).length;
   const misses = list.filter((r) => !r.ok).length;
   const gaps = [], breaks = [];
@@ -508,7 +508,7 @@ function render() {
       const tr = document.createElement('tr');
       const td = (cls, txt) => { const c = document.createElement('td'); if (cls) c.className = cls; if (txt != null) c.textContent = txt; tr.appendChild(c); return c; };
       const end = s.tout || (s.open ? new Date() : null);
-      const items = rows.filter((r) => keyOf(r.scanner) === keyOf(s.scanner) && r.kind === 'scan' && r.ok && r.at >= s.tin && (!end || r.at <= end)).length;
+      const items = rows.filter((r) => keyOf(r.scanner) === keyOf(s.scanner) && (r.kind === 'scan' || r.kind === 'table') && r.ok && r.at >= s.tin && (!end || r.at <= end)).length;
       td('', s.scanner);
       td('time hide-sm', dfmt(s.tin));
       td('time', tfmt(s.tin));
@@ -528,7 +528,7 @@ function render() {
   const items = (person ? list.filter((r) => keyOf(r.scanner) === person) : list).slice().reverse();
   const prevByPerson = {};
   const gapOf = new Map();
-  for (const r of list) { if (r.kind !== 'scan' || !r.ok) continue; const k = keyOf(r.scanner); if (prevByPerson[k]) gapOf.set(r, (r.at - prevByPerson[k]) / 1000); prevByPerson[k] = r.at; }
+  for (const r of list) { if ((r.kind !== 'scan' && r.kind !== 'table') || !r.ok) continue; const k = keyOf(r.scanner); if (prevByPerson[k]) gapOf.set(r, (r.at - prevByPerson[k]) / 1000); prevByPerson[k] = r.at; }
   const wrap = $('#listWrap'); wrap.textContent = '';
   if (!items.length) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = 'Nothing to show for this range.'; wrap.appendChild(d); return; }
   const t = document.createElement('table');
@@ -540,7 +540,7 @@ function render() {
     td('time', (singleDay ? '' : r.at.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ') + tfmt(r.at));
     td('', r.scanner || 'Unknown');
     const it = td('');
-    if (r.ok) { it.textContent = r.item || ''; if (r.kind === 'reprice') { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = 'RE-PRICED'; it.appendChild(tg); } }
+    if (r.ok) { it.textContent = r.item || ''; if (r.kind === 'reprice' || r.kind === 'table') { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = r.kind === 'table' ? 'TABLE' : 'RE-PRICED'; it.appendChild(tg); } }
     else { it.className = 'miss'; it.textContent = 'No item found'; }
     td('num', r.ok ? money(r.price) : '');
     const g = gapOf.get(r);

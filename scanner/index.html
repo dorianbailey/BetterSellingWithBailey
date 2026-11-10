@@ -264,6 +264,13 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
 .ta-list{list-style:none;margin:0;padding:0;width:100%;max-width:280px;text-align:left}
 .ta-list li{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:6px;border-radius:12px;background:rgba(250,247,242,.07);font-size:14.5px;font-weight:600}
 .ta-list svg{width:20px;height:20px;color:var(--gold);flex:none}
+/* weak signal */
+.sig-pill{position:fixed;left:50%;top:calc(var(--st) + 66px);transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:16px;border:1px solid rgba(240,176,72,.6);background:rgba(25,23,20,.85);color:#f6c56b;font-size:13px;font-weight:700;white-space:nowrap;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sig-pill svg{width:16px;height:16px;flex:none}
+.sig-pill.ok{border-color:rgba(123,211,137,.6);color:#a8e3b4}
+.bubble.saved{border-color:var(--grey)}
+.bubble.saved::after{border-color:var(--grey)}
+.bubble.saved .price{font-size:34px;color:var(--cream)}
 /* sales: which sale you're working, and the whole sale's list */
 .sale-line{margin:0;display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;justify-content:center;max-width:340px;color:rgba(250,247,242,.8);font-size:14px;line-height:1.45}
 .sale-line b{color:var(--cream);font-weight:700}
@@ -324,6 +331,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   </div>
 </header>
 
+<button id="sigPill" class="sig-pill" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 8.8a15 15 0 0 1 20 0M5.5 12.4a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg><span id="sigText"></span></button>
 <div id="reticle" class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <div id="tblGuide" class="tbl-guide" hidden></div>
 <div id="tblLayer" class="tbl-layer" hidden><img id="tblShot" alt="The table you priced"><div id="tblTags"></div></div>
@@ -432,6 +440,9 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
     <textarea id="sNotes" rows="4" placeholder="e.g. Tag most things around half of eBay sold. Glassware $1–5 unless it's a known pattern. Price furniture to move."></textarea></label>
   <label class="field check-row"><input id="sDouble" type="checkbox"><span>Double-check every price<small>Two AI looks per scan for steadier prices and to catch valuable items. Uses about twice the AI credit.</small></span></label>
   <label class="field check-row"><input id="sSpeak" type="checkbox"><span>Say the price out loud<small>Reads each price aloud so you can keep your eyes and hands on the item.</small></span></label>
+  <label class="field"><span>Weak signal mode</span>
+    <select id="sSignal"><option value="auto">Turns on by itself when the signal drops</option><option value="on">Always on (basements, houses with no service)</option></select></label>
+  <p class="small" style="margin-top:-8px">With a weak signal the scanner sends smaller photos and one AI look. With no signal it saves each photo and prices it on its own when the signal is back.</p>
   <label class="field"><span>Start a scan when</span>
     <select id="sTrigger"><option value="auto">I hold the phone steady on an item</option><option value="touch">I touch and hold the screen</option></select></label>
   <label class="field"><span>How long to hold still before it prices</span>
@@ -502,7 +513,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
 const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
-const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto' };
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto', signal: 'auto' };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -1006,9 +1017,11 @@ function mergeLooks(list) {
   return m;
 }
 
-async function priceIt(shot, id, hash, replace, tap) {
+async function priceIt(shot, id, hash, replace, tap, extra) {
+  if (offline()) { saveForLater(shot, id, hash, tap, extra, replace); return; }   // no signal at all: save it, price it later
   const t0 = performance.now();
-  const n = S.double === false ? 1 : 2;
+  const w = weak();   // weak signal: one smaller photo, one look
+  const n = w || S.double === false ? 1 : 2;
   const dbg = lastScan = { img: 'data:image/jpeg;base64,' + shot.b64, text: '', at: new Date(), ms: 0, err: '' };
   const parts = new Array(n).fill(null), done = new Array(n).fill(false), finals = new Array(n).fill(null);
   let shownKey = '', firstErr = null, errCount = 0, waitTimer = null;
@@ -1028,9 +1041,9 @@ async function priceIt(shot, id, hash, replace, tap) {
     showEntry(m, true, !first);
     if (first) { markLatency(performance.now() - t0); haptic(); say(spoken(m)); }
   };
-  const runs = parts.map((_, i) => streamAI(i ? (shot.b64s || shot.b64) : shot.b64, '', (t) => {
+  const runs = parts.map((_, i) => streamAI(i || w ? (shot.b64s || shot.b64) : shot.b64, extra || '', (t) => {
       if (!parts[i]) { const p = parsePartial(t); if (p) { parts[i] = p; tryShow(); } }
-    }, 20000, i ? 'scan2' : 'scan', tap)
+    }, w ? 10000 : 20000, i ? 'scan2' : 'scan', tap)
     .then((text) => { if (!i) dbg.text = text; finals[i] = parseFinal(text); if (!parts[i] && finals[i]) parts[i] = finals[i]; })
     .catch((err) => { errCount++; if (!firstErr) firstErr = err; if (!i) { dbg.text = (err && err.partialText) || ''; dbg.err = errText(err); } })
     .finally(() => { done[i] = true; tryShow(); }));
@@ -1040,6 +1053,11 @@ async function priceIt(shot, id, hash, replace, tap) {
   dbg.ms = performance.now() - t0;
 
   const r = mergeLooks(finals);
+  if (!r && errCount === n && firstErr && (!firstErr.status || firstErr.name === 'AbortError')) {
+    noteNet(false);                                  // the signal dropped: keep the photo and price it later
+    saveForLater(shot, id, hash, tap, extra, replace); return;
+  }
+  if (errCount < n) noteNet(true, dbg.ms);
   if (!r) {
     if (lastItem && lastItem.seq === id) lastItem = null;
     if (errCount === n) { if (id === scanSeq) showError(firstErr); return; }   // every look failed: show why
@@ -1047,12 +1065,105 @@ async function priceIt(shot, id, hash, replace, tap) {
     if (id === scanSeq) { if (tap) showNone(); else quietNone(); }
     return;
   }
-  const entry = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), who: S.who || '', sale: S.sale || '', hash, thumb: shot.thumb, model: MODEL }, r);
+  const entry = Object.assign({ id: newId(), t: Date.now(), who: S.who || '', sale: S.sale || '', hash, thumb: shot.thumb, model: MODEL }, r);
   rememberShot(entry.id, shot.b64);
   if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) { queueRemove(history[i]); history.splice(i, 1); } }
   history.unshift(entry); saveHistory(); queueSync(entry);
   if (lastItem && lastItem.seq === id) { lastItem.pending = false; lastItem.entryId = entry.id; lastItem.t = Date.now(); }
   if (id === scanSeq) { showEntry(entry, false, !!shownKey); if (!shownKey) haptic(); setStatus('Tap the price for comps'); }
+}
+
+/* ---------- weak signal: smaller photos and one look; with no signal, photos are saved and priced later ---------- */
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const net = { bad: false, slow: 0, fast: 0 };
+const offline = () => navigator.onLine === false;
+function weak() { return S.signal === 'on' || net.bad || offline(); }
+// After each AI call: two slow or failed calls switch weak-signal mode on; two quick ones switch it back off.
+function noteNet(ok, ms) {
+  if (!ok) { net.bad = true; net.fast = 0; }
+  else if (ms > 7000) { net.fast = 0; if (++net.slow >= 2) net.bad = true; }
+  else if (ms < 4000) { net.slow = 0; if (net.bad && ++net.fast >= 2) { net.bad = false; net.fast = 0; } }
+  updateSig();
+}
+const pendingCount = () => history.filter((e) => e.pending).length;
+function updateSig() {
+  const n = pendingCount(), w = weak(), pill = $('#sigPill');
+  pill.hidden = !w && !n;
+  pill.classList.toggle('ok', !w && n > 0);
+  $('#sigText').textContent = w ? (offline() ? 'No signal' : 'Weak signal') + (n ? ' · ' + n + ' saved' : '') : 'Pricing ' + n + ' saved photo' + (n === 1 ? '' : 's') + '…';
+}
+$('#sigPill').addEventListener('click', () => setStatus(pendingCount() ? 'Saved photos get priced on their own when the signal is back' : 'Weak signal: sending smaller photos so prices still come through'));
+addEventListener('online', () => { updateSig(); clearTimeout(qTimer); qTimer = setTimeout(runQueue, 800); });
+addEventListener('offline', () => { net.bad = true; updateSig(); });
+
+// Saved photos live in the phone's own database until they're priced.
+const qdb = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('bsb_scan', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('queue', { keyPath: 'id' });
+    r.onsuccess = () => res(r.result); r.onerror = () => { dbp = null; rej(r.error); };
+  }));
+  const run = async (mode, fn) => {
+    const db = await open();
+    return new Promise((res, rej) => { const t = db.transaction('queue', mode); const req = fn(t.objectStore('queue')); t.oncomplete = () => res(req && req.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); });
+  };
+  return { put: (v) => run('readwrite', (st) => st.put(v)), get: (id) => run('readonly', (st) => st.get(id)), del: (id) => run('readwrite', (st) => st.delete(id)) };
+})();
+async function saveForLater(shot, seq, hash, tap, extra, replace) {
+  const entry = { id: newId(), t: Date.now(), who: S.who || '', sale: S.sale || '', hash, thumb: shot.thumb, model: MODEL, pending: true, name: 'Waiting for signal', price: null, conf: 'med', match: 'exact' };
+  try { await qdb.put({ id: entry.id, b64: shot.b64s || shot.b64, t: entry.t, sale: entry.sale, tap: !!tap, extra: extra || '' }); }
+  catch (e) { if (lastItem && lastItem.seq === seq) lastItem = null; if (seq === scanSeq) showError(apiError(0, 'offline')); return null; }
+  if (replace) { const i = history.findIndex((x) => x.id === replace); if (i >= 0) { queueRemove(history[i]); history.splice(i, 1); } }
+  history.unshift(entry); saveHistory();
+  if (lastItem && lastItem.seq === seq) { lastItem.pending = false; lastItem.entryId = entry.id; lastItem.t = Date.now(); }
+  if (seq === scanSeq) showSaved(entry, true);
+  updateSig();
+  return entry;
+}
+function showSaved(e, fresh) {
+  current = e; scanning(false);
+  bPrice.textContent = 'Saved';
+  bName.textContent = 'No signal right now. It gets priced when the signal is back';
+  $('#bFlag').textContent = '';
+  popIn('saved'); afterShow();
+  if (fresh) { haptic(); say('Saved for later'); setStatus('Saved. Keep scanning; prices fill in when the signal is back'); }
+}
+// Price saved photos one at a time, oldest first, whenever there's signal.
+let qBusy = false, qDone = 0, qTimer = setTimeout(() => runQueue(), 5000);
+function dropPending(e) {
+  const i = history.indexOf(e); if (i >= 0) history.splice(i, 1);
+  saveHistory(); if (!$('#histSheet').hidden) renderHistory();
+  if (current === e) hideBubble();
+}
+async function runQueue() {
+  clearTimeout(qTimer);
+  if (qBusy) return;
+  const e = offline() || !PASS ? null : history.slice().reverse().find((x) => x.pending);
+  if (!e) {
+    if (qDone && !offline()) { setStatus(qDone + ' saved photo' + (qDone === 1 ? '' : 's') + ' priced · they\'re in your list'); qDone = 0; }
+    updateSig(); qTimer = setTimeout(runQueue, 15000); return;
+  }
+  qBusy = true; let next = 15000;
+  try {
+    const rec = await qdb.get(e.id);
+    if (!rec) { dropPending(e); next = 300; return; }
+    const t0 = performance.now();
+    const text = await streamAI(rec.b64, rec.extra || '', null, 25000, 'queued', rec.tap, null,
+      { 'x-scanner-taken': new Date(rec.t).toISOString(), 'x-scanner-sale': encodeURIComponent(rec.sale || '') });
+    noteNet(true, performance.now() - t0);
+    const r = parseFinal(text);
+    await qdb.del(e.id).catch(() => {});
+    if (!r) { dropPending(e); next = 300; return; }   // nothing to price in that photo
+    Object.assign(e, r); delete e.pending; e.late = true; rememberShot(e.id, rec.b64);
+    saveHistory(); queueSync(e); refreshViews(e); qDone++; next = 300;
+  } catch (err) {
+    const ty = err && err.type, st = err && err.status;
+    if (ty === 'not_clocked_in') { next = 60000; setStatus('Clock in to finish pricing your saved photos', true); }
+    else if (ty === 'bad_password') next = 60000;
+    else if (st && st < 500 && st !== 429 && st !== 408) { await qdb.del(e.id).catch(() => {}); dropPending(e); next = 300; }   // that photo was refused for good
+    else { noteNet(false); next = 15000; }
+  } finally { qBusy = false; updateSig(); clearTimeout(qTimer); qTimer = setTimeout(runQueue, next); }
 }
 
 /* ---------- sales: the sale you're working, and one shared list per sale ---------- */
@@ -1552,6 +1663,7 @@ function checkText(e) {
   return up ? 'Check value · could be ' + money(up) : e.check ? 'Check value · horror and Cars VHS can sell for more' : '';
 }
 function showEntry(e, partial, quiet) {
+  if (e.pending) { showSaved(e); return; }
   current = partial ? null : e;
   scanning(false);
   const rough = e.conf === 'low' && !e.edited;
@@ -1654,7 +1766,7 @@ function openDetail(e) {
   $('#dMsg').textContent = ''; $('#dMsg').className = 'd-msg';
   fillDetail(e);
   $('#dRescan').hidden = !(current && current.id === e.id && lockRef);
-  $('#dCloseup').hidden = tbl.on;
+  $('#dCloseup').hidden = tbl.on || !!e.pending;
   openSheet($('#detailSheet'));
   if (e.flag && e.flag.status === 'open') syncFlags(true);
   fitName();
@@ -1673,6 +1785,8 @@ function fillDetail(e) {
   fillCheck(e);
   fillAside(e);
   fillHouse(e);
+  $('#dReprice').hidden = !!e.pending;
+  if (e.pending) { $('#dAsideBtn').hidden = true; $('#dMsg').className = 'd-msg'; $('#dMsg').textContent = 'Saved without signal. It gets priced on its own when the signal is back.'; }
   $('#dLook').hidden = !e.look || !!e.closeup;
   $('#dLook').textContent = e.look ? 'For an exact match, show the camera: ' + e.look : '';
   $('#dSeen').hidden = !e.seen;
@@ -1809,7 +1923,8 @@ function histRow(e) {
   if (e.flag) { const tg = document.createElement('span'); tg.className = 'h-tag ' + (e.flag.status === 'done' ? 'done' : 'open'); tg.textContent = e.flag.status === 'done' ? 'Dorian priced' : 'Set aside'; sm.prepend(tg); }
   mid.append(b, sm);
   const pr = document.createElement('span'); pr.className = 'h-price';
-  pr.textContent = (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
+  pr.textContent = e.pending ? '…' : (e.conf === 'low' && !e.edited ? '~' : '') + money(e.price);
+  if (e.pending) sm.textContent = 'Saved without signal · ' + when(e.t);
   li.append(img, mid, pr);
   return li;
 }
@@ -1855,7 +1970,7 @@ $('#hExport').addEventListener('click', async () => {
 
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto';
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto'; $('#sSignal').value = S.signal === 'on' ? 'on' : 'auto';
   $('#sSpeak').closest('label').hidden = !canSpeak; $('#sInstall').hidden = !installable();
   applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
@@ -1871,10 +1986,10 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
-  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value;
+  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value; S.signal = $('#sSignal').value;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
-  closeSheets(true);
+  closeSheets(true); updateSig();
   if (modeChanged && current) showEntry(current);
 });
 /* ---------- owner view ---------- */
@@ -1949,7 +2064,7 @@ function showOff() {
   if (S.role === 'owner') ownerCount();
   syncFlags(false);
   if (needsClock()) refreshClock();
-  flushSync(); refreshSaleTotal();
+  flushSync(); refreshSaleTotal(); updateSig();
 }
 
 /* ---------- time clock (employees clock in before scanning; the owner doesn't) ---------- */
@@ -1987,14 +2102,19 @@ async function clockApi(action) {
 }
 async function refreshClock() {
   if (!PASS || !S.who) return;
-  try { shift = await clockApi('status'); clockKnown = true; takeShiftSale(); }
-  catch (e) { if (!clockKnown) offMsg('Couldn\'t reach the time clock. Check your signal.'); clockKnown = true; }
+  try { shift = await clockApi('status'); clockKnown = true; store.set('shift', shift || null); takeShiftSale(); }
+  catch (e) {
+    const c = store.get('shift', null);   // no signal: trust the last shift this phone saw, if it's from today
+    if (!shift && c && !c.clock_out && Date.now() - Date.parse(c.clock_in) < 16 * 3600000) { shift = c; takeShiftSale(); }
+    else if (!clockKnown) offMsg('Couldn\'t reach the time clock. Check your signal.');
+    clockKnown = true;
+  }
   renderOff();
 }
 $('#clockInBtn').addEventListener('click', async () => {
   const b = $('#clockInBtn'); b.disabled = true; offMsg('');
   try {
-    shift = await clockApi('in'); clockKnown = true; haptic(); offMsg(shift ? 'Clocked in at ' + when(Date.parse(shift.clock_in)) + '.' : '');
+    shift = await clockApi('in'); clockKnown = true; store.set('shift', shift || null); haptic(); offMsg(shift ? 'Clocked in at ' + when(Date.parse(shift.clock_in)) + '.' : '');
     if (shift) { if (shift.sale) takeShiftSale(); else { S.sale = ''; S.saleAt = 0; store.set('settings', S); openSaleSheet(); } }   // right after clocking in: which sale?
   }
   catch (e) { if (e.message !== 'password') offMsg('Couldn\'t clock in. Check your signal and try again.'); }
@@ -2013,7 +2133,7 @@ $('#clockOutBtn').addEventListener('click', async () => {
     const done = await clockApi('out');
     const end = done && done.clock_out ? Date.parse(done.clock_out) : Date.now();
     const items = history.filter((e) => e.t >= started && e.t <= end && (!e.who || e.who === S.who)).length;
-    shift = null; haptic();
+    shift = null; store.set('shift', null); haptic();
     offMsg('Clocked out at ' + when(end) + ' · ' + dur(end - started) + ' on the clock · ' + items + ' item' + (items === 1 ? '' : 's') + ' scanned.');
   } catch (e) { if (e.message !== 'password') offMsg('Couldn\'t clock out. Check your signal and try again.'); }
   finally { b.disabled = false; renderOff(); }

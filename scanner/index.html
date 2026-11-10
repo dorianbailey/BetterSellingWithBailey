@@ -388,6 +388,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   <div id="dAsideState" class="aside-state" hidden><b id="dAsideTitle"></b><span id="dAsideSub"></span><button id="dAsideUndo" class="linkbtn" type="button">Take it back</button></div>
   <p id="dNote" class="note"></p>
   <p id="dSeen" class="seen-line" hidden></p>
+  <p id="dCode" class="seen-line" hidden></p>
   <div class="stack">
     <a id="dComps" class="btn gold" target="_blank" rel="noopener">See real eBay sold prices</a>
     <div class="row"><button id="dRescan" class="btn" type="button">Rescan</button><button id="dRemove" class="btn danger" type="button">Remove</button></div>
@@ -439,6 +440,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   <label class="field"><span>Your pricing rules (the AI follows these)</span>
     <textarea id="sNotes" rows="4" placeholder="e.g. Tag most things around half of eBay sold. Glassware $1–5 unless it's a known pattern. Price furniture to move."></textarea></label>
   <label class="field check-row"><input id="sDouble" type="checkbox"><span>Double-check every price<small>Two AI looks per scan for steadier prices and to catch valuable items. Uses about twice the AI credit.</small></span></label>
+  <label class="field check-row"><input id="sCodes" type="checkbox"><span>Read barcodes and ISBNs<small>When a barcode is in view (the back of a book, a DVD, a boxed item), it's looked up so the price is for that exact item.</small></span></label>
   <label class="field check-row"><input id="sSpeak" type="checkbox"><span>Say the price out loud<small>Reads each price aloud so you can keep your eyes and hands on the item.</small></span></label>
   <label class="field"><span>Weak signal mode</span>
     <select id="sSignal"><option value="auto">Turns on by itself when the signal drops</option><option value="on">Always on (basements, houses with no service)</option></select></label>
@@ -513,7 +515,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
 const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
-const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto', signal: 'auto' };
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto', signal: 'auto', codes: true };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -877,7 +879,7 @@ function trigger(f, fresh, replace, tap) {
   if (tap) showThinking();
   else { clearTimeout(lingerTimer); bubble.className = 'bubble'; current = null; }   // automatic: no bubble until there's a price
   scanning(true); setStatus('Pricing…');
-  priceIt(shot, id, hash, replace, tap);
+  priceWithCode(shot, codeSource(shot.can), id, hash, replace, tap);
 }
 
 // Draw the current view (cropped like the scanner sees it) into a canvas, max 800px.
@@ -905,9 +907,9 @@ function encode(canvas) {
   return { b64, b64s, thumb: tcan.toDataURL('image/jpeg', .6) };
 }
 function capture() {
-  if (bestSharp >= 0) { const shot = encode(best); bestSharp = -1; return shot; }   // sharpest frame from the hold
+  if (bestSharp >= 0) { const shot = encode(best); shot.can = best; bestSharp = -1; return shot; }   // sharpest frame from the hold
   drawView(cap, cctx);
-  return encode(cap);
+  const shot = encode(cap); shot.can = cap; return shot;
 }
 // Focus check: how crisp the middle of the view is (variance of edges). Higher = sharper.
 const sh = document.createElement('canvas'); sh.width = 160; sh.height = 160;
@@ -1066,11 +1068,90 @@ async function priceIt(shot, id, hash, replace, tap, extra) {
     return;
   }
   const entry = Object.assign({ id: newId(), t: Date.now(), who: S.who || '', sale: S.sale || '', hash, thumb: shot.thumb, model: MODEL }, r);
+  if (shot.code) { entry.code = shot.code.code; entry.codeInfo = shot.code.desc || ''; entry.q = shot.code.code; }
   rememberShot(entry.id, shot.b64);
   if (replace) { const i = history.findIndex((e) => e.id === replace); if (i >= 0) { queueRemove(history[i]); history.splice(i, 1); } }
   history.unshift(entry); saveHistory(); queueSync(entry);
   if (lastItem && lastItem.seq === id) { lastItem.pending = false; lastItem.entryId = entry.id; lastItem.t = Date.now(); }
   if (id === scanSeq) { showEntry(entry, false, !!shownKey); if (!shownKey) haptic(); setStatus('Tap the price for comps'); }
+}
+
+/* ---------- barcodes: an ISBN or UPC in the photo pins down the exact item ---------- */
+const CODE_FORMATS = ['ean_13', 'upc_a', 'upc_e', 'ean_8'];
+let codeReader = null;
+// Phones with a built-in barcode reader use it; iPhones load a small one (once) from the site.
+function barcodeReader() {
+  if (!codeReader) codeReader = (async () => {
+    if ('BarcodeDetector' in window) {
+      try {
+        const have = await BarcodeDetector.getSupportedFormats(), use = CODE_FORMATS.filter((f) => have.includes(f));
+        if (use.length) { const d = new BarcodeDetector({ formats: use }); return async (img) => { const r = await d.detect(img); return r.length ? r[0].rawValue : ''; }; }
+      } catch (e) {}
+    }
+    if (!window.ZXingWASM) await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'vendor/zxing-reader.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+    const Z = window.ZXingWASM;
+    await Z.prepareZXingModule({ overrides: { locateFile: (path, prefix) => path.endsWith('.wasm') ? new URL('vendor/zxing_reader.wasm', location.href).href : prefix + path }, fireImmediately: true });
+    return async (img) => {
+      const r = await Z.readBarcodes(img, { formats: ['EAN-13', 'UPC-A', 'UPC-E', 'EAN-8'], tryHarder: true, maxNumberOfSymbols: 1 });
+      const ok = r.find((x) => x.isValid && x.text); return ok ? ok.text : '';
+    };
+  })().catch((e) => { codeReader = null; throw e; });
+  return codeReader;
+}
+const codeCan = document.createElement('canvas'), codeCtx = codeCan.getContext('2d', { willReadFrequently: true });
+// The middle of the photo, copied right away (the photo canvas gets reused).
+function codeSource(can) {
+  if (S.codes === false || tbl.on || !can || !can.width) return null;
+  try {
+    const w = can.width * .86, h = can.height * .76, k = Math.min(1, 1000 / w);
+    codeCan.width = Math.round(w * k); codeCan.height = Math.round(h * k);
+    codeCtx.drawImage(can, (can.width - w) / 2, (can.height - h) / 2, w, h, 0, 0, codeCan.width, codeCan.height);
+    return codeCtx.getImageData(0, 0, codeCan.width, codeCan.height);
+  } catch (e) { return null; }
+}
+const within = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+async function readCode(img) {
+  try {
+    const read = await within(barcodeReader(), 2500);
+    let t = String(await within(read(img), 700) || '').replace(/\D/g, '');
+    if (t.length === 13 && t[0] === '0') t = t.slice(1);   // a UPC read as EAN-13
+    return t.length === 8 || t.length === 12 || t.length === 13 ? t : '';
+  } catch (e) { return ''; }
+}
+// Books by ISBN from Open Library; other barcodes through the scanner's server (remembered once looked up).
+async function lookupCode(code) {
+  const isbn = /^97[89]\d{10}$/.test(code), out = { code, isbn, desc: '', looked: true };
+  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 1800);
+  try {
+    if (isbn) {
+      const r = await fetch('https://openlibrary.org/api/books?bibkeys=ISBN:' + code + '&format=json&jscmd=data', { signal: ctrl.signal });
+      const b = (await r.json())['ISBN:' + code];
+      if (b && b.title) {
+        const by = (b.authors || []).map((a) => a.name).filter(Boolean).slice(0, 2).join(' and ');
+        const pub = [(b.publishers || []).map((x) => x.name)[0], b.publish_date].filter(Boolean).join(', ');
+        out.desc = ('"' + b.title + (b.subtitle ? ': ' + b.subtitle : '') + '"' + (by ? ' by ' + by : '') + (pub ? ' (' + pub + ')' : '')).slice(0, 200);
+      }
+    } else {
+      const r = await fetch(API + '?barcode=' + code, { method: 'POST', headers: apiHeaders(), signal: ctrl.signal });
+      const j = await r.json(), pr = j && j.product;
+      if (pr && pr.name) out.desc = (pr.name + (pr.brand && !pr.name.toLowerCase().includes(String(pr.brand).toLowerCase()) ? ' (' + pr.brand + ')' : '')).slice(0, 200);
+    }
+  } catch (e) { out.looked = false; } finally { clearTimeout(timer); }
+  return out;
+}
+function codeText(c) {
+  const what = (c.isbn ? 'ISBN ' : c.code.length === 12 ? 'UPC ' : 'barcode ') + c.code;
+  return 'Price the item in the center. The barcode on it reads ' + what + '. ' +
+    (c.desc ? 'A product database lists it as ' + c.desc + '. Use that to name the exact item' + (c.isbn ? ' (title, author and edition)' : '') + ' and price it, as long as it fits what you see.'
+      : c.looked ? 'No listing was found for it, so go by what you see.' : 'Use it if you know what it is; otherwise go by what you see.') + ' JSON only.';
+}
+async function priceWithCode(shot, img, id, hash, replace, tap) {
+  const code = img ? await readCode(img) : '';
+  if (!code) { priceIt(shot, id, hash, replace, tap); return; }
+  if (id === scanSeq) { setStatus((/^97[89]/.test(code) ? 'ISBN ' : 'Barcode ') + code + ' · looking it up…'); if (tap) bName.textContent = 'Reading the barcode…'; }
+  const info = offline() ? { code, isbn: /^97[89]\d{10}$/.test(code), desc: '', looked: false } : await lookupCode(code);
+  shot.code = info;
+  priceIt(shot, id, hash, replace, tap, codeText(info));
 }
 
 /* ---------- weak signal: smaller photos and one look; with no signal, photos are saved and priced later ---------- */
@@ -1791,6 +1872,8 @@ function fillDetail(e) {
   $('#dLook').textContent = e.look ? 'For an exact match, show the camera: ' + e.look : '';
   $('#dSeen').hidden = !e.seen;
   $('#dSeen').textContent = e.seen ? 'Read on the item: "' + e.seen + '"' : '';
+  $('#dCode').hidden = !e.code;
+  $('#dCode').textContent = e.code ? (/^97[89]/.test(e.code) ? 'ISBN ' : 'Barcode ') + e.code + (e.codeInfo ? ' · ' + e.codeInfo : '') : '';
   $('#dComps').href = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(e.q || e.name) + '&LH_Sold=1&LH_Complete=1';
 }
 // "Check value" box: a possible higher value, or a horror / Cars VHS that needs a look-up.
@@ -1970,7 +2053,7 @@ $('#hExport').addEventListener('click', async () => {
 
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto'; $('#sSignal').value = S.signal === 'on' ? 'on' : 'auto';
+  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto'; $('#sSignal').value = S.signal === 'on' ? 'on' : 'auto'; $('#sCodes').checked = S.codes !== false;
   $('#sSpeak').closest('label').hidden = !canSpeak; $('#sInstall').hidden = !installable();
   applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
@@ -1986,7 +2069,7 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
-  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value; S.signal = $('#sSignal').value;
+  S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value; S.signal = $('#sSignal').value; S.codes = $('#sCodes').checked;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
   closeSheets(true); updateSig();
@@ -2175,6 +2258,7 @@ async function startCamera() {
   setTimeout(() => { try { const c = track.getCapabilities && track.getCapabilities(); if (c && c.torch) torchBtn.hidden = false; } catch (e) {} }, 600);
   keepAwake();
   setStatus('Hold steady on an item');
+  if (S.codes !== false) setTimeout(() => barcodeReader().catch(() => {}), 1500);   // load the barcode reader in the background
   if (!loopStarted) { loopStarted = true; requestAnimationFrame(tick); }
   return true;
 }

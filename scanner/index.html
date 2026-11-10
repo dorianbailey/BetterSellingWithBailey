@@ -322,6 +322,7 @@ body.off #cam,body.off .reticle,body.off .bubble,body.off .bottom,body.off .shad
   <button id="dReprice" class="btn goldfill" type="button">Re-price with these details</button>
   <button id="dCloseup" class="btn" type="button" style="margin-top:10px">Add a close-up (label, mark or underside)</button>
   <p id="dLook" class="d-look" hidden></p>
+  <p id="dHouse" class="d-look" hidden></p>
   <p id="dMsg" class="d-msg" role="status"></p>
   <div class="d-prices">
     <div class="box"><span>Tag price</span><div class="tagin">$<input id="dPrice" type="number" inputmode="numeric" min="0" step="1" aria-label="Tag price"></div><em>Tap to change</em></div>
@@ -463,11 +464,14 @@ If you can name the specific brand and model or pattern, use "match":"exact". If
 - "conf": high = the specific item is identified and its sold value is well established; med = brand or type identified but value depends on model, condition or completeness; low = rough guess.
 - "note": the one thing to check, at most 8 words (maker's mark, does it work, complete set, chips or cracks, authenticity, size). Empty if nothing.
 - "look": if one more view would pin down the exact item or change the price a lot, where to point the camera, at most 5 words (e.g. "label on the bottom", "copyright page", "back of the card", "maker's mark underneath", "model sticker on back"). Empty if not needed.
+- "cat": "clothing" for clothing (t-shirts, shirts, blouses, sweatshirts, hoodies, sweaters, pants, jeans, shorts, dresses, skirts, jackets, coats, suits, hats, caps, scarves, ties, gloves; not shoes, boots, bags, belts or jewelry); "cup" for mugs, cups, teacups, tumblers, wine glasses and other drinking glasses; otherwise "other". The app tags everyday clothing and cups at a flat house price by itself, so still price them normally here.
+- "qty": how many pieces are being priced (1 for a single item). "price", "low" and "high" are for all of them together.
+- "special": only for clothing and cups. true only if the piece is clearly special AND would sell used for more than $15 each: designer or premium brands (The North Face, Patagonia, Ralph Lauren, Lacoste, Burberry, Pendleton, Carhartt, Harley-Davidson and similar), real leather or fur, vintage band or concert tees, team jerseys, new with tags, collectible makers or patterns (Fire-King, Pyrex, Hall, Lenox, Royal Albert, McCoy, Starbucks You Are Here or city mugs), fine china, crystal, sterling, antiques. Everyday clothes (store brands, basic athletic wear, event or souvenir tees and hoodies, plain sweaters and jeans) and ordinary mugs and glasses are false. false for everything else.
 - "q": eBay search words that find sold comps for this item, or for similar items.
 If the photo shows no object at all (black, blurred beyond recognition, or bare wall, floor or ceiling), use an empty name and zeros.
 
 Reply with only one line of JSON, keys in exactly this order:
-{"seen":"...","name":"...","match":"exact|similar","conf":"high|med|low","price":0,"upside":0,"low":0,"high":0,"note":"...","look":"...","q":"..."}`;
+{"seen":"...","name":"...","cat":"clothing|cup|other","qty":1,"special":false,"match":"exact|similar","conf":"high|med|low","price":0,"upside":0,"low":0,"high":0,"note":"...","look":"...","q":"..."}`;
 
 /* ---------- storage ---------- */
 const store = {
@@ -829,7 +833,7 @@ function keepSharpest() {
 function body(b64, extra) {
   let sys = SYSTEM;
   const notes = (S.notes || '').trim();
-  if (notes) sys += "\n\nThe owner's own pricing rules. Follow them:\n" + notes.slice(0, 1500);
+  if (notes) sys += "\n\nThe owner's own pricing rules. Follow them:\n" + notes.slice(0, 1100);
   return {
     model: MODEL, max_tokens: 300, stream: true, system: sys,
     messages: [{ role: 'user', content: [].concat(b64).map((d) => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: d } }))
@@ -906,6 +910,7 @@ function mergeLooks(list) {
     m.note = 'Two looks disagreed ($' + lo + ' vs $' + hi + '). Check before tagging' + (m.note ? '. ' + m.note : '');
   } else m.price = friendly((a.price + b.price) / 2);
   m.looks = ok.map((x) => x.price);
+  if (!m.split) { m.cat = m.cat || a.cat || b.cat; houseRule(m); }
   return m;
 }
 
@@ -998,18 +1003,43 @@ function parsePartial(t) {
   const p = t.match(/"price"\s*:\s*(null|\d+(?:\.\d+)?)\s*[,}]/);
   const up = t.match(/"upside"\s*:\s*(\d+(?:\.\d+)?)\s*[,}]/);
   const sn = t.match(/"seen"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-  const extra = { upside: up ? Math.round(+up[1]) : 0, seen: sn ? unesc(sn[1]) : '' };
+  const ct = t.match(/"cat"\s*:\s*"(\w+)"/), qt = t.match(/"qty"\s*:\s*(\d+)\s*[,}]/), sp = t.match(/"special"\s*:\s*(true|false)/);
+  const extra = { upside: up ? Math.round(+up[1]) : 0, seen: sn ? unesc(sn[1]) : '', cat: ct ? ct[1] : '', qty: qt ? +qt[1] : 1, special: !!sp && sp[1] === 'true' };
+  if (HOUSE[extra.cat]) {   // clothing and cups: an everyday piece shows its house price right away; a special one waits for its sold range
+    if (!sp) return null;
+    if (extra.special) {
+      const lo0 = t.match(/"low"\s*:\s*(\d+(?:\.\d+)?)\s*[,}]/), hi0 = t.match(/"high"\s*:\s*(\d+(?:\.\d+)?)\s*[,}]/);
+      if (!lo0 || !hi0) return null;
+      extra.low = +lo0[1]; extra.high = +hi0[1];
+    }
+  }
   if (S.mode === 'resale') {
     const lo = t.match(/"low"\s*:\s*(\d+(?:\.\d+)?)\s*[,}]/), hi = t.match(/"high"\s*:\s*(\d+(?:\.\d+)?)\s*[,}]/);
     if (!lo || !hi) return null;
-    return Object.assign({ name: tidyName(unesc(n[2])), match, conf: c[1], price: p && p[1] !== 'null' ? Math.max(1, Math.round(+p[1])) : null, low: +lo[1], high: +hi[1] }, extra);
+    return houseRule(Object.assign({ name: tidyName(unesc(n[2])), match, conf: c[1], price: p && p[1] !== 'null' ? Math.max(1, Math.round(+p[1])) : null }, extra, { low: +lo[1], high: +hi[1] }));
   }
   if (!p || p[1] === 'null') return null;
   // wait until the upside (written right after the price) is known, or the AI has moved past it
   if (!up && !/"(low|high|note)"\s*:/.test(t)) return null;
-  return Object.assign({ name: tidyName(unesc(n[2])), match, conf: c[1], price: Math.max(1, Math.round(+p[1])) }, extra);
+  return houseRule(Object.assign({ name: tidyName(unesc(n[2])), match, conf: c[1], price: Math.max(1, Math.round(+p[1])) }, extra));
 }
 function num(v) { const x = typeof v === 'string' ? parseFloat(v.replace(/[$,]/g, '')) : v; return (typeof x === 'number' && isFinite(x) && x >= 0) ? Math.round(x) : null; }
+// House prices: everyday clothing is $2 a piece and mugs, cups and glasses $1 a piece.
+// A special piece (the AI calls it special AND its sold range says over $15 each) is priced normally.
+// Items someone priced by hand are never changed.
+const HOUSE = { clothing: 2, cup: 1 }, SPECIAL_OVER = 15;
+const HOUSE_WHAT = { clothing: 'Clothing is', cup: 'Mugs, cups and glasses are' };
+function houseRule(m) {
+  if (!m) return m;
+  delete m.house;
+  const flat = HOUSE[m.cat];
+  if (!flat || m.edited || m.price == null) return m;
+  const q = Math.max(1, Math.min(50, Math.round(+m.qty || 1)));
+  const each = m.low != null && m.high != null ? (m.low + m.high) / 2 / q : null;
+  if (m.special === true && each != null && each > SPECIAL_OVER) return m;   // special: keep the normal price
+  m.house = true; m.price = flat * q;
+  return m;
+}
 // One clean name for the bubble: drop hedges like "… or similar", "(set unknown)", "X? No: Y".
 function tidyName(raw) {
   let n = String(raw || '').trim();
@@ -1028,11 +1058,11 @@ function parseFinal(t) {
     name: tidyName(j.name).slice(0, 90), match: j.match === 'similar' ? 'similar' : 'exact', conf: ['high', 'med', 'low'].includes(j.conf) ? j.conf : 'med',
     price: num(j.price) == null ? null : Math.max(1, num(j.price)), low: num(j.low), high: num(j.high), upside: num(j.upside) || 0,
     seen: typeof j.seen === 'string' ? j.seen.slice(0, 80) : '',
-    note: typeof j.note === 'string' ? j.note.slice(0, 160) : '', look: typeof j.look === 'string' ? j.look.trim().slice(0, 60) : '', q: typeof j.q === 'string' && j.q.trim() ? j.q.slice(0, 120) : j.name
+    note: typeof j.note === 'string' ? j.note.slice(0, 160) : '', look: typeof j.look === 'string' ? j.look.trim().slice(0, 60) : '', cat: typeof j.cat === 'string' ? j.cat.toLowerCase().slice(0, 12) : '', qty: num(j.qty) || 1, special: j.special === true, q: typeof j.q === 'string' && j.q.trim() ? j.q.slice(0, 120) : j.name
   };
   if (r.price == null && r.low == null) return null;
   if (r.low != null && r.high != null && r.low > r.high) { const x = r.low; r.low = r.high; r.high = x; }
-  return r;
+  return houseRule(r);
 }
 
 /* ---------- bubble states ---------- */
@@ -1057,6 +1087,7 @@ function showEntry(e, partial, quiet) {
   const up = upsideOf(e);
   bPrice.textContent = (rough ? '~' : '') + (resale ? range(e.low, e.high) : money(e.price));
   bName.textContent = e.flag && e.flag.status === 'done' ? 'Dorian’s price · ' + e.name : e.flag ? 'Set aside for Dorian · ' + e.name
+    : e.house && !e.edited ? 'House price · ' + e.name
     : rough ? 'Rough guess · ' + e.name : e.match === 'similar' && !e.edited ? 'Similar items · ' + e.name : e.name;
   $('#bFlag').textContent = up ? 'Check value · could be ' + money(up) : '';
   const cls = (rough ? 'low' : '') + (resale ? ' range' : '') + (up ? ' flagged' : '');
@@ -1156,13 +1187,22 @@ function fillDetail(e) {
   $('#dUpside').hidden = !up;
   $('#dUpside').textContent = up ? 'Could be worth up to ' + money(up) + ' if it checks out. Look into it before tagging.' : '';
   fillAside(e);
+  fillHouse(e);
   $('#dLook').hidden = !e.look || !!e.closeup;
   $('#dLook').textContent = e.look ? 'For an exact match, show the camera: ' + e.look : '';
   $('#dSeen').hidden = !e.seen;
   $('#dSeen').textContent = e.seen ? 'Read on the item: "' + e.seen + '"' : '';
   $('#dComps').href = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(e.q || e.name) + '&LH_Sold=1&LH_Complete=1';
 }
+// One line in the item sheet explaining the clothing / cup house price.
+function fillHouse(e) {
+  const el = $('#dHouse');
+  el.hidden = !HOUSE[e.cat] || !!e.edited;
+  el.textContent = !HOUSE[e.cat] ? '' : e.house ? 'House price: ' + HOUSE_WHAT[e.cat] + ' $' + HOUSE[e.cat] + ' a piece unless one would sell for over $' + SPECIAL_OVER + '.'
+    : 'Priced normally: this one should sell for over $' + SPECIAL_OVER + ', so the $' + HOUSE[e.cat] + ' house price doesn\'t apply.';
+}
 function refreshViews(e) {
+  if (detailEntry && detailEntry.id === e.id) fillHouse(e);
   if (current && current.id === e.id) showEntry(e);
   if (!$('#histSheet').hidden) renderHistory();
 }
@@ -1224,7 +1264,7 @@ $('#dPrice').addEventListener('input', (ev) => {
   if (!detailEntry) return;
   const v = num(ev.target.value);
   detailEntry.price = v; detailEntry.edited = true;
-  saveHistory();
+  saveHistory(); fillHouse(detailEntry);
   if (current && current.id === detailEntry.id) showEntry(detailEntry);
   if (!$('#histSheet').hidden) renderHistory();
 });

@@ -467,14 +467,29 @@ If you can name the specific brand and model or pattern, use "match":"exact". If
 - "conf": high = the specific item is identified and its sold value is well established; med = brand or type identified but value depends on model, condition or completeness; low = rough guess.
 - "note": the one thing to check, at most 8 words (maker's mark, does it work, complete set, chips or cracks, authenticity, size). Empty if nothing.
 - "look": if one more view would pin down the exact item or change the price a lot, where to point the camera, at most 5 words (e.g. "label on the bottom", "copyright page", "back of the card", "maker's mark underneath", "model sticker on back"). Empty if not needed.
-- "cat": "clothing" for clothing (t-shirts, shirts, blouses, sweatshirts, hoodies, sweaters, pants, jeans, shorts, dresses, skirts, jackets, coats, suits, hats, caps, scarves, ties, gloves; not shoes, boots, bags, belts or jewelry); "cup" for mugs, cups, teacups, tumblers, wine glasses and other drinking glasses; otherwise "other". The app tags everyday clothing and cups at a flat house price by itself, so still price them normally here.
+- "cat": the app prices these everyday categories at flat house prices by itself, so still price them normally here:
+  "clothing": t-shirts, shirts, blouses, sweatshirts, hoodies, sweaters, pants, jeans, shorts, dresses, skirts, jackets, coats, suits, hats, caps, scarves, ties, gloves (not shoes, boots, bags, belts or jewelry).
+  "cup": mugs, cups, teacups, tumblers, wine glasses and other drinking glasses.
+  "book": hardcover and paperback books (not comics or magazines).
+  "dvd": DVDs and Blu-rays. "vhs": VHS tapes. "cd": music CDs.
+  "frame": an empty picture frame or one holding a photo, up to about 8x10. "bigframe": the same but larger than 8x10. Framed art (paintings, prints, posters, needlework) is "other".
+  "soft": pillows, cushions, stuffed animals and plush toys, throw blankets.
+  Everything else is "other".
 - "qty": how many pieces are being priced (1 for a single item). "price", "low" and "high" are for all of them together.
-- "special": only for clothing and cups. true only if the piece is clearly special AND would sell used for more than $15 each: designer or premium brands (The North Face, Patagonia, Ralph Lauren, Lacoste, Burberry, Pendleton, Carhartt, Harley-Davidson and similar), real leather or fur, vintage band or concert tees, team jerseys, new with tags, collectible makers or patterns (Fire-King, Pyrex, Hall, Lenox, Royal Albert, McCoy, Starbucks You Are Here or city mugs), fine china, crystal, sterling, antiques. Everyday clothes (store brands, basic athletic wear, event or souvenir tees and hoodies, plain sweaters and jeans) and ordinary mugs and glasses are false. false for everything else.
+- "special": only for those categories, otherwise false. true only if the piece is clearly special AND would sell used for more than $15 each:
+  clothing: designer or premium brands (The North Face, Patagonia, Ralph Lauren, Lacoste, Burberry, Pendleton, Carhartt, Harley-Davidson and similar), real leather or fur, vintage band or concert tees, team jerseys, new with tags.
+  cups: collectible makers or patterns (Fire-King, Pyrex, Hall, Lenox, Royal Albert, McCoy, Starbucks You Are Here or city mugs), fine china, crystal, sterling, antiques.
+  books: first editions, signed copies, antique or rare books, collectible sets, current textbooks.
+  DVDs and CDs: box sets, rare or out-of-print titles, Criterion, sealed collectibles.
+  VHS: always true for horror movies and for the movie Cars (Disney Pixar); also sealed or rare tapes.
+  frames: sterling, antique or ornate gilt, designer makers.
+  soft: Steiff, mohair or other collectible plush, antique or handmade quilts, signed designer pieces. Ordinary decorative pillows are never special, however fancy the fabric.
+  Everyday pieces of these kinds are false.
 - "q": eBay search words that find sold comps for this item, or for similar items.
 If the photo shows no object at all or is clearly accidental (see LOOK), use an empty name and zeros.
 
 Reply with only one line of JSON, keys in exactly this order:
-{"seen":"...","name":"...","cat":"clothing|cup|other","qty":1,"special":false,"match":"exact|similar","conf":"high|med|low","price":0,"upside":0,"low":0,"high":0,"note":"...","look":"...","q":"..."}`;
+{"seen":"...","name":"...","cat":"other","qty":1,"special":false,"match":"exact|similar","conf":"high|med|low","price":0,"upside":0,"low":0,"high":0,"note":"...","look":"...","q":"..."}`;
 
 /* ---------- storage ---------- */
 const store = {
@@ -561,7 +576,7 @@ function spoken(e) {
   else return '';
   if (e.flag && e.flag.status === 'done') t = 'Dorian says ' + t;
   else if (e.conf === 'low' && !e.edited) t = 'About ' + t;
-  if (upsideOf(e)) t += '. Check value';
+  if (checkOf(e)) t += '. Check value';
   return t;
 }
 function saveHistory() {
@@ -1033,16 +1048,18 @@ function parsePartial(t) {
   return houseRule(Object.assign({ name: tidyName(unesc(n[2])), match, conf: c[1], price: Math.max(1, Math.round(+p[1])) }, extra));
 }
 function num(v) { const x = typeof v === 'string' ? parseFloat(v.replace(/[$,]/g, '')) : v; return (typeof x === 'number' && isFinite(x) && x >= 0) ? Math.round(x) : null; }
-// House prices: everyday clothing is $2 a piece and mugs, cups and glasses $1 a piece.
-// A special piece (the AI calls it special AND its sold range says over $15 each) is priced normally.
+// House prices (Dorian's flat prices), per piece. A special piece (the AI calls it special AND its sold
+// range says over $15 each) is priced normally. Horror VHS and the movie Cars on VHS also get "Check value".
 // Items someone priced by hand are never changed.
-const HOUSE = { clothing: 2, cup: 1 }, SPECIAL_OVER = 15;
-const HOUSE_WHAT = { clothing: 'Clothing is', cup: 'Mugs, cups and glasses are' };
+const HOUSE = { clothing: 2, cup: 1, book: 1, dvd: 1, cd: 1, vhs: 1, frame: 2, bigframe: 4, soft: 2 }, SPECIAL_OVER = 15;
+const HOUSE_WHAT = { clothing: 'Clothing is', cup: 'Mugs, cups and glasses are', book: 'Books are', dvd: 'DVDs are', cd: 'CDs are', vhs: 'VHS tapes are',
+  frame: 'Small picture frames (up to 8x10) are', bigframe: 'Large picture frames are', soft: 'Pillows, stuffed animals and other soft goods are' };
 function houseRule(m) {
   if (!m) return m;
-  delete m.house;
+  delete m.house; delete m.check;
   const flat = HOUSE[m.cat];
   if (!flat || m.edited || m.price == null) return m;
+  if (m.cat === 'vhs' && m.special) m.check = true;   // horror or Cars on VHS: flag it to look into
   const q = Math.max(1, Math.min(50, Math.round(+m.qty || 1)));
   const each = m.low != null && m.high != null ? (m.low + m.high) / 2 / q : null;
   if (m.special === true && each != null && each > SPECIAL_OVER) return m;   // special: keep the normal price
@@ -1088,6 +1105,12 @@ function showThinking() {
 }
 // Worth flagging when it could be worth clearly more than the tag.
 function upsideOf(e) { return !e.edited && e.upside && e.price != null && e.upside >= Math.max(e.price * 1.5, e.price + 20) ? e.upside : 0; }
+// should the bubble say "Check value"? (a big possible upside, or a VHS tape that's horror or Cars)
+function checkOf(e) { return !!(upsideOf(e) || (e.check && !e.edited)); }
+function checkText(e) {
+  const up = upsideOf(e) || (e.check && Math.max(e.upside || 0, e.high || 0) > (e.price || 0) ? Math.max(e.upside || 0, e.high || 0) : 0);
+  return up ? 'Check value · could be ' + money(up) : e.check ? 'Check value · horror and Cars VHS can sell for more' : '';
+}
 function showEntry(e, partial, quiet) {
   current = partial ? null : e;
   scanning(false);
@@ -1098,8 +1121,8 @@ function showEntry(e, partial, quiet) {
   bName.textContent = e.flag && e.flag.status === 'done' ? 'Dorian’s price · ' + e.name : e.flag ? 'Set aside for Dorian · ' + e.name
     : e.house && !e.edited ? 'House price · ' + e.name
     : rough ? 'Rough guess · ' + e.name : e.match === 'similar' && !e.edited ? 'Similar items · ' + e.name : e.name;
-  $('#bFlag').textContent = up ? 'Check value · could be ' + money(up) : '';
-  const cls = (rough ? 'low' : '') + (resale ? ' range' : '') + (up ? ' flagged' : '');
+  $('#bFlag').textContent = checkText(e);
+  const cls = (rough ? 'low' : '') + (resale ? ' range' : '') + (checkOf(e) ? ' flagged' : '');
   if (quiet && bubble.classList.contains('on')) bubble.className = 'bubble on ' + cls;   // update in place, no pop
   else popIn(cls);
   afterShow();
@@ -1205,9 +1228,7 @@ function fillDetail(e) {
   $('#dPrice').value = e.price == null ? '' : e.price;
   $('#dRange').textContent = range(e.low, e.high);
   $('#dNote').textContent = e.note || '';
-  const up = upsideOf(e);
-  $('#dUpside').hidden = !up;
-  $('#dUpside').textContent = up ? 'Could be worth up to ' + money(up) + ' if it checks out. Look into it before tagging.' : '';
+  fillCheck(e);
   fillAside(e);
   fillHouse(e);
   $('#dLook').hidden = !e.look || !!e.closeup;
@@ -1216,7 +1237,14 @@ function fillDetail(e) {
   $('#dSeen').textContent = e.seen ? 'Read on the item: "' + e.seen + '"' : '';
   $('#dComps').href = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(e.q || e.name) + '&LH_Sold=1&LH_Complete=1';
 }
-// One line in the item sheet explaining the clothing / cup house price.
+// "Check value" box: a possible higher value, or a horror / Cars VHS that needs a look-up.
+function fillCheck(e) {
+  const up = upsideOf(e), vhs = e.check && !e.edited;
+  $('#dUpside').hidden = !up && !vhs;
+  $('#dUpside').textContent = up ? 'Could be worth up to ' + money(up) + ' if it checks out. Look into it before tagging.'
+    : vhs ? 'Horror movies and the movie Cars on VHS can sell for a lot more than $1. Look it up before tagging, or set it aside for Dorian.' : '';
+}
+// One line in the item sheet explaining the house price (clothing, cups, books, DVDs, CDs, VHS, frames, soft goods).
 function fillHouse(e) {
   const el = $('#dHouse');
   el.hidden = !HOUSE[e.cat] || !!e.edited;
@@ -1224,7 +1252,7 @@ function fillHouse(e) {
     : 'Priced normally: this one should sell for over $' + SPECIAL_OVER + ', so the $' + HOUSE[e.cat] + ' house price doesn\'t apply.';
 }
 function refreshViews(e) {
-  if (detailEntry && detailEntry.id === e.id) fillHouse(e);
+  if (detailEntry && detailEntry.id === e.id) { fillHouse(e); fillCheck(e); fillAside(e); }
   if (current && current.id === e.id) showEntry(e);
   if (!$('#histSheet').hidden) renderHistory();
 }
@@ -1286,7 +1314,7 @@ $('#dPrice').addEventListener('input', (ev) => {
   if (!detailEntry) return;
   const v = num(ev.target.value);
   detailEntry.price = v; detailEntry.edited = true;
-  saveHistory(); fillHouse(detailEntry);
+  saveHistory(); fillHouse(detailEntry); fillCheck(detailEntry); fillAside(detailEntry);
   if (current && current.id === detailEntry.id) showEntry(detailEntry);
   if (!$('#histSheet').hidden) renderHistory();
 });
@@ -1634,12 +1662,12 @@ function resetEyes() { for (const b of document.querySelectorAll('.eye')) { cons
 // The owner answers with a tag price on the Team activity page; the answer comes back here.
 function apiHeaders() { return { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || '') }; }
 function asideReason(e) {
-  return e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
+  return e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.check ? 'Horror or Cars VHS' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
 }
 function fillAside(e) {
   const f = e.flag, btn = $('#dAsideBtn'), box = $('#dAsideState');
   btn.hidden = !!f; box.hidden = !f;
-  btn.className = 'btn' + (!f && (upsideOf(e) || e.split || e.conf === 'low') ? ' goldfill' : '');
+  btn.className = 'btn' + (!f && (checkOf(e) || e.split || e.conf === 'low') ? ' goldfill' : '');
   if (!f) return;
   box.className = 'aside-state ' + (f.status === 'done' ? 'done' : 'open');
   if (f.status === 'done') {

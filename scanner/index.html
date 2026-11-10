@@ -1074,6 +1074,7 @@ async function priceIt(shot, id, hash, replace, tap, extra) {
   history.unshift(entry); saveHistory(); queueSync(entry);
   if (lastItem && lastItem.seq === id) { lastItem.pending = false; lastItem.entryId = entry.id; lastItem.t = Date.now(); }
   if (id === scanSeq) { showEntry(entry, false, !!shownKey); if (!shownKey) haptic(); setStatus('Tap the price for comps'); }
+  autoAside(entry);
 }
 
 /* ---------- barcodes: an ISBN or UPC in the photo pins down the exact item ---------- */
@@ -1237,7 +1238,7 @@ async function runQueue() {
     await qdb.del(e.id).catch(() => {});
     if (!r) { dropPending(e); next = 300; return; }   // nothing to price in that photo
     Object.assign(e, r); delete e.pending; e.late = true; rememberShot(e.id, rec.b64);
-    saveHistory(); queueSync(e); refreshViews(e); qDone++; next = 300;
+    saveHistory(); queueSync(e); refreshViews(e); autoAside(e); qDone++; next = 300;
   } catch (err) {
     const ty = err && err.type, st = err && err.status;
     if (ty === 'not_clocked_in') { next = 60000; setStatus('Clock in to finish pricing your saved photos', true); }
@@ -1752,6 +1753,7 @@ function showEntry(e, partial, quiet) {
   const up = upsideOf(e);
   bPrice.textContent = (rough ? '~' : '') + (resale ? range(e.low, e.high) : money(e.price));
   bName.textContent = e.flag && e.flag.status === 'done' ? 'Dorian’s price · ' + e.name : e.flag ? 'Set aside for Dorian · ' + e.name
+    : overLine(e) ? 'Over ' + money(ASIDE_OVER) + ' · leave untagged for Dorian · ' + e.name
     : e.house && !e.edited ? 'House price · ' + e.name
     : rough ? 'Rough guess · ' + e.name : e.match === 'similar' && !e.edited ? 'Similar items · ' + e.name : e.name;
   $('#bFlag').textContent = checkText(e);
@@ -2327,13 +2329,16 @@ function resetEyes() { for (const b of document.querySelectorAll('.eye')) { cons
 // Employees send anything they're unsure about (photo + the AI's guess) to the owner's list.
 // The owner answers with a tag price on the Team activity page; the answer comes back here.
 function apiHeaders() { return { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-sale': encodeURIComponent(S.sale || '') }; }
+// Anything the scanner prices over $100 (or says could be worth over $100) goes to Dorian on its own.
+const ASIDE_OVER = 100;
+function overLine(e) { return !!e && S.role !== 'owner' && !e.pending && !e.house && !e.edited && Math.max(e.price || 0, upsideOf(e) || 0) > ASIDE_OVER; }
 function asideReason(e) {
-  return e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.check ? 'Horror or Cars VHS' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
+  return overLine(e) ? 'Priced over ' + money(ASIDE_OVER) : e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.check ? 'Horror or Cars VHS' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
 }
 function fillAside(e) {
   const f = e.flag, btn = $('#dAsideBtn'), box = $('#dAsideState');
   btn.hidden = !!f; box.hidden = !f;
-  btn.className = 'btn' + (!f && (checkOf(e) || e.split || e.conf === 'low') ? ' goldfill' : '');
+  btn.className = 'btn' + (!f && (checkOf(e) || e.split || e.conf === 'low' || overLine(e)) ? ' goldfill' : '');
   if (!f) return;
   box.className = 'aside-state ' + (f.status === 'done' ? 'done' : 'open');
   if (f.status === 'done') {
@@ -2350,21 +2355,40 @@ $('#dAsideBtn').addEventListener('click', async () => {
   const btn = $('#dAsideBtn'), msg = $('#dMsg');
   btn.disabled = true; btn.textContent = 'Sending…'; msg.textContent = ''; msg.className = 'd-msg';
   try {
-    const photo = shots.get(e.id) || (e.thumb ? e.thumb.split(',')[1] : '');
-    const res = await fetch(API + '?flag=add', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({
-      eid: e.id, item: e.name, price: e.price, upside: upsideOf(e) || 0, low: e.low, high: e.high, conf: e.conf, match: e.match,
-      seen: e.seen || '', note: e.note || '', facts: e.facts || '', reason: asideReason(e), photo, sale: e.sale || S.sale || '' }) });
-    if (res.status === 401) throw Object.assign(new Error('pass'), { type: 'bad_password' });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok || !j.flag) throw new Error('server');
-    e.flag = { id: j.flag.id, status: j.flag.status === 'done' ? 'done' : 'open', at: Date.now() };
-    if (j.flag.status === 'done') applyAnswer(e, j.flag);
-    saveHistory(); fillDetail(e); refreshViews(e); haptic();
+    await sendAside(e);
+    fillDetail(e); refreshViews(e); haptic();
   } catch (err) {
     msg.className = 'd-msg bad';
     msg.textContent = err && err.type === 'bad_password' ? 'The scanner password changed. Close this and enter the new one.' : 'Couldn\'t send it. Check your signal and try again.';
   } finally { btn.disabled = false; btn.textContent = 'Set aside for Dorian'; }
 });
+// Sends one item to Dorian's set-aside list (the server keeps one entry per item).
+async function sendAside(e) {
+  const photo = shots.get(e.id) || (e.thumb ? e.thumb.split(',')[1] : '');
+  const res = await fetch(API + '?flag=add', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({
+    eid: e.id, item: e.name, price: e.price, upside: upsideOf(e) || 0, low: e.low, high: e.high, conf: e.conf, match: e.match,
+    seen: e.seen || '', note: e.note || '', facts: e.facts || '', reason: asideReason(e), photo, sale: e.sale || S.sale || '' }) });
+  if (res.status === 401) throw Object.assign(new Error('pass'), { type: 'bad_password' });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || !j.flag) throw new Error('server');
+  e.flag = { id: j.flag.id, status: j.flag.status === 'done' ? 'done' : 'open', at: Date.now() };
+  delete e.asideDue;
+  if (j.flag.status === 'done') applyAnswer(e, j.flag);
+  saveHistory();
+}
+// Over the line: send it on its own. Without signal it stays due and is retried.
+async function autoAside(e) {
+  if (!overLine(e) || e.flag) return;
+  if (!e.asideDue) { e.asideDue = true; saveHistory(); }
+  try {
+    await sendAside(e);
+    refreshViews(e);
+    if (current && current.id === e.id) showEntry(e, false, true);
+    if (detailEntry && detailEntry.id === e.id && !$('#detailSheet').hidden) fillDetail(e);
+    setStatus('Over ' + money(ASIDE_OVER) + ': sent to Dorian. Leave it untagged.');
+  } catch (err) {}
+}
+function retryAsides() { history.filter((e) => e.asideDue && !e.flag).slice(0, 5).forEach((e) => autoAside(e)); }
 $('#dAsideUndo').addEventListener('click', async () => {
   const e = detailEntry; if (!e || !e.flag) return;
   const b = $('#dAsideUndo'); b.disabled = true;
@@ -2406,7 +2430,7 @@ async function syncFlags(force) {
     if ($('#offPanel').hidden) setStatus(t); else offMsg(t);
   } catch (e) {}
 }
-setInterval(() => { if (!document.hidden) syncFlags(false); }, 90000);
+setInterval(() => { if (!document.hidden) { syncFlags(false); retryAsides(); } }, 90000);
 // Owner: how many items are waiting in the set-aside list
 async function ownerCount() {
   const op = ownerPassStored(); if (S.role !== 'owner' || !op) return;

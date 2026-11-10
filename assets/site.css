@@ -543,3 +543,92 @@ p { margin: 0; }
 .press { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.95rem; color: var(--muted); max-width: 54ch; }
 .press a { font-weight: 700; }
 @media (prefers-reduced-motion: no-preference) { .hero .press { animation: bsb-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.38s both; } }
+
+/* ---------- Offer rework (Nov 2026) ---------- */
+.pay-example { margin-top: 1rem; padding: 0.9rem 1rem; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; font-size: 0.97rem; }
+.pay-example strong { color: var(--ink); }
+.tag-price .big.words { font-size: clamp(2rem, 3.4vw, 2.5rem); }
+
+/* What happens after you get in touch */
+.next-steps { list-style: none; counter-reset: nx; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 0.7rem; }
+.next-steps li { counter-increment: nx; position: relative; padding-left: 40px; min-height: 28px; font-size: 0.99rem; }
+.next-steps li::before { content: counter(nx); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--gold); font-weight: 700; font-size: 0.9rem; }
+.next-steps strong { color: var(--ink); }
+
+/* Sale alerts signup */
+.alerts-card { margin-top: 1.4rem; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: clamp(20px, 3.5vw, 36px); display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(20px, 4vw, 48px); align-items: start; }
+.alerts-copy h3 { font-size: 1.5rem; }
+.alerts-copy p { margin-top: 0.5rem; }
+.alerts-copy .more { display: inline-block; margin-top: 0.9rem; font-weight: 700; text-decoration: none; }
+.alerts-copy .more:hover { text-decoration: underline; }
+fieldset.field { border: 0; padding: 0; margin: 0; min-width: 0; }
+fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink); padding: 0; margin-bottom: 0.45rem; }
+.chips.light .chip span { color: var(--ink); border-color: var(--line); background: var(--cream); font-size: 0.93rem; padding: 0.45rem 0.85rem; }
+.chips.light .chip input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.chips.light .chip input:focus-visible + span { outline-color: var(--gold-deep); }
+@media (max-width: 860px) { .alerts-card { grid-template-columns: 1fr; } }
+
+/* Printable pages (checklist, certificate, QR sign) */
+.print-only { display: none; }
+@media print {
+  .site-nav, .site-footer, .action-bar, .announce, .no-print, .skip-link { display: none !important; }
+  .print-only { display: block; }
+  body { background: #fff; font-size: 11pt; }
+  .section, .page-hero { padding: 0 !important; }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* Print helpers */
+.print-help { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.2rem; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 1rem 1.2rem; color: var(--muted); }
+.print-help .btn { margin-left: auto; }
+
+/* QR sign for the checkout table */
+.sign-wrap { display: grid; place-items: center; }
+.qr-sign { width: min(100%, 640px); background: var(--paper); border: 2px solid var(--ink); border-radius: 22px; padding: clamp(28px, 5vw, 56px); text-align: center; }
+.qr-sign .sign-brand { font-family: var(--display); font-weight: 700; color: var(--gold-deep); font-size: 1.2rem; }
+.qr-sign h1 { font-size: clamp(2rem, 5vw, 3rem); margin-top: 0.6rem; }
+.qr-sign .sign-lead { margin: 1rem auto 0; max-width: 34ch; font-size: 1.2rem; }
+.qr-sign .qr { width: 260px; height: 260px; margin: 1.6rem auto 0; padding: 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-sizing: content-box; }
+.qr-sign .sign-url { margin-top: 0.9rem; font-weight: 700; color: var(--ink); font-size: 1.1rem; }
+.qr-sign .sign-foot { margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); }
+
+/* First-30-days checklist */
+.checklist-list { list-style: none; padding: 0 !important; margin: 0 0 1.6rem !important; display: grid; gap: 0.2rem; }
+.checklist-list li { display: grid; grid-template-columns: 26px 1fr; gap: 0.8rem; align-items: start; padding: 0.75rem 0; border-bottom: 1px solid var(--line); margin: 0 !important; }
+.checklist-list .box { width: 20px; height: 20px; border: 2px solid var(--gold-deep); border-radius: 5px; margin-top: 0.3rem; background: var(--paper); }
+.checklist h2:first-of-type { margin-top: 0; }
+
+/* Partner certificate */
+.cert-sheet { display: grid; gap: 28px; justify-items: center; }
+.cert { width: min(100%, 720px); background: var(--paper); border: 2px solid var(--ink); outline: 1px solid var(--gold); outline-offset: -10px; border-radius: 16px; padding: 34px 38px; }
+.cert-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.3rem 1rem; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
+.cert h2 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); margin-top: 0.8rem; }
+.cert-body { margin-top: 0.6rem; }
+.cert-row { display: grid; grid-template-columns: 1fr auto; gap: 1.4rem; align-items: end; margin-top: 1.2rem; }
+.cert-lines p { display: flex; align-items: end; gap: 0.6rem; margin-top: 0.9rem; font-weight: 600; color: var(--ink); }
+.cert-lines .line { flex: 1; border-bottom: 1.5px solid var(--ink); height: 1.2em; }
+.cert-qr { text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.cert-qr img { width: 96px; height: 96px; padding: 6px; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-sizing: content-box; margin-bottom: 0.3rem; }
+.cert-foot { margin-top: 1.1rem; padding-top: 0.8rem; border-top: 1px solid var(--line); font-weight: 600; color: var(--ink); text-align: center; }
+
+@media print {
+  .sign-wrap { min-height: 0; }
+  .qr-sign { border-width: 3px; width: 100%; padding: 0.6in 0.5in; }
+  .qr-sign .qr { width: 3.4in; height: 3.4in; }
+  .cert-sheet { gap: 0.35in; padding-top: 0.1in !important; }
+  .cert { width: 100%; break-inside: avoid; padding: 0.32in 0.4in; }
+  .checklist-list li { padding: 0.35rem 0; break-inside: avoid; }
+  .page-grid { display: block; }
+  .page-hero { border: 0; }
+  .page-hero p { color: #333; }
+  body, body.has-action-bar { padding: 0 !important; }
+  .cert { padding: 0.26in 0.36in; }
+  .checklist { font-size: 10pt; }
+  .checklist h2 { font-size: 15pt !important; margin: 0.9rem 0 0.3rem !important; }
+  .checklist-list { margin-bottom: 0.6rem !important; }
+  .checklist-list li { padding: 0.22rem 0; font-size: 10pt !important; line-height: 1.4 !important; }
+  .checklist .callout { margin: 0.6rem 0 0; padding: 0.5rem 0.8rem; }
+  .checklist .callout p, .checklist .print-only { font-size: 9.5pt !important; line-height: 1.4 !important; }
+  .page-hero h1 { font-size: 24pt; }
+  .page-hero p { font-size: 10.5pt; margin-top: 0.4rem; }
+}

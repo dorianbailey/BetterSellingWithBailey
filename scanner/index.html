@@ -2329,9 +2329,10 @@ function resetEyes() { for (const b of document.querySelectorAll('.eye')) { cons
 // Employees send anything they're unsure about (photo + the AI's guess) to the owner's list.
 // The owner answers with a tag price on the Team activity page; the answer comes back here.
 function apiHeaders() { return { 'content-type': 'application/json', 'x-scanner-pass': scanPass(), 'x-scanner-user': encodeURIComponent(S.who || ''), 'x-scanner-sale': encodeURIComponent(S.sale || '') }; }
-// Anything the scanner prices over $100 (or says could be worth over $100) goes to Dorian on its own.
+// Any single item the scanner prices over $100 (or says could be worth over $100) goes to Dorian on its own.
+// Groups of several pieces priced together don't count.
 const ASIDE_OVER = 100;
-function overLine(e) { return !!e && S.role !== 'owner' && !e.pending && !e.house && !e.edited && Math.max(e.price || 0, upsideOf(e) || 0) > ASIDE_OVER; }
+function overLine(e) { return !!e && S.role !== 'owner' && !e.pending && !e.house && !e.edited && Math.round(+e.qty || 1) <= 1 && Math.max(e.price || 0, upsideOf(e) || 0) > ASIDE_OVER; }
 function asideReason(e) {
   return overLine(e) ? 'Priced over ' + money(ASIDE_OVER) : e.split ? 'The two AI looks disagreed' : upsideOf(e) ? 'Could be worth more' : e.check ? 'Horror or Cars VHS' : e.conf === 'low' ? 'The AI wasn\'t sure' : '';
 }
@@ -2376,19 +2377,41 @@ async function sendAside(e) {
   if (j.flag.status === 'done') applyAnswer(e, j.flag);
   saveHistory();
 }
-// Over the line: send it on its own. Without signal it stays due and is retried.
+// Dorian also gets an email for each one, so nothing over the line waits unseen.
+const OWNER_EMAIL = 'bettersellingwithbailey@gmail.com';
+async function emailOwner(e) {
+  const worth = upsideOf(e) || 0;
+  const body = {
+    _subject: 'Set aside for you: ' + e.name + ' (' + money(e.price) + ')', _template: 'table', _captcha: 'false',
+    'Item': e.name, 'Scanner price': money(e.price), 'Could be worth': worth ? money(worth) : '',
+    'Sold range': e.low != null && e.high != null ? range(e.low, e.high) : '',
+    'Scanned by': e.who || S.who || '', 'Sale': e.sale || S.sale || '', 'Why': 'Priced over ' + money(ASIDE_OVER),
+    'AI note': e.note || '', 'Answer it here': location.origin + '/scanner/activity/'
+  };
+  const res = await fetch('https://formsubmit.co/ajax/' + OWNER_EMAIL, { method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || !(j.success === true || j.success === 'true')) throw new Error('mail');
+  delete e.mailDue; saveHistory();
+}
+// Over the line: send it on its own, then email Dorian. Without signal both stay due and are retried.
 async function autoAside(e) {
   if (!overLine(e) || e.flag) return;
   if (!e.asideDue) { e.asideDue = true; saveHistory(); }
   try {
     await sendAside(e);
+    e.mailDue = true; saveHistory();
+    emailOwner(e).catch(() => {});
     refreshViews(e);
     if (current && current.id === e.id) showEntry(e, false, true);
     if (detailEntry && detailEntry.id === e.id && !$('#detailSheet').hidden) fillDetail(e);
     setStatus('Over ' + money(ASIDE_OVER) + ': sent to Dorian. Leave it untagged.');
   } catch (err) {}
 }
-function retryAsides() { history.filter((e) => e.asideDue && !e.flag).slice(0, 5).forEach((e) => autoAside(e)); }
+function retryAsides() {
+  history.filter((e) => e.asideDue && !e.flag).slice(0, 5).forEach((e) => autoAside(e));
+  history.filter((e) => e.mailDue && e.flag).slice(0, 5).forEach((e) => emailOwner(e).catch(() => {}));
+}
 $('#dAsideUndo').addEventListener('click', async () => {
   const e = detailEntry; if (!e || !e.flag) return;
   const b = $('#dAsideUndo'); b.disabled = true;

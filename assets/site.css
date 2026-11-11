@@ -750,3 +750,6 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
 /* ---- Legal pages ---- */
 .legal .updated { color: var(--muted); font-size: 0.95rem; }
 .footer-base a { color: inherit; }
+
+/* ---- Video inside a blog post ---- */
+.article-reel { max-width: 320px; margin: 1.6rem 0 2.2rem; }

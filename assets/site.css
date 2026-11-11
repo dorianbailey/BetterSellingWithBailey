@@ -664,3 +664,11 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
   .hero-ctas .btn { flex: 1 1 100%; }
   .hero-call { margin: 0 auto; }
 }
+
+/* $100 referral reward band (homepage) */
+.refer-band { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: clamp(24px, 4vw, 44px); display: grid; grid-template-columns: minmax(0, 1.4fr) auto; gap: 1.5rem 3rem; align-items: center; box-shadow: 0 24px 44px -36px rgba(25,23,20,0.35); }
+.refer-band h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
+.refer-band h2 em { color: var(--gold-deep); }
+.refer-band p { margin-top: 0.7rem; max-width: 60ch; color: var(--muted); }
+.refer-band .more { color: var(--gold-deep); font-weight: 700; }
+@media (max-width: 980px) { .refer-band { grid-template-columns: 1fr; } }

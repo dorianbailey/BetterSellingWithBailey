@@ -158,6 +158,16 @@
       },
       done: function (d) { return "Thanks for the referral, " + d.partner_name.split(" ")[0] + "! I'll reach out to " + d.client_name.split(" ")[0] + " personally, usually the same day, and keep you posted."; }
     },
+    friend: {
+      check: function (d) {
+        if (!d.name) return "Please add your name.";
+        if (!d.phone && !emailOk(d.email)) return "Please add your phone or email, so I know where to send your $100.";
+        if (!d.their_name) return "Please add their name.";
+        if (!d.their_phone && !emailOk(d.their_email)) return "Please add a phone number or email for them.";
+        return "";
+      },
+      done: function (d) { return "Thanks, " + d.name.split(" ")[0] + "! I'll reach out to " + d.their_name.split(" ")[0] + " soon. If their sale goes ahead, your $100 goes out within a week after it ends."; }
+    },
     checklist: {
       check: function (d) { return emailOk(d.email) ? "" : "Please add your email address so I can send it."; },
       done: function () { return "Sent! Check your inbox for the checklist. Nothing there? Look in your spam folder, or call " + PHONE + "."; }

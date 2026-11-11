@@ -672,3 +672,27 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
 .refer-band p { margin-top: 0.7rem; max-width: 60ch; color: var(--muted); }
 .refer-band .more { color: var(--gold-deep); font-weight: 700; }
 @media (max-width: 980px) { .refer-band { grid-template-columns: 1fr; } }
+
+/* Hero photo rotator */
+.hero-rotator .rot-frame { position: relative; aspect-ratio: 5 / 4; border-radius: 4px; overflow: hidden; background: var(--cream-2); box-shadow: 0 30px 60px -40px rgba(25, 23, 20, 0.55); }
+.hero-rotator .rot-frame img { position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; border-radius: 0; box-shadow: none; opacity: 0; transition: opacity 1.1s ease; }
+.hero-rotator .rot-frame img.is-active { opacity: 1; }
+.hero-rotator figcaption { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.rot-dots { display: inline-flex; gap: 0.15rem; font-style: normal; }
+.rot-dot { width: 28px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; display: inline-grid; place-items: center; }
+.rot-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: background 0.3s ease, transform 0.3s ease; }
+.rot-dot.is-active::before { background: var(--gold-deep); transform: scale(1.25); }
+.rot-dot:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 2px; border-radius: 50%; }
+@media (prefers-reduced-motion: reduce) { .hero-rotator .rot-frame img { transition: none; } }
+
+/* Facebook feed page */
+.fb-feed { width: 100%; max-width: 500px; min-height: 600px; margin: 0 auto; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; justify-content: center; }
+.fb-feed iframe { display: block; max-width: 100%; }
+.fb-feed-wait { margin: auto; color: var(--muted); padding: 2rem; }
+.fb-feed-note { max-width: 500px; margin: 0.9rem auto 0; font-size: 0.9rem; color: var(--muted); }
+/* The rotator fades its photos with opacity, so the entrance animation moves from the photos to the frame. */
+.hero-rotator .rot-frame img { animation: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-rotator .rot-frame { animation: bsb-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both; }
+}
+@media (max-width: 980px) { .hero-rotator .rot-frame { aspect-ratio: 4 / 3; } }

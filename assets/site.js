@@ -168,6 +168,16 @@
       },
       done: function (d) { return "Thanks, " + d.name.split(" ")[0] + "! I'll reach out to " + d.their_name.split(" ")[0] + " soon. If their sale goes ahead, your $100 goes out within a week after it ends."; }
     },
+    apply: {
+      check: function (d) {
+        if (!d.name) return "Please add your name.";
+        if (!d.phone) return "Please add your mobile number so I can text you.";
+        if (!d.age) return "Please choose your age.";
+        if (d.age === "Under 16") return "Thanks for your interest! The job is for ages 16 and up, so please apply again once you turn 16.";
+        return "";
+      },
+      done: function (d) { return "Thanks, " + d.name.split(" ")[0] + "! Your application is in. I'll text you soon to set up a quick call."; }
+    },
     checklist: {
       check: function (d) { return emailOk(d.email) ? "" : "Please add your email address so I can send it."; },
       done: function () { return "Sent! Check your inbox for the checklist. Nothing there? Look in your spam folder, or call " + PHONE + "."; }

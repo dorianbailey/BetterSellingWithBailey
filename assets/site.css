@@ -696,3 +696,5 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
   .hero-rotator .rot-frame { animation: bsb-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both; }
 }
 @media (max-width: 980px) { .hero-rotator .rot-frame { aspect-ratio: 4 / 3; } }
+
+.nowrap { white-space: nowrap; }

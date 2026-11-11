@@ -225,3 +225,66 @@
     });
   });
 })();
+
+/* Hero photo rotator: crossfades the sale photos, with dots to pick one.
+   Pauses on hover, on keyboard focus and when the tab is hidden; no
+   automatic rotation for people who prefer reduced motion. */
+(function () {
+  var fig = document.querySelector(".hero-rotator");
+  if (!fig) return;
+  var imgs = fig.querySelectorAll(".rot-frame img");
+  var dots = fig.querySelectorAll(".rot-dot");
+  var cap = fig.querySelector(".rot-cap");
+  if (imgs.length < 2) return;
+  var i = 0, timer = null, paused = false;
+  var delay = parseInt(fig.getAttribute("data-rotate"), 10) || 5500;
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function show(n) {
+    i = (n + imgs.length) % imgs.length;
+    Array.prototype.forEach.call(imgs, function (img, k) {
+      var on = k === i;
+      img.classList.toggle("is-active", on);
+      if (on) { img.removeAttribute("aria-hidden"); if (img.loading === "lazy") img.loading = "eager"; }
+      else img.setAttribute("aria-hidden", "true");
+    });
+    Array.prototype.forEach.call(dots, function (d, k) {
+      d.classList.toggle("is-active", k === i);
+      if (k === i) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current");
+    });
+    if (cap) cap.textContent = imgs[i].getAttribute("data-caption") || "";
+  }
+  function start() { if (still || timer) return; timer = setInterval(function () { if (!paused && !document.hidden) show(i + 1); }, delay); }
+  Array.prototype.forEach.call(dots, function (d, k) {
+    d.addEventListener("click", function () { show(k); clearInterval(timer); timer = null; start(); });
+  });
+  fig.addEventListener("mouseenter", function () { paused = true; });
+  fig.addEventListener("mouseleave", function () { paused = false; });
+  fig.addEventListener("focusin", function () { paused = true; });
+  fig.addEventListener("focusout", function () { paused = false; });
+  // warm up the next photos once the page has loaded
+  window.addEventListener("load", function () { Array.prototype.forEach.call(imgs, function (img) { img.loading = "eager"; }); });
+  start();
+})();
+
+/* Facebook feed (latest/ page): Meta's Page Plugin, sized to its column
+   (the plugin takes 180 to 500 px wide), added after load. */
+(function () {
+  var box = document.querySelector("[data-fb-feed]");
+  if (!box) return;
+  var page = box.getAttribute("data-fb-feed");
+  function build() {
+    var w = Math.max(280, Math.min(500, Math.floor(box.clientWidth)));
+    var h = parseInt(box.getAttribute("data-height"), 10) || 1400;
+    var src = "https://www.facebook.com/plugins/page.php?href=" + encodeURIComponent(page) +
+      "&tabs=timeline&width=" + w + "&height=" + h +
+      "&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false";
+    var f = document.createElement("iframe");
+    f.src = src; f.width = w; f.height = h; f.title = "Better Selling With Bailey posts on Facebook";
+    f.style.border = "none"; f.style.overflow = "hidden"; f.setAttribute("scrolling", "no");
+    f.setAttribute("allow", "encrypted-media; picture-in-picture; web-share"); f.setAttribute("allowfullscreen", "true");
+    f.loading = "lazy";
+    box.innerHTML = "";
+    box.appendChild(f);
+  }
+  if (document.readyState === "complete") build(); else window.addEventListener("load", build);
+})();

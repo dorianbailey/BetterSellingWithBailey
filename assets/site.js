@@ -142,7 +142,7 @@
    Dorian's Gmail through FormSubmit without leaving the page. */
 (function () {
   var ENDPOINT = "https://formsubmit.co/ajax/bettersellingwithbailey@gmail.com";
-  var PHONE = '<a href="tel:+18143238239">(814) 323-8239</a>';
+  var PHONE = '<a href="tel:+18145271079">(814) 527-1079</a>';
   var emailOk = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v || ""); };
   var KINDS = {
     alerts: {

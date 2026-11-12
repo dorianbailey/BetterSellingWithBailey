@@ -603,6 +603,7 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
 .cert { width: min(100%, 720px); background: var(--paper); border: 2px solid var(--ink); outline: 1px solid var(--gold); outline-offset: -10px; border-radius: 16px; padding: 34px 38px; }
 .cert-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.3rem 1rem; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
 .cert h2 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); margin-top: 0.8rem; }
+.cert-eyebrow + h2 { margin-top: 0.3rem !important; }
 .cert-body { margin-top: 0.6rem; }
 .cert-row { display: grid; grid-template-columns: 1fr auto; gap: 1.4rem; align-items: end; margin-top: 1.2rem; }
 .cert-lines p { display: flex; align-items: end; gap: 0.6rem; margin-top: 0.9rem; font-weight: 600; color: var(--ink); }
@@ -753,3 +754,17 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
 
 /* ---- Video inside a blog post ---- */
 .article-reel { max-width: 320px; margin: 1.6rem 0 2.2rem; }
+
+/* BBB Accredited Business seal */
+.bbb-seal { display: inline-block; line-height: 0; border-radius: 10px; }
+.bbb-seal img { display: block; width: 150px; height: auto; }
+.bbb-seal:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.footer-bbb { margin-top: 1.3rem; }
+.footer-bbb .bbb-seal img { width: 170px; }
+.site-footer a.bbb-seal:hover { text-decoration: none; }
+.hero-trust a.bbb-seal { display: block; width: max-content; border-bottom: 0; margin-bottom: 0.8rem; }
+.hero-trust .bbb-seal img { width: 140px; }
+.side-card .bbb-seal { display: block; width: max-content; margin: 1.1rem auto 0; }
+.side-card .bbb-seal img { width: 130px; }
+.cert-top .bbb-seal img, .cert-top img.cert-bbb { width: 118px; height: auto; display: block; }
+.cert-eyebrow { margin: 0.9rem 0 0; font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }

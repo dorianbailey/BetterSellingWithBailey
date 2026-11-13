@@ -29,6 +29,10 @@ html,body{margin:0;height:100%;background:#000;color:var(--cream);font-family:'P
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 #cam{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+body.front #cam{transform:scaleX(-1)}
+.light-ring{display:none;position:fixed;inset:0;z-index:1;pointer-events:none;border:22px solid #fff;box-shadow:inset 0 0 18px rgba(255,255,255,.65)}
+body.front .light-ring{display:block}
+body.off .light-ring{display:none}
 .shade{position:fixed;left:0;right:0;pointer-events:none;z-index:1}
 .shade.t{top:0;height:calc(120px + var(--st));background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,0))}
 .shade.b{bottom:0;height:calc(130px + var(--sb));background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.6))}
@@ -320,10 +324,12 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 <body>
 <video id="cam" playsinline muted autoplay></video>
 <div class="shade t"></div><div class="shade b"></div>
+<div class="light-ring" aria-hidden="true"></div>
 
 <header class="top">
   <div class="brand"><span class="b">B</span><span>Price Scanner<small>BETTER SELLING WITH BAILEY</small></span></div>
   <div class="actions">
+    <button id="camBtn" class="icon-btn" aria-label="Switch to the front camera" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><path d="M9.2 12.2a3 3 0 0 1 5.3-1.6"/><path d="M14.8 13.8a3 3 0 0 1-5.3 1.6"/><path d="M14.6 8.9v1.8h-1.8"/><path d="M9.4 17.1v-1.8h1.8"/></svg></button>
     <button id="torchBtn" class="icon-btn" aria-label="Flashlight" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 2h8v4l-2.5 4v12h-3V10L8 6z"/><path d="M8 6h8"/></svg></button>
     <button id="teamBtn" class="icon-btn" aria-label="Team activity" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6M3 20h18"/></svg><span id="teamCount" class="count"></span></button>
     <button id="histBtn" class="icon-btn" aria-label="Scanned items"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span id="histCount" class="count"></span></button>
@@ -435,6 +441,9 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
   <h2 style="margin-bottom:16px">Settings</h2>
   <label class="field"><span>Your name (scans are logged under it)</span>
     <input id="sWho" type="text" autocomplete="given-name" autocapitalize="words" maxlength="40"></label>
+  <label class="field"><span>Camera</span>
+    <select id="sCam"><option value="back">Back camera (hold the phone or use the tripod)</option><option value="front">Front camera (phone face up, hold items over it)</option></select></label>
+  <p class="small" style="margin-top:-8px">No tripod? Lay the phone face up on the table and hold each item 8 to 12 inches above the screen, with the side you want priced facing down. The screen's white edge lights the item from below. You can also switch with the camera button at the top.</p>
   <label class="field"><span>Price bubble shows</span>
     <select id="sMode"><option value="tag">Estate sale tag price</option><option value="resale">Online resale range (eBay)</option></select></label>
   <label class="field"><span>Your pricing rules (the AI follows these)</span>
@@ -515,7 +524,7 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch
 const API = 'https://qnsomzxhnagzjwjhetzu.supabase.co/functions/v1/price-scanner';
 const PREFIX = 'bsb_scan_';
 const MODEL = 'claude-haiku-5-5';   // locked; the server enforces this too
-const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto', signal: 'auto', codes: true };
+const DEFAULTS = { mode: 'tag', sens: 'normal', notes: '', double: true, keep: '5', speak: true, trigger: 'auto', signal: 'auto', codes: true, cam: 'back' };
 // "still": normalized motion (pixels of shift at analysis size) allowed per frame; "hold": ms of stillness before pricing
 const SENS = { quick: { still: .95, hold: 300 }, normal: { still: .7, hold: 450 }, steady: { still: .5, hold: 750 } };
 const CHANGE_RAW = 14, CHANGE_NORM = 3;   // how far the view must move from a priced item before the bubble clears
@@ -623,6 +632,8 @@ const SAME_WINDOW = 10 * 60 * 1000;   // only ask 'same item?' about something s
 /* ---------- helpers ---------- */
 const money = (n) => (n == null || isNaN(n)) ? '–' : '$' + Math.round(+n).toLocaleString('en-US');
 const range = (a, b) => (a == null || b == null) ? '–' : (Math.round(a) === Math.round(b) ? money(a) : money(a) + '–' + Math.round(+b).toLocaleString('en-US'));
+const isFront = () => S.cam === 'front';
+const holdMsg = () => isFront() ? 'Hold item over camera' : 'Hold steady on an item';
 function setStatus(msg, warn) {
   if (statusMsg.textContent !== msg) statusMsg.textContent = msg;
   statusEl.classList.toggle('warn', !!warn);
@@ -800,7 +811,7 @@ function tick(now) {
   const motion = prev ? diff(f.px, prev.px) / (f.grad + 1) : 9;
   prev = f;
   if (f.mean < 20) { stillMs = 0; setReticle(0); setStatus('Too dark. Turn on a light', true); return; }
-  if (f.grad < 1.6) { stillMs = 0; setReticle(0); setStatus('Point at an item'); return; }
+  if (f.grad < 1.6) { stillMs = 0; setReticle(0); setStatus(isFront() ? 'Hold item over camera' : 'Point at an item'); return; }
 
   if (S.trigger === 'touch' && !touching && !closeupFor) {
     stillMs = 0; bestSharp = -1; setReticle(0); setStatus('Touch and hold the screen while you aim'); return;
@@ -811,7 +822,7 @@ function tick(now) {
   const p = Math.min(1, stillMs / cfg.hold);
   setReticle(p);
   if (p >= 1 && now - lastTrigger > 600 && (now > quietUntil || S.trigger === 'touch')) { stillMs = 0; trigger(f, false, null, S.trigger === 'touch'); }
-  else setStatus(closeupFor ? 'Close-up: hold steady on the label or mark' : stillMs > 0 ? 'Hold steady…' : 'Hold steady on an item');
+  else setStatus(closeupFor ? 'Close-up: hold steady on the label or mark' : stillMs > 0 ? 'Hold steady…' : holdMsg());
 }
 
 function unlock() {
@@ -1452,7 +1463,7 @@ function setTable(on) {
   $('#tblBtn').setAttribute('aria-pressed', String(on));
   if (on) { unlock(); try { if (canSpeak) speechSynthesis.cancel(); } catch (e) {} }
   tableLive();
-  if (!on) { setStatus(S.trigger === 'touch' ? 'Touch and hold the screen while you aim' : 'Hold steady on an item'); prev = null; stillMs = 0; }
+  if (!on) { setStatus(S.trigger === 'touch' ? 'Touch and hold the screen while you aim' : holdMsg()); prev = null; stillMs = 0; }
 }
 // Back to the live camera, ready for the next table.
 function tableLive() {
@@ -1781,7 +1792,7 @@ function showNone() {
   bPrice.textContent = '';
   bName.textContent = 'Couldn\'t make out an item. Tap to try again';
   popIn('none'); afterShow();
-  setStatus('Hold steady on an item');
+  setStatus(holdMsg());
 }
 function showError(err) {
   current = null; scanning(false);
@@ -2055,7 +2066,7 @@ $('#hExport').addEventListener('click', async () => {
 
 function openSettings() {
   $('#sWho').value = S.who || ''; $('#sWho').readOnly = !!shift; $('#sWho').title = shift ? 'Clock out to change your name' : '';
-  $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto'; $('#sSignal').value = S.signal === 'on' ? 'on' : 'auto'; $('#sCodes').checked = S.codes !== false;
+  $('#sCam').value = isFront() ? 'front' : 'back'; $('#sMode').value = S.mode; $('#sNotes').value = S.notes; $('#sSens').value = S.sens; $('#sDouble').checked = S.double !== false; $('#sKeep').value = String(S.keep || '5'); $('#sSpeak').checked = S.speak !== false; $('#sTrigger').value = S.trigger === 'touch' ? 'touch' : 'auto'; $('#sSignal').value = S.signal === 'on' ? 'on' : 'auto'; $('#sCodes').checked = S.codes !== false;
   $('#sSpeak').closest('label').hidden = !canSpeak; $('#sInstall').hidden = !installable();
   applyRole(); $('#sOwner').value = ''; resetEyes(); $('#sOwnerMsg').textContent = '';
   const avg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
@@ -2071,10 +2082,13 @@ function openSettings() {
 $('#setBtn').addEventListener('click', openSettings);
 $('#sSave').addEventListener('click', () => {
   const modeChanged = $('#sMode').value !== S.mode;
+  const camChanged = $('#sCam').value !== (isFront() ? 'front' : 'back');
+  S.cam = $('#sCam').value === 'front' ? 'front' : 'back';
   S.mode = $('#sMode').value; S.notes = $('#sNotes').value.slice(0, 1500); S.sens = $('#sSens').value; S.double = $('#sDouble').checked; S.keep = $('#sKeep').value; S.speak = $('#sSpeak').checked; S.trigger = $('#sTrigger').value; S.signal = $('#sSignal').value; S.codes = $('#sCodes').checked;
   const who = $('#sWho').value.replace(/\s+/g, ' ').trim().slice(0, 40); if (who && !shift) S.who = who;
   store.set('settings', S);
   closeSheets(true); updateSig();
+  if (camChanged && stream) switchCamera(); else if (camChanged) camLabels();
   if (modeChanged && current) showEntry(current);
 });
 /* ---------- owner view ---------- */
@@ -2139,6 +2153,7 @@ function stopScanner() {
   if (stream) { for (const t of stream.getTracks()) { try { t.stop(); } catch (e) {} } }
   stream = null; track = null; video.srcObject = null;
   torchOn = false; torchBtn.hidden = true; torchBtn.classList.remove('on');
+  camLabels();
   try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null;
   showOff();
 }
@@ -2173,7 +2188,7 @@ function renderOff() {
   $('#clockState').hidden = !clock || !shift;
   if (clock && shift) $('#clockState').textContent = 'On the clock since ' + when(Date.parse(shift.clock_in)) + ' · ' + dur(Date.now() - Date.parse(shift.clock_in));
   renderSaleLine();
-  $('#offHint').textContent = !clock || shift ? 'Point at an item and hold steady. Prices pop up on their own.'
+  $('#offHint').textContent = !clock || shift ? (isFront() ? 'Lay the phone face up and hold an item over the camera. Prices pop up on their own.' : 'Point at an item and hold steady. Prices pop up on their own.')
     : !clockKnown ? 'Checking the time clock…'
     : 'Clock in to start scanning' + (S.who ? ', ' + S.who.split(' ')[0] : '') + '.';
 }
@@ -2247,7 +2262,7 @@ async function startCamera() {
   if (stream) return true;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { camHelp('This browser can\'t open the camera. Open this page in Safari (iPhone) or Chrome (Android).'); return false; }
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
+    stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: isFront() ? 'user' : 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
   } catch (e) {
     camHelp(e && e.name === 'NotAllowedError'
       ? 'Camera access is blocked. On iPhone: Settings › Safari › Camera › Allow. On Android: tap the lock icon by the address bar › Permissions › Camera. Then try again.'
@@ -2257,13 +2272,38 @@ async function startCamera() {
   video.srcObject = stream;
   try { await video.play(); } catch (e) {}
   track = stream.getVideoTracks()[0];
-  setTimeout(() => { try { const c = track.getCapabilities && track.getCapabilities(); if (c && c.torch) torchBtn.hidden = false; } catch (e) {} }, 600);
+  camLabels();
+  setTimeout(() => { try { const c = track && track.getCapabilities && track.getCapabilities(); if (c && c.torch && !isFront()) torchBtn.hidden = false; } catch (e) {} }, 600);
   keepAwake();
-  setStatus('Hold steady on an item');
+  setStatus(holdMsg());
   if (S.codes !== false) setTimeout(() => barcodeReader().catch(() => {}), 1500);   // load the barcode reader in the background
   if (!loopStarted) { loopStarted = true; requestAnimationFrame(tick); }
   return true;
 }
+// Mirror the preview when the camera faces the user, and keep the switch button in step.
+function camLabels() {
+  let fm = '';
+  try { fm = (track && track.getSettings && track.getSettings().facingMode) || ''; } catch (e) {}
+  document.body.classList.toggle('front', fm ? fm === 'user' : isFront());
+  const b = $('#camBtn');
+  b.hidden = !stream;
+  b.classList.toggle('on', isFront());
+  b.setAttribute('aria-pressed', isFront() ? 'true' : 'false');
+  b.setAttribute('aria-label', isFront() ? 'Switch to the back camera' : 'Switch to the front camera (phone face up)');
+}
+async function switchCamera() {
+  unlock(); closeupFor = null;
+  if (stream) { for (const t of stream.getTracks()) { try { t.stop(); } catch (e) {} } }
+  stream = null; track = null; video.srcObject = null;
+  torchOn = false; torchBtn.hidden = true; torchBtn.classList.remove('on');
+  prev = null; stillMs = 0; bestSharp = -1;
+  const ok = await startCamera();
+  if (!ok) { camLabels(); showOff(); }
+}
+$('#camBtn').addEventListener('click', () => {
+  S.cam = isFront() ? 'back' : 'front'; store.set('settings', S);
+  switchCamera();
+});
 function camHelp(msg) {
   setup.hidden = false; $('#setupKey').hidden = true; $('#setupCam').hidden = false; $('#camMsg').textContent = msg;
 }
@@ -2522,7 +2562,7 @@ const ICON = {
 function tourSteps() {
   return [
     { title: 'Point and hold steady', art: '<div class="ta-ret"><i></i><i></i><i></i><i></i>' + ICON.item + '</div><span class="ta-pill">Hold steady…</span>',
-      text: (needsClock() ? 'Clock in, tap Start scanner, ' : 'Tap Start scanner, ') + (S.trigger === 'touch' ? 'then touch and hold the screen while you aim at one item. ' : 'then point at one item and hold still for a second. ') + 'The price pops up on its own' + (canSpeak ? ' and the phone says it out loud' : '') + '. It skips floors, walls and other things you didn\u2019t aim at, and you can tap the screen to price anything right away.' },
+      text: (needsClock() ? 'Clock in, tap Start scanner, ' : 'Tap Start scanner, ') + (S.trigger === 'touch' ? 'then touch and hold the screen while you aim at one item. ' : 'then point at one item and hold still for a second. ') + 'The price pops up on its own' + (canSpeak ? ' and the phone says it out loud' : '') + '. It skips floors, walls and other things you didn\u2019t aim at, and you can tap the screen to price anything right away. No tripod? Tap the camera button at the top, lay the phone face up, and hold items over it.' },
     { title: 'Read the bubble', art: '<div class="ta-bub"><b>$25</b><span>Lionel 700E locomotive</span><em>Check value · could be $175</em></div>',
       text: 'That’s the tag price. A ~ means a rough guess. “Check value” means it might be worth a lot more, so don’t tag it yet: set it aside for Dorian. Scan the same thing twice and it asks before pricing it again.' },
     { title: 'Tap the price for more', art: '<ul class="ta-list"><li>' + ICON.edit + 'Fix the name, add details</li><li>' + ICON.zoom + 'Close-up of a label or mark</li><li>' + ICON.flag + 'Set aside for Dorian</li><li>' + ICON.tag + 'Real eBay sold prices</li></ul>',

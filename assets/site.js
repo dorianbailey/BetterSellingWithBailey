@@ -6,6 +6,8 @@
 
   function setOpen(open) {
     panel.classList.toggle("is-open", open);
+    document.documentElement.classList.toggle("nav-open", open);
+    if (open) panel.scrollTop = 0;
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
     toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   }

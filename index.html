@@ -147,7 +147,7 @@
         <ul>
           <li>Sale inside the home, or in the garage or yard</li>
           <li>Be as involved in pricing as you like</li>
-          <li>Book early: I take on only 2 to 3 sales a month</li>
+          <li>Planned around your move-in date</li>
         </ul>
         <a class="more" href="downsizing-sales/">Downsizing and moving sales &rarr;</a>
       </article>
@@ -172,7 +172,6 @@
       <span class="eyebrow">How it works</span>
       <h2 style="font-size:clamp(1.85rem,3.4vw,2.6rem)">From first call to a cleared-out house</h2>
       <p style="margin-top:1rem;color:var(--muted)">Be as hands-on or hands-off as you like. Most clients aren't at the sale at all.</p>
-      <p class="note">I take on only 2 to 3 sales a month, so every sale gets my personal attention. Spring and summer dates go first.</p>
     </div>
     <ol class="steps">
       <li><div><h3>Free walkthrough</h3><p>We walk through the home together, free of charge. I'll ask about your deadline and give you an honest estimate of what the sale could bring, including whether a sale makes sense at all.</p></div></li>
@@ -224,12 +223,6 @@
           <div class="pay-option"><h4>When the sale ends</h4><p>The rest of the fee and the 25% come out of the sale proceeds. No second check to write.</p></div>
         </div>
         <p class="pay-example"><strong>Example:</strong> on a $10,000 sale, the total cost is $3,495 ($995 plus $2,500). You've already paid $500, so $2,995 comes out of the proceeds and you're paid $7,005 the day the sale ends.</p>
-        <ul class="promises">
-          <li><strong>Insured</strong>Your sale is covered by my business insurance.</li>
-          <li><strong>Written contract</strong>Fees and dates are in writing before anything happens.</li>
-          <li><strong>Paid the day the sale ends</strong>No waiting weeks for a check.</li>
-          <li><strong>Straight talk on small sales</strong>The flat fee is a bigger share of a small sale. If a sale won't make sense for you, I'll tell you at the walkthrough.</li>
-        </ul>
       </div>
     </div>
   </div>
@@ -320,7 +313,7 @@
       <span class="eyebrow">About</span>
       <h2>You'll work with me, start to finish</h2>
       <p>I'm Dorian Bailey. I grew up in North East, graduated from North East High School, and study Marketing and Management Information Systems at Penn State Behrend.</p>
-      <p>Long before this business existed, I spent years buying, selling, researching and pricing items of all kinds. Better Selling With Bailey grew out of that, with one rule: you work directly with me, from the first walkthrough to the last day of the sale. My helpers and I run every sale together, and I take on only 2 to 3 sales a month so each one gets my full attention.</p>
+      <p>Long before this business existed, I spent years buying, selling, researching and pricing items of all kinds. Better Selling With Bailey grew out of that, with one rule: you work directly with me, from the first walkthrough to the last day of the sale. My helpers and I run every sale together, and each one gets my full attention.</p>
       <p>Selling a lifetime of belongings can feel overwhelming. Some clients want a say in every price; others would rather hand it all to me. Either way works. What you can count on is clear communication and honest guidance the whole way through.</p>
           <p><a href="about/">More about me and how I work &rarr;</a></p>
       <p class="sign">Dorian Bailey</p>
@@ -328,76 +321,26 @@
   </div>
 </section>
 
-<!-- UPCOMING SALES -->
-<section class="section section-alt" id="events">
+<!-- UPCOMING SALES: one line for shoppers. The script below adds sale cards when a public sale is scheduled. -->
+<section class="shop-strip" id="events" aria-label="Upcoming public sales">
   <div class="wrap">
-    <div class="section-head">
-      <span class="eyebrow">For shoppers</span>
-      <h2>Upcoming public sales</h2>
-      <p>Sales are open to the public. Get a text or email when the next one is announced, with preview photos.</p>
-    </div>
-    <div class="events-list" id="events-list">
-      <div class="events-empty">
-        <p>No public sales are on the calendar right now. Sign up below and you'll hear about the next one first.</p>
-      </div>
-    </div>
-    <div class="alerts-card" id="sale-alerts">
-      <div class="alerts-copy">
-        <h3>Get sale alerts</h3>
-        <p>One or two messages a month, only about sales: the dates, the address and photos of the best finds.</p>
-        <a class="more" href="shopping-our-sales/">How entry, payment and discounts work &rarr;</a>
-        <a class="more" href="latest/">See the latest posts &rarr;</a>
-      </div>
-      <form class="alerts-form" data-form="alerts" data-subject="New sale-alert signup" novalidate>
-        <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="_honey" tabindex="-1" autocomplete="off"></label></div>
-        <div class="form-grid">
-          <div class="field"><label for="al-email">Email</label><input id="al-email" name="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
-          <div class="field"><label for="al-phone">Mobile for texts <span class="opt">(optional)</span></label><input id="al-phone" name="phone" type="tel" autocomplete="tel" placeholder="(814) 555-0100"></div>
-          <fieldset class="field full interests">
-            <legend>What are you hunting for? <span class="opt">(optional)</span></legend>
-            <div class="chips light">
-              <label class="chip"><input type="checkbox" name="interests" value="Collectibles and toys"><span>Collectibles and toys</span></label>
-              <label class="chip"><input type="checkbox" name="interests" value="Tools"><span>Tools</span></label>
-              <label class="chip"><input type="checkbox" name="interests" value="Hunting and fishing"><span>Hunting and fishing</span></label>
-              <label class="chip"><input type="checkbox" name="interests" value="Harley-Davidson"><span>Harley-Davidson</span></label>
-              <label class="chip"><input type="checkbox" name="interests" value="Furniture and household"><span>Furniture and household</span></label>
-              <label class="chip"><input type="checkbox" name="interests" value="Antiques and vintage"><span>Antiques and vintage</span></label>
-            </div>
-          </fieldset>
-        </div>
-        <div class="form-actions">
-          <button class="btn btn-gold" type="submit">Get sale alerts</button>
-          <p class="form-fine">Adding a mobile number means you agree to sale-alert texts from Better Selling With Bailey. Message and data rates may apply. Reply STOP anytime, HELP for help. See the <a href="privacy/">Privacy Policy</a> and <a href="terms/#texts">Terms</a>.</p>
-        </div>
-        <p class="form-status" role="status" hidden></p>
-      </form>
-    </div>
+    <div class="events-list" id="events-list"></div>
+    <p class="shop-line"><strong>Shopping a sale instead?</strong> <span id="events-none">No public sales are on the calendar right now.</span> <a href="sale-alerts/">Get sale alerts &rarr;</a></p>
   </div>
 </section>
 
-<!-- REFERRAL REWARD + PARTNERS -->
-<section class="section" aria-labelledby="refer-title" style="padding-bottom:0">
-  <div class="wrap" style="display:grid;gap:1.25rem">
+<!-- REFERRALS: friends get $100; professionals go to their own page -->
+<section class="section" aria-labelledby="refer-title">
+  <div class="wrap">
     <div class="refer-band">
       <div>
-        <span class="eyebrow">Referral reward</span>
-        <h2 id="refer-title">Know someone selling? <em>Get $100.</em></h2>
-        <p>Send a friend, neighbor or family member my way. If they book a sale for a home in Erie County, I'll send you $100 once it ends.</p>
+        <span class="eyebrow">Referrals</span>
+        <h2 id="refer-title">Know a family who needs this?</h2>
+        <p>Send a friend or neighbor my way and get <strong>$100</strong> once their sale ends. Realtors, attorneys and senior communities: I plan the sale around your client's date and send you a short report when the house is clear.</p>
       </div>
       <div style="display:grid;gap:0.7rem;justify-items:start">
-        <a class="btn btn-gold" href="refer/#send">Send a referral</a>
-        <a class="more" href="refer/">How it works &rarr;</a>
-      </div>
-    </div>
-    <div class="partners">
-      <div>
-        <span class="eyebrow" style="color:var(--gold)">For professionals</span>
-        <h2 id="partners-title">Realtors, attorneys and senior communities</h2>
-        <p>Have a client who needs a home cleared before a listing, a closing or a move? I plan the sale around your date, keep your client updated, and send you a short report when the house is clear.</p>
-      </div>
-      <div style="display:grid;gap:0.7rem;justify-items:start">
-        <a class="btn btn-gold" href="for-realtors-and-attorneys/#refer">Refer a client</a>
-        <a href="for-realtors-and-attorneys/" style="color:var(--gold);font-weight:700">How I work with professionals &rarr;</a>
+        <a class="btn btn-gold" href="refer/#send">Refer a friend, get $100</a>
+        <a class="more" href="for-realtors-and-attorneys/">For realtors and attorneys &rarr;</a>
       </div>
     </div>
   </div>
@@ -700,8 +643,10 @@ var BSWB_EVENTS = [
   document.head.appendChild(ld);
 
   var list = document.getElementById("events-list");
+  var none = document.getElementById("events-none");
+  if (none) none.hidden = true;
   if (list) {
-    list.innerHTML = upcoming.map(function (ev) {
+    list.innerHTML = '<h2 class="events-title">Upcoming public sales</h2>' + upcoming.map(function (ev) {
       var p = ev.startDate.split("-");
       return '<article class="event"><div class="event-date"><span class="m">' + MONTHS[parseInt(p[1], 10) - 1] +
         '</span><span class="d">' + parseInt(p[2], 10) + '</span></div><div><h3>' + esc(ev.title) +

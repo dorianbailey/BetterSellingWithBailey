@@ -522,6 +522,10 @@ p { margin: 0; }
 .prose thead th, .article-body thead th { font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--ink); }
 .prose td.you, .article-body td.you { font-weight: 700; color: var(--ink); background: rgba(201, 168, 76, 0.12); }
 .table-scroll { overflow-x: auto; }
+/* Word tables (comparisons): left-aligned, top-aligned, a readable minimum width on phones */
+.prose table.table-words th, .prose table.table-words td, .article-body table.table-words th, .article-body table.table-words td { text-align: left; vertical-align: top; font-variant-numeric: normal; }
+.table-words { min-width: 620px; }
+.table-words tbody th { color: var(--ink); width: 22%; }
 .callout { background: var(--paper); border-left: 3px solid var(--gold); border-radius: 0 12px 12px 0; padding: 1rem 1.2rem; margin: 1.4rem 0; }
 .callout p:last-child { margin-bottom: 0; }
 .town-list { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0 !important; margin: 0.6rem 0 1.4rem !important; }

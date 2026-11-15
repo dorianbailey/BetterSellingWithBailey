@@ -228,9 +228,11 @@
   });
 })();
 
-/* Hero photo rotator: crossfades the sale photos, with dots to pick one.
-   Pauses on hover, on keyboard focus and when the tab is hidden; no
-   automatic rotation for people who prefer reduced motion. */
+/* Hero photo rotator: crossfades the sale photos every 3 seconds, with dots to
+   pick one. Pauses only while a mouse is over it or a keyboard user has focus
+   inside it, and when the tab is hidden. Touch taps don't pause it (iOS fires
+   mouseenter on tap and never mouseleave, which used to freeze it). People who
+   prefer reduced motion get an instant swap instead of the fade. */
 (function () {
   var fig = document.querySelector(".hero-rotator");
   if (!fig) return;
@@ -238,9 +240,8 @@
   var dots = fig.querySelectorAll(".rot-dot");
   var cap = fig.querySelector(".rot-cap");
   if (imgs.length < 2) return;
-  var i = 0, timer = null, paused = false;
-  var delay = parseInt(fig.getAttribute("data-rotate"), 10) || 5500;
-  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var i = 0, timer = null, hover = false, kbd = false;
+  var delay = parseInt(fig.getAttribute("data-rotate"), 10) || 3000;
   function show(n) {
     i = (n + imgs.length) % imgs.length;
     Array.prototype.forEach.call(imgs, function (img, k) {
@@ -255,17 +256,24 @@
     });
     if (cap) cap.textContent = imgs[i].getAttribute("data-caption") || "";
   }
-  function start() { if (still || timer) return; timer = setInterval(function () { if (!paused && !document.hidden) show(i + 1); }, delay); }
+  function restart() {
+    clearInterval(timer);
+    timer = setInterval(function () { if (!hover && !kbd && !document.hidden) show(i + 1); }, delay);
+  }
   Array.prototype.forEach.call(dots, function (d, k) {
-    d.addEventListener("click", function () { show(k); clearInterval(timer); timer = null; start(); });
+    d.addEventListener("click", function () { show(k); restart(); });
   });
-  fig.addEventListener("mouseenter", function () { paused = true; });
-  fig.addEventListener("mouseleave", function () { paused = false; });
-  fig.addEventListener("focusin", function () { paused = true; });
-  fig.addEventListener("focusout", function () { paused = false; });
+  fig.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") hover = true; });
+  fig.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") hover = false; });
+  fig.addEventListener("focusin", function (e) {
+    var t = e.target;
+    kbd = !!(t && t.matches && (function () { try { return t.matches(":focus-visible"); } catch (x) { return true; } })());
+  });
+  fig.addEventListener("focusout", function () { kbd = false; });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) restart(); });
   // warm up the next photos once the page has loaded
   window.addEventListener("load", function () { Array.prototype.forEach.call(imgs, function (img) { img.loading = "eager"; }); });
-  start();
+  restart();
 })();
 
 /* Facebook feed (latest/ page): Meta's Page Plugin, sized to its column

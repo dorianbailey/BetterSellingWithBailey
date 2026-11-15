@@ -772,3 +772,8 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
 .side-card .bbb-seal img { width: 130px; }
 .cert-top .bbb-seal img, .cert-top img.cert-bbb { width: 118px; height: auto; display: block; }
 .cert-eyebrow { margin: 0.9rem 0 0; font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
+
+/* H1 kicker: keyword line inside the hero H1, styled like the eyebrow */
+.hero h1 .h1-kicker { display: block; font-family: var(--body); font-style: normal; line-height: 1.4; margin-bottom: 0.9rem; animation: none; }
+.faq-jump { display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; font-weight: 600; font-size: 0.97rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
+.prose h2[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }

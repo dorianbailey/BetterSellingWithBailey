@@ -298,3 +298,20 @@
   }
   if (document.readyState === "complete") build(); else window.addEventListener("load", build);
 })();
+
+/* Mobile Call/Book bar: hidden while the top-of-page buttons are visible, so the
+   first screen doesn't show the same two buttons twice. Pages without them, and
+   browsers without IntersectionObserver, keep the bar showing. */
+(function () {
+  var bar = document.querySelector(".action-bar");
+  var ctas = document.querySelector(".hero .hero-ctas, .page-hero .hero-ctas");
+  if (!bar || !ctas || !("IntersectionObserver" in window)) return;
+  function tuck(on) {
+    bar.classList.toggle("is-tucked", on);
+    if (on) { bar.setAttribute("aria-hidden", "true"); bar.inert = true; }
+    else { bar.removeAttribute("aria-hidden"); bar.inert = false; }
+  }
+  new IntersectionObserver(function (entries) {
+    tuck(entries[0].isIntersecting);
+  }, { rootMargin: "0px 0px -80px 0px" }).observe(ctas);
+})();

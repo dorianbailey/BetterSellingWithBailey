@@ -780,3 +780,19 @@ fieldset.field legend { font-weight: 700; font-size: 0.95rem; color: var(--ink);
 .hero h1 .h1-kicker { display: block; font-family: var(--body); font-style: normal; line-height: 1.4; margin-bottom: 0.9rem; animation: none; }
 .faq-jump { display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; font-weight: 600; font-size: 0.97rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
 .prose h2[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
+
+/* Shoppers: one line on the homepage; sale cards appear above it when a sale is scheduled */
+.shop-strip { padding: clamp(18px, 3vw, 28px) 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--cream-2); }
+.shop-strip .events-list:empty { display: none; }
+.shop-strip .events-list { margin-bottom: 1rem; }
+.shop-strip .events-title { font-size: clamp(1.4rem, 2.4vw, 1.8rem); }
+.shop-line { color: var(--muted); }
+.shop-line strong { color: var(--ink); }
+.shop-line a { color: var(--gold-deep); font-weight: 700; white-space: nowrap; }
+
+/* Mobile Call/Book bar: tucked away while the page's own top buttons are on screen */
+@media (max-width: 760px) {
+  .action-bar { transition: transform 0.25s ease, opacity 0.25s ease; }
+  .action-bar.is-tucked { transform: translateY(110%); opacity: 0; pointer-events: none; }
+}
+@media (prefers-reduced-motion: reduce) { .action-bar { transition: none; } }

@@ -101,6 +101,9 @@ p { margin: 0; }
   .nav-toggle { display: block; }
   .nav-panel { display: block; position: fixed; inset: var(--nav-h) 0 auto 0; background: var(--cream); border-bottom: 1px solid var(--line); box-shadow: 0 18px 30px rgba(25,23,20,0.12); padding: 0.5rem var(--gutter) 1.25rem; transform: translateY(-8px); opacity: 0; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0.18s; z-index: 999; }
   .nav-panel.is-open { opacity: 1; transform: none; visibility: visible; }
+  /* The menu is taller than a phone screen: let it scroll on its own and keep the page behind it still. */
+  .nav-panel { max-height: calc(100vh - var(--nav-h)); max-height: calc(100dvh - var(--nav-h)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: calc(1.25rem + env(safe-area-inset-bottom)); }
+  html.nav-open { overflow: hidden; }
   .nav-panel a { display: block; padding: 0.8rem 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 1.05rem; }
   .nav-panel .btn { margin-top: 1rem; width: 100%; border-bottom: 0; }
   .nav-panel .panel-phone { color: var(--gold-deep); }

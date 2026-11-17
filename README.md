@@ -44,3 +44,14 @@ The walkthrough form and the checklist form also send the visitor an automatic c
 Every form includes `lead_source`, `first_page` and `first_visit`: how that visitor first found the site (a Google or Facebook referral, a `utm_source` tag, `ref: partner-certificate` from a certificate QR code, or `direct`). Add `?utm_source=...` to any link you post so its leads are labeled.
 
 The first message sent from the live site triggers a one-time confirmation email from FormSubmit; click its activation link and every later message arrives in Gmail.
+
+## Google Ads tracking
+
+Every page except the scanner loads the Google tag (`GTM-5ZPS6HPP`) right after `<meta charset>`. Two conversions are sent to Google Ads account 549-230-4531:
+
+| Conversion | Fires when | Where |
+| --- | --- | --- |
+| Walkthrough form | The homepage form sends successfully | `index.html`, in the form script |
+| Phone tap | Someone taps any `tel:` link | `assets/site.js`, last block |
+
+Calls from the ads themselves are counted inside Google Ads through the call asset, so they need no code. The privacy policy's "Google Ads measurement" item describes this tag; update it if the tracking changes.

@@ -315,3 +315,13 @@
     tuck(entries[0].isIntersecting);
   }, { rootMargin: "0px 0px -80px 0px" }).observe(ctas);
 })();
+
+/* Google Ads: count a tap on any phone number as a "Phone tap" conversion. */
+(function () {
+  document.addEventListener("click", function (e) {
+    var link = e.target.closest && e.target.closest('a[href^="tel:"]');
+    if (link && typeof window.gtag === "function") {
+      window.gtag("event", "conversion", { send_to: "AW-18581355021/zr69CLHBubodEI30o5xF" });
+    }
+  });
+})();
